@@ -1,0 +1,29 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+namespace: kowabunga
+name: cloud
+readme: README.md
+authors: The Kowabunga Project
+description: Kowabunga Ansible modules
+license: Apache-2.0
+tags:
+  - cloud
+  - kowabunga
+  - paas
+dependencies: {}
+repository: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
+documentation: https://docs.ansible.com/ansible/latest/collections/kowabunga/cloud/index.html
+homepage: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
+build_ignore:
+  - setup.cfg
+  - tox.ini
+  - .gitignore
+  - .tox
+  - .env
+  - .vscode
+  - ansible_collections_kowabunga.egg-info
+  - changelogs
+version: 0.0.1
