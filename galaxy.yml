@@ -18,6 +18,7 @@ repository: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
 documentation: https://docs.ansible.com/ansible/latest/collections/kowabunga/cloud/index.html
 homepage: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
 build_ignore:
+  - "*.tar.gz"
   - setup.cfg
   - tox.ini
   - .gitignore
