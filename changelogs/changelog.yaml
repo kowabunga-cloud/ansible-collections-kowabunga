@@ -1,0 +1,6 @@
+ancestor: null
+releases:
+  0.0.1:
+    changes:
+      release_summary: Initial release of collection.
+    release_date: '2020-05-11'
