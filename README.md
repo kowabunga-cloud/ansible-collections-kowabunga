@@ -30,17 +30,17 @@ It is supported and maintained by the Kowabunga community.
 | **Kowabunga**           | [![Kowabunga Release](https://img.shields.io/github/v/release/kowabunga-cloud/kowabunga)](https://github.com/kowabunga-cloud/kowabunga/releases) |
 | **Kowabunga Ansible Collection**     | [![Kowabunga Ansible Collection Release](https://img.shields.io/github/v/release/kowabunga-cloud/ansible-collections-kowabunga)](https://github.com/kowabunga-cloud/ansible-collections-kowabunga/releases) |
 
-## Installation
-
-`kowabunga-python` can be installed like any other Python library through `pip install`:
-
-```console
-$ pip install kowabunga
-```
-
 Check out the [list of released versions](https://github.com/kowabunga-cloud/kowabunga-python/releases).
 
 ## Installation
+
+For using this collection, first you have to install Python `kowabunga` package on your Ansible controller:
+
+```sh
+pip install kowabunga
+```
+
+[Kowabunga SDK][kowabunga-python] has to be available on the Ansible host running the Kowabunga modules. Depending on the Ansible playbook and roles you use, this host is not necessarily the Ansible controller. Sometimes Ansible might invoke a non-standard Python interpreter on the target Ansible host.
 
 Before using this collection, you have to install it with `ansible-galaxy`:
 
