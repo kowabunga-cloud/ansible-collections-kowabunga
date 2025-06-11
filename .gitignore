@@ -3,6 +3,7 @@ MANIFEST.json
 
 .idea/
 *.pyc
+*.tar.gz
 __pycache__
 .vscode
 /changelogs/.plugin-cache.yaml
