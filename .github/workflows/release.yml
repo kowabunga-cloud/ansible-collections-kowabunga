@@ -45,7 +45,8 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ansible-collection-kowabunga
-        path: .
+        path: dist/
+    - run: cp dist/*.tar.gz .
     - name: Publish Collection
       uses: artis3n/ansible_galaxy_collection@v2
       with:
