@@ -1,0 +1,76 @@
+<p align="center">
+  <a href="https://www.kowabunga.cloud/?utm_source=github&utm_medium=logo" target="_blank">
+    <picture>
+      <source srcset="https://raw.githubusercontent.com/kowabunga-cloud/infographics/master/art/kowabunga-title-white.png" media="(prefers-color-scheme: dark)" />
+      <source srcset="https://raw.githubusercontent.com/kowabunga-cloud/infographics/master/art/kowabunga-title-black.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+      <img src="https://raw.githubusercontent.com/kowabunga-cloud/infographics/master/art/kowabunga-title-black.png" alt="Kowabunga" width="800">
+    </picture>
+  </a>
+</p>
+
+# Ansible Kowabunga Collection
+
+Ansible Kowabunga collection aka `kowabunga.cloud` provides:
+
+- Ansible roles and playbooks for automating deployment of **Kowabunga core modules**:
+  - **Kahuna** API orchestration engine,
+  - **Koala** Web interface,
+  - **Kiwi** SD-WAN nodes,
+  - **Kaktus** HCI storage and computing nodes,
+- Ansible modules and plugins for managing Kowabunga cloud resources.
+
+It is supported and maintained by the Kowabunga community.
+
+[![License: Apache License, Version 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://spdx.org/licenses/Apache-2.0.html)
+
+## Current Releases
+
+| Project            | Release Badge                                                                                       |
+|--------------------|-----------------------------------------------------------------------------------------------------|
+| **Kowabunga**           | [![Kowabunga Release](https://img.shields.io/github/v/release/kowabunga-cloud/kowabunga)](https://github.com/kowabunga-cloud/kowabunga/releases) |
+| **Kowabunga Ansible Collection**     | [![Kowabunga Ansible Collection Release](https://img.shields.io/github/v/release/kowabunga-cloud/ansible-collections-kowabunga)](https://github.com/kowabunga-cloud/ansible-collections-kowabunga/releases) |
+
+## Installation
+
+`kowabunga-python` can be installed like any other Python library through `pip install`:
+
+```console
+$ pip install kowabunga
+```
+
+Check out the [list of released versions](https://github.com/kowabunga-cloud/kowabunga-python/releases).
+
+## Installation
+
+Before using this collection, you have to install it with `ansible-galaxy`:
+
+```sh
+ansible-galaxy collection install kowabunga.cloud
+```
+
+You can also include it in a `requirements.yml` file:
+
+```yaml
+collections:
+- name: kowabunga.cloud
+```
+
+And then install it with:
+
+```sh
+ansible-galaxy collection install -r requirements.yml
+```
+
+<!-- ## Documentation -->
+
+<!-- See collection docs at Ansible's main page: -->
+
+<!-- * [kowabunga.cloud collection docs (version released in Ansible package)]( -->
+<!--   https://docs.ansible.com/ansible/latest/collections/kowabunga/cloud/index.html) -->
+
+<!-- * [kowabunga.cloud collection docs (devel version)]( -->
+<!--   https://docs.ansible.com/ansible/devel/collections/kowabunga/cloud/index.html) -->
+
+## License
+
+Licensed under [Apache License, Version 2.0](https://opensource.org/license/apache-2-0), see [`LICENSE`](LICENSE).
