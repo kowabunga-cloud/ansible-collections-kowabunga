@@ -28,9 +28,12 @@ It is supported and maintained by the Kowabunga community.
 | Project            | Release Badge                                                                                       |
 |--------------------|-----------------------------------------------------------------------------------------------------|
 | **Kowabunga**           | [![Kowabunga Release](https://img.shields.io/github/v/release/kowabunga-cloud/kowabunga)](https://github.com/kowabunga-cloud/kowabunga/releases) |
+| **Kowabunga Python SDK**     | [![Kowabunga Python SDK Release](https://img.shields.io/github/v/release/kowabunga-cloud/kowabunga-python)](https://github.com/kowabunga-cloud/kowabunga-python/releases) |
 | **Kowabunga Ansible Collection**     | [![Kowabunga Ansible Collection Release](https://img.shields.io/github/v/release/kowabunga-cloud/ansible-collections-kowabunga)](https://github.com/kowabunga-cloud/ansible-collections-kowabunga/releases) |
 
-Check out the [list of released versions](https://github.com/kowabunga-cloud/kowabunga-python/releases).
+Check out the [list of released versions](https://github.com/kowabunga-cloud/ansible-collections-kowabunga/releases).
+
+[kowabunga-python]: https://github.com/kowabunga-cloud/kowabunga-python
 
 ## Installation
 
