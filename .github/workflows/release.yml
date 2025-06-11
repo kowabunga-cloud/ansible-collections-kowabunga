@@ -21,6 +21,7 @@ jobs:
     - name: Build Collection
       uses: artis3n/ansible_galaxy_collection@v2
       with:
+        api_key: '${{ secrets.GALAXY_API_KEY }}'
         publish: false
     - run: mkdir dist
     - run: mv *.tar.gz dist
