@@ -1,0 +1,8 @@
+FILES.json
+MANIFEST.json
+
+.idea/
+*.pyc
+__pycache__
+.vscode
+/changelogs/.plugin-cache.yaml
