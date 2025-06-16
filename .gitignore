@@ -1,5 +1,7 @@
 FILES.json
 MANIFEST.json
+test.yml
+ansible.cfg
 
 .idea/
 *.pyc
@@ -7,3 +9,4 @@ MANIFEST.json
 __pycache__
 .vscode
 /changelogs/.plugin-cache.yaml
+/collections
