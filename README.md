@@ -114,15 +114,11 @@ To use a module from the Ansible Kowabunga collection, call them by their Fully 
         state: present
 ```
 
-<!-- ## Documentation -->
+## Documentation
 
-<!-- See collection docs at Ansible's main page: -->
+See collection docs at:
 
-<!-- * [kowabunga.cloud collection docs (version released in Ansible package)]( -->
-<!--   https://docs.ansible.com/ansible/latest/collections/kowabunga/cloud/index.html) -->
-
-<!-- * [kowabunga.cloud collection docs (devel version)]( -->
-<!--   https://docs.ansible.com/ansible/devel/collections/kowabunga/cloud/index.html) -->
+* [kowabunga.cloud collection docs (devel version)](https://ansible.kowabunga.cloud/kowabunga/cloud/index.html)
 
 ## License
 
