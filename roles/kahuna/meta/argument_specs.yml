@@ -53,7 +53,7 @@ argument_specs:
           - Lifetime (hours) of issued JWT tokens.
           - High frequency enforces token generation, consuming more resources.
           - Low frequency can causes security issues if token get compromised.
-        tpye: int
+        type: int
         default: 24
 
       kowabunga_kahuna_apikey:
