@@ -118,7 +118,7 @@ To use a module from the Ansible Kowabunga collection, call them by their Fully 
 
 See collection docs at:
 
-* [kowabunga.cloud collection docs (devel version)](https://ansible.kowabunga.cloud/kowabunga/cloud/index.html)
+* [kowabunga.cloud collection docs](https://ansible.kowabunga.cloud/kowabunga/cloud/index.html)
 
 ## License
 
