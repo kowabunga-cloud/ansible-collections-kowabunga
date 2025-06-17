@@ -1,0 +1,42 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+kowabunga_loglevel: INFO
+kowabunga_http_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+kowabunga_public_url: "http://{{ kowabunga_http_address }}:{{ kowabunga_http_port }}"
+kowabunga_fqdn: "{{ kowabunga_public_url | replace('http://', '') | replace('https://', '') }}"
+
+kowabunga_acme_sh_version: 3.1.1
+kowabunga_acme_archive: "https://github.com/acmesh-official/acme.sh/archive/{{ kowabunga_acme_sh_version }}.tar.gz"
+kowabunga_acme_bin: "/usr/share/acme.sh-3.0.7/acme.sh --force"
+kowabunga_acme_key_type: ec-256
+kowabunga_ssl_key_file: "/etc/nginx/ssl/{{ kowabunga_fqdn }}/key.pem"
+kowabunga_ssl_cert_file: "/etc/nginx/ssl/{{ kowabunga_fqdn }}/cert.pem"
+
+kowabunga_kahuna_enabled: false
+kowabunga_kahuna_admin_email: ~
+kowabunga_kahuna_http_port: 8080
+kowabunga_kahuna_http_timeout: 1h
+kowabunga_kahuna_jwt_signature: ~
+kowabunga_kahuna_jwt_lifetime_hours: 24
+kowabunga_kahuna_apikey: ~
+kowabunga_kahuna_db_uri: "mongodb://127.0.0.1:27017/?directConnection=true"
+kowabunga_kahuna_db_name: kowabunga
+kowabunga_kahuna_cache_enabled: true
+kowabunga_kahuna_cache_type: memory
+kowabunga_kahuna_cache_size_mb: 16
+kowabunga_kahuna_cache_ttl_minutes: 15
+kowabunga_kahuna_bootstrap_user: ~
+kowabunga_kahuna_bootstrap_pubkey: ~
+kowabunga_kahuna_smtp_host: "smtp.acme.com"
+kowabunga_kahuna_smtp_port: 587
+kowabunga_kahuna_smtp_from: ~
+kowabunga_kahuna_smtp_username: ~
+kowabunga_kahuna_smtp_password: ~
+
+kowabunga_koala_enabled: true
+kowabunga_koala_http_port: 50000
+kowabunga_koala_root_dir: /var/www/kowabunga

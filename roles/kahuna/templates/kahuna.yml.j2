@@ -1,0 +1,38 @@
+global:
+  logLevel: {{ kowabunga_loglevel }}
+  publicUrl: "{{ kowabunga_public_url }}"
+  adminEmail: {{ kowabunga_kahuna_admin_email }}
+  jwt:
+    signature: {{ kowabunga_kahuna_jwt_signature }}
+    lifetimeHours: {{ kowabunga_kahuna_jwt_lifetime_hours }}
+  http:
+    address: {{ kowabunga_http_address }}
+    port: {{ kowabunga_kahuna_http_port }}
+  apiKey: {{ kowabunga_kahuna_apikey }}
+  db:
+    uri: "{{ kowabunga_kahuna_db_uri }}"
+    name: {{ kowabunga_kahuna_db_name }}
+  cache:
+    enabled: {{ kowabunga_kahuna_cache_enabled }}
+    type: {{ kowabunga_kahuna_cache_type }}
+    sizeMB: {{ kowabunga_kahuna_cache_size_mb }}
+    expirationMinutes: {{ kowabunga_kahuna_cache_ttl_minutes }}
+  bootstrap:
+    user: {{ kowabunga_kahuna_bootstrap_user }}
+    pubkey: "{{ kowabunga_kahuna_bootstrap_pubkey }}"
+  smtp:
+    host: "{{ kowabunga_kahuna_smtp_host }}"
+    port: {{ kowabunga_kahuna_smtp_port }}
+    from: "{{ kowabunga_kahuna_smtp_from }}"
+    username: "{{ kowabunga_kahuna_smtp_username }}"
+    password: "{{ kowabunga_kahuna_smtp_password }}"
+
+cloudinit:
+  linux:
+    userData: /etc/kowabunga/templates/linux/user_data.yml
+    metaData: /etc/kowabunga/templates/linux/meta_data.yml
+    networkConfig: /etc/kowabunga/templates/linux/network_config.yml
+  windows:
+    userData: /etc/kowabunga/templates/windows/user_data.yml
+    metaData: /etc/kowabunga/templates/windows/meta_data.yml
+    networkConfig: /etc/kowabunga/templates/windows/network_config.yml

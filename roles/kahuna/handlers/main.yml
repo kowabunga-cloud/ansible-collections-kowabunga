@@ -1,0 +1,16 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: restart kowabunga-kahuna
+  ansible.builtin.service:
+    name: kowabunga-kahuna
+    state: restarted
+    enabled: true
+
+- name: reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+    enabled: true

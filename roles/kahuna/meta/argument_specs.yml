@@ -1,0 +1,21 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start Kahuna and Koala
+    description:
+      - Install, configure, and start Kowabunga Kahuna orchestrator and Koala WebUI.
+
+    options:
+      kowabunga_loglevel:
+        description:
+          - Kahuna server log level.
+        type: str
+        default: INFO
+        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
+
+      kowabunga_http_address:
+        description:
+          - IPv4 address to listen to.
+        type: str
+        default: hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']

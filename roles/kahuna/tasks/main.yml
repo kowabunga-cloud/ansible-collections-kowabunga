@@ -1,0 +1,75 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Kowabunga Kahuna orchestrator
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    update_cache: true
+    state: latest
+  loop:
+    - socat
+    - nginx
+    - kowabunga-kahuna
+  notify: restart kowabunga-kahuna
+
+- name: Configure Kahuna
+  ansible.builtin.template:
+    src: kahuna.yml.j2
+    dest: /etc/kowabunga/kahuna.yml
+    owner: kahuna
+    group: kowabunga
+    mode: 0640
+  no_log: true
+  notify: restart kowabunga-kahuna
+
+- name: Install Kowabunga Koala WebUI
+  ansible.builtin.apt:
+    name: kowabunga-koala
+    state: latest
+  notify: reload nginx
+  when: kowabunga_koala_enabled
+
+- name: Create nginx SSL directory
+  ansible.builtin.file:
+   path: "/etc/nginx/ssl/{{ kowabunga_fqdn }}"
+   state: directory
+
+- name: Get ACME.sh
+  ansible.builtin.unarchive:
+    src: "{{ kowabunga_acme_archive }}"
+    dest: /usr/share
+    remote_src: true
+
+- name: Register ZeroSSL account
+  ansible.builtin.shell: "{{ kowabunga_acme_bin }} --register-account -m {{ kowabunga_kahuna_admin_email }}"
+
+- name: Issue ZeroSSL certificates
+  ansible.builtin.shell: "{{ kowabunga_acme_bin }} --issue --standalone -d {{ kowabunga_fqdn }} --keylength {{ kowabunga_acme_key_type }}"
+
+- name: Install SSL certificates into nginx
+  ansible.builtin.shell: "{{ kowabunga_acme_bin }} --install-cert --standalone -d {{ kowabunga_fqdn }} --key-file {{ kowabunga_ssl_key_file }} --fullchain-file {{ kowabunga_ssl_cert_file }} --reloadcmd 'service nginx reload'"
+
+- name: Ensure nginx default virtual host is off
+  ansible.builtin.file:
+    name: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: Create custom content dir
+  ansible.builtin.copy:
+    src: 404.html
+    dest: /var/www/html/404.html
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: Set nginx virtual host
+  template:
+    src: kowabunga.vhost.j2
+    dest: "/etc/nginx/sites-enabled/{{ kowabunga_fqdn }}"
+    owner: root
+    group: root
+    mode: 0640
+  notify: reload nginx
