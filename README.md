@@ -68,6 +68,52 @@ And then install it with:
 ansible-galaxy collection install -r requirements.yml
 ```
 
+## Usage
+
+To use a module from the Ansible Kowabunga collection, call them by their Fully Qualified Collection Name (FQCN), composed of their namespace, collection name and module name:
+
+```yaml
+---
+- hosts: localhost
+  tasks:
+    - name: Create Project
+      kowabunga.cloud.project:
+        endpoint: https://kowabunga.acme.com
+        api_key: SECRET_API_KEY
+        name: my-project
+        description: My Project
+        teams:
+          - dev
+          - ops
+        regions:
+          - eu-west-1
+        state: present
+```
+
+[Ansible module defaults](https://docs.ansible.com/ansible/latest/user_guide/playbooks_module_defaults.html) are supported as well:
+
+```
+---
+- hosts: localhost
+
+  module_defaults:
+    group/kowabunga.cloud.kowabunga:
+      endpoint: https://kowabunga.acme.com
+      api_key: SECRET_API_KEY
+
+  tasks:
+    - name: Create Project
+      kowabunga.cloud.project:
+        name: my-project
+        description: My Project
+        teams:
+          - dev
+          - ops
+        regions:
+          - eu-west-1
+        state: present
+```
+
 <!-- ## Documentation -->
 
 <!-- See collection docs at Ansible's main page: -->
