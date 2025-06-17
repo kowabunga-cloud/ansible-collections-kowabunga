@@ -17,5 +17,131 @@ argument_specs:
         description:
           - IPv4 address to listen to.
         type: str
-        default: hostvars[inventory_hostname]['ansible_default_ipv4']['address']
-        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
+        default: Instance's private interface IPv4 address.
+
+      kowabunga_public_url:
+        description:
+          - Public URL the server is exposed to.
+        type: str
+        default: "http://{{ kowabunga_http_address }}:{{ kowabunga_http_port }}"
+
+      kowabunga_kahuna_admin_email:
+        description:
+          - Email address for Kahuna to send emails from
+        type: str
+
+      kowabunga_kahuna_http_port:
+        description:
+          - Port number for Kahuna to listen from.
+        type: int
+        default: 8080
+
+      kowabunga_kahuna_http_timeout:
+        description:
+          - Kahuna HTTP requests timeout.
+        type: str
+        default: 1h
+
+      kowabunga_kahuna_jwt_signature:
+        description:
+          - Secret key used by Kahuna to issue JWT token.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+
+      kowabunga_kahuna_jwt_lifetime_hours:
+        description:
+          - Lifetime (hours) of issued JWT tokens.
+          - High frequency enforces token generation, consuming more resources.
+          - Low frequency can causes security issues if token get compromised.
+        tpye: int
+        default: 24
+
+      kowabunga_kahuna_apikey:
+        description:
+          - Kahuna master API key used to bootstrap system.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Recommended not to be used once users accounts and nominative admin keys have been issued.
+        type: str
+
+      kowabunga_kahuna_db_uri:
+        description:
+          - MongoDB connection URI used by Kahuna to access database.
+        type: str
+        default: "mongodb://127.0.0.1:27017/?directConnection=true"
+
+      kowabunga_kahuna_db_name:
+        description:
+          - MongoDB database name used by Kahuna.
+        type: str
+        default: kowabunga
+
+      kowabunga_kahuna_cache_enabled:
+        description:
+          - Define whether Kahuna must cache database requests.
+          - Cache entries are flushed when resources are updated.
+        type: bool
+        default: true
+
+      kowabunga_kahuna_cache_type:
+        description:
+          - Type of database cache to be used ny Kahuna
+        type: str
+        default: memory
+        choices: ['memory']
+
+      kowabunga_kahuna_cache_size_mb:
+        description:
+          - Kahuna cache size (in MB), when enabled.
+        type: int
+        default: 16
+
+      kowabunga_kahuna_cache_ttl_minutes:
+        description:
+          - Kahuna cache time-to-live (TTL), when enabled.
+          - Cache entries are automatically flushed after TTL interval.
+        type: int
+        default: 15
+
+      kowabunga_kahuna_bootstrap_user:
+        description:
+          - Default username to be associated to created instance when boostraped.
+          - Can be tune-in per project
+        type: str
+
+      kowabunga_kahuna_bootstrap_pubkey:
+        description:
+          - Default SSH public key to be associated to bootstrap user when instances are created.
+        type: str
+
+      kowabunga_kahuna_smtp_host:
+        description:
+          - SMTP host to be used by Kahuna to send email notifications.
+        type: str
+        default: "smtp.acme.com"
+
+      kowabunga_kahuna_smtp_port:
+        description:
+          - SMTP host to be used by Kahuna to send email notifications.
+        type: int
+        default: 587
+
+      kowabunga_kahuna_smtp_from:
+        description:
+          - Email address for Kahuna to send emails notifications from.
+        type: str
+
+      kowabunga_kahuna_smtp_username:
+        description:
+          - SMTP username to be used by Kahuna to send email notifications.
+        type: str
+
+      kowabunga_kahuna_smtp_password:
+        description:
+          - SMTP password to be used by Kahuna to send email notifications.
+        type: str
+
+      kowabunga_koala_enabled:
+        description:
+          - Defines whether Koala WebUI must be deployed.
+        type: bool
+        default: true
