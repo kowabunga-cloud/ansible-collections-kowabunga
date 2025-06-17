@@ -22,6 +22,10 @@ Ansible Kowabunga collection aka `kowabunga.cloud` provides:
 It is supported and maintained by the Kowabunga community.
 
 [![License: Apache License, Version 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://spdx.org/licenses/Apache-2.0.html)
+[![time tracker](https://wakatime.com/badge/github/kowabunga-cloud/ansible-collections-kowabunga.svg)](https://wakatime.com/badge/github/kowabunga-cloud/ansible-collections-kowabunga)
+![Code lines](https://sloc.xyz/github/kowabunga-cloud/ansible-collections-kowabunga/?category=code)
+![Comments](https://sloc.xyz/github/kowabunga-cloud/ansible-collections-kowabunga/?category=comments)
+![COCOMO](https://sloc.xyz/github/kowabunga-cloud/ansible-collections-kowabunga/?category=cocomo&avg-wage=100000)
 
 ## Current Releases
 
