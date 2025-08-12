@@ -27,7 +27,7 @@ argument_specs:
         type: str
         default: ""
 
-      kowabunga_kaktus_agent_apikey:
+      kowabunga_kaktus_agent_api_key:
         description:
           - API key of the Kowabunga Kaktus agent, as instructed in Kahuna database.
           - Used by agent to establish WebSocket connection to Kahuna.

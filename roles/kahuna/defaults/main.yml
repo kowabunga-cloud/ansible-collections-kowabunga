@@ -13,7 +13,7 @@ kowabunga_kahuna_http_port: 8080
 kowabunga_kahuna_http_timeout: 1h
 kowabunga_kahuna_jwt_signature: ~
 kowabunga_kahuna_jwt_lifetime_hours: 24
-kowabunga_kahuna_apikey: ~
+kowabunga_kahuna_api_key: ~
 kowabunga_kahuna_db_uri: "mongodb://127.0.0.1:27017/?directConnection=true"
 kowabunga_kahuna_db_name: kowabunga
 kowabunga_kahuna_cache_enabled: true

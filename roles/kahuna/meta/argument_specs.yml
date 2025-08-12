@@ -56,7 +56,7 @@ argument_specs:
         type: int
         default: 24
 
-      kowabunga_kahuna_apikey:
+      kowabunga_kahuna_api_key:
         description:
           - Kahuna master API key used to bootstrap system.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
