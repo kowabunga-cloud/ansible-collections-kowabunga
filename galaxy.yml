@@ -15,7 +15,7 @@ tags:
   - paas
 dependencies: {}
 repository: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
-documentation: https://docs.ansible.com/ansible/latest/collections/kowabunga/cloud/index.html
+documentation: https://ansible.kowabunga.cloud/kowabunga/cloud/index.html
 homepage: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
 build_ignore:
   - "*.tar.gz"
