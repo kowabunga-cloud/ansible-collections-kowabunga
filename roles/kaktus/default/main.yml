@@ -1,0 +1,37 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+###################
+# Global Settings #
+###################
+
+kowabunga_public_url: "https://kowabunga.acme.com"
+kowabunga_kaktus_loglevel: INFO
+
+#####################
+# Agent Credentials #
+#####################
+
+kowabunga_kaktus_agent_id: ""
+kowabunga_kaktus_agent_apikey: ""
+
+####################
+# Libvirt Settings #
+####################
+
+kowabunga_kaktus_libvirt_host: "127.0.0.1"
+kowabunga_kaktus_libvirt_port: 16509
+kowabunga_kaktus_libvirt_protocol: tcp
+kowabunga_kaktus_libvirt_tls_private_key_file: ""
+kowabunga_kaktus_libvirt_tls_public_cert_file: ""
+kowabunga_kaktus_libvirt_tls_ca_file: ""
+
+#################
+# Ceph Settings #
+#################
+
+kowabunga_kaktus_ceph_monitor_name: ceph-mon
+kowabunga_kaktus_ceph_monitor_host: "127.0.0.1"
+kowabunga_kaktus_ceph_monitor_port: 3300

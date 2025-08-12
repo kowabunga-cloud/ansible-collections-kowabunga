@@ -1,0 +1,21 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Kowabunga Kaktus agent
+  ansible.builtin.apt:
+    name: kowabunga-kaktus-agent
+    update_cache: true
+    state: latest
+  notify: restart kowabunga-kaktus-agent
+
+- name: Configure Kowabunga Kaktus Agent
+  ansible.builtin.template:
+    src: kaktus.yml.j2
+    dest: /etc/kowabunga/kaktus.yml
+    owner: kaktus
+    group: kowabunga
+    mode: 0640
+  no_log: true
+  notify: restart kowabunga-kaktus-agent

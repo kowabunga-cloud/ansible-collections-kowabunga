@@ -1,0 +1,95 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start Kaktus node.
+    description:
+      - Install, configure, and start Kowabunga Kaktus HCI node.
+
+    options:
+      kowabunga_public_url:
+        description:
+          - Public URL the Kahuna server is exposed to.
+        type: str
+        default: "https://kowabunga.acme.com"
+
+      kowabunga_kaktus_loglevel:
+        description:
+          - Kahuna Kaktus agent log level.
+        type: str
+        default: INFO
+        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
+
+      kowabunga_kaktus_agent_id:
+        description:
+          - ID of the Kowabunga Kaktus agent, as instructed in Kahuna database.
+          - Used by agent to establish WebSocket connection to Kahuna.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: ""
+
+      kowabunga_kaktus_agent_apikey:
+        description:
+          - API key of the Kowabunga Kaktus agent, as instructed in Kahuna database.
+          - Used by agent to establish WebSocket connection to Kahuna.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: ""
+
+      kowabunga_kaktus_libvirt_host:
+        description:
+          - Libvirt host to be used by Kaktus agent to connect to.
+        type: str
+        default: "127.0.0.1"
+
+      kowabunga_kaktus_libvirt_port:
+        description:
+          - Libvirt port to be used by Kaktus agent to connect.
+          - Usually 16509 for plain TCP connection and 16514 for TLS one.
+        type: int
+        default: 16509
+
+      kowabunga_kaktus_libvirt_protocol:
+        description:
+          - Protocol to be used by Kaktus agent to connect to libvirt daemon.
+        type: str
+        default: tcp
+        choices: ['tcp', 'tls']
+
+      kowabunga_kaktus_libvirt_tls_private_key_file:
+        description:
+          - Path to PEM-formatted file containing libvirt TLS private key.
+          - Only useful when TLS connection is expected.
+        type: str
+        default: ""
+
+      kowabunga_kaktus_libvirt_tls_public_cert_file:
+        description:
+          - Path to PEM-formatted file containing libvirt TLS public certificate.
+          - Only useful when TLS connection is expected.
+        type: str
+        default: ""
+
+      kowabunga_kaktus_libvirt_tls_ca_file:
+        description:
+          - Path to PEM-formatted file containing libvirt TLS certificate of authority.
+          - Only useful when TLS connection is expected.
+        type: str
+        default: ""
+
+      kowabunga_kaktus_ceph_monitor_name:
+        description:
+          - Ceph cluster monitor hostname to be used by Kaktus agent to connect to.
+        type: str
+        default: ceph-mon
+
+      kowabunga_kaktus_ceph_monitor_host:
+        description:
+          - Ceph cluster monitor host address to be used by Kaktus agent to connect to.
+        type: str
+        default: "127.0.0.1"
+
+      kowabunga_kaktus_ceph_monitor_port:
+        description:
+          - Ceph cluster monitor Port to be used by Kaktus agent to connect.
+        type: int
+        default: 3300

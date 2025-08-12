@@ -1,0 +1,21 @@
+global:
+  logLevel: {{ kowabunga_kaktus_loglevel }}
+  id: {{ kowabunga_kaktus_agent_id }}
+  endpoint: "wss://{{ kowabunga_fqdn }}"
+  apiKey: {{ kowabunga_kaktus_agent_apikey }}
+libvirt:
+  protocol: {{ kowabunga_kaktus_libvirt_protocol }}
+  address: {{ kowabunga_kaktus_libvirt_host }}
+  port: {{ kowabunga_kaktus_libvirt_port }}
+{% if kowabunga_kaktus_libvirt_protocol == 'tls' %}
+  tls:
+    key: {{ kowabunga_kaktus_libvirt_tls_private_key_file }}
+    cert: {{ kowabunga_kaktus_libvirt_tls_public_cert_file }}
+    ca: {{ kowabunga_kaktus_libvirt_tls_ca_file }}
+{% endif %}
+ceph:
+  plugin: /usr/lib/kowabunga/plugins/ceph.so
+  monitor:
+    name: {{ kowabunga_kaktus_ceph_monitor_name }}
+    address: {{ kowabunga_kaktus_ceph_monitor_host }}
+    port: {{ kowabunga_kaktus_ceph_monitor_port }}
