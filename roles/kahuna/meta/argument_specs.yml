@@ -6,13 +6,6 @@ argument_specs:
       - Install, configure, and start Kowabunga Kahuna orchestrator and Koala WebUI.
 
     options:
-      kowabunga_loglevel:
-        description:
-          - Kahuna server log level.
-        type: str
-        default: INFO
-        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
-
       kowabunga_http_address:
         description:
           - IPv4 address to listen to.
@@ -24,6 +17,13 @@ argument_specs:
           - Public URL the server is exposed to.
         type: str
         default: "http://{{ kowabunga_http_address }}:{{ kowabunga_http_port }}"
+
+      kowabunga_kahuna_loglevel:
+        description:
+          - Kahuna server log level.
+        type: str
+        default: INFO
+        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
 
       kowabunga_kahuna_admin_email:
         description:
