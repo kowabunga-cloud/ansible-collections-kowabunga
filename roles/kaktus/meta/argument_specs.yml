@@ -25,7 +25,6 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: ""
 
       kowabunga_kaktus_agent_api_key:
         description:
@@ -33,7 +32,6 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: ""
 
       kowabunga_kaktus_libvirt_host:
         description:
@@ -60,21 +58,18 @@ argument_specs:
           - Path to PEM-formatted file containing libvirt TLS private key.
           - Only useful when TLS connection is expected.
         type: str
-        default: ""
 
       kowabunga_kaktus_libvirt_tls_public_cert_file:
         description:
           - Path to PEM-formatted file containing libvirt TLS public certificate.
           - Only useful when TLS connection is expected.
         type: str
-        default: ""
 
       kowabunga_kaktus_libvirt_tls_ca_file:
         description:
           - Path to PEM-formatted file containing libvirt TLS certificate of authority.
           - Only useful when TLS connection is expected.
         type: str
-        default: ""
 
       kowabunga_kaktus_ceph_monitor_name:
         description:

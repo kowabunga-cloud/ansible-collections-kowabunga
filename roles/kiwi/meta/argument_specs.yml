@@ -25,7 +25,6 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: ""
 
       kowabunga_kiwi_agent_api_key:
         description:
@@ -33,7 +32,6 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: ""
 
       kowabunga_kiwi_powerdns_as_host:
         description:
@@ -57,7 +55,6 @@ argument_specs:
         description:
           - PowerDNS authoritative server (AS) API key to be used by Kiwi agent to connect to.
         type: str
-        default: ""
 
       kowabunga_kiwi_powerdns_recursor_api_port:
         description:
@@ -69,7 +66,6 @@ argument_specs:
         description:
           - PowerDNS recursor API key to be used by Kiwi agent to connect to.
         type: str
-        default: ""
 
       kowabunga_kiwi_powerdns_recursor_cluster_group_name:
         description:
