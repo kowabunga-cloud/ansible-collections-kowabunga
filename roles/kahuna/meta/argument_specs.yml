@@ -29,6 +29,7 @@ argument_specs:
         description:
           - Email address for Kahuna to send emails from
         type: str
+        required: true
 
       kowabunga_kahuna_http_port:
         description:
@@ -47,6 +48,7 @@ argument_specs:
           - Secret key used by Kahuna to issue JWT token.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
+        required: true
 
       kowabunga_kahuna_jwt_lifetime_hours:
         description:
@@ -62,6 +64,7 @@ argument_specs:
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
           - Recommended not to be used once users accounts and nominative admin keys have been issued.
         type: str
+        required: true
 
       kowabunga_kahuna_db_uri:
         description:
@@ -107,11 +110,13 @@ argument_specs:
           - Default username to be associated to created instance when boostraped.
           - Can be tune-in per project
         type: str
+        required: true
 
       kowabunga_kahuna_bootstrap_pubkey:
         description:
           - Default SSH public key to be associated to bootstrap user when instances are created.
         type: str
+        required: true
 
       kowabunga_kahuna_smtp_host:
         description:
@@ -129,16 +134,19 @@ argument_specs:
         description:
           - Email address for Kahuna to send emails notifications from.
         type: str
+        required: true
 
       kowabunga_kahuna_smtp_username:
         description:
           - SMTP username to be used by Kahuna to send email notifications.
         type: str
+        required: true
 
       kowabunga_kahuna_smtp_password:
         description:
           - SMTP password to be used by Kahuna to send email notifications.
         type: str
+        required: true
 
       kowabunga_koala_enabled:
         description:

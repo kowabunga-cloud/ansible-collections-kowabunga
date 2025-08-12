@@ -25,6 +25,7 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
+        required: true
 
       kowabunga_kaktus_agent_api_key:
         description:
@@ -32,6 +33,7 @@ argument_specs:
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
+        required: true
 
       kowabunga_kaktus_libvirt_host:
         description:
