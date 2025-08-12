@@ -1,0 +1,78 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start Kiwi node.
+    description:
+      - Install, configure, and start Kowabunga Kiwi SDN node.
+
+    options:
+      kowabunga_public_url:
+        description:
+          - Public URL the server is exposed to.
+        type: str
+        default: "https://kowabunga.acme.com"
+
+      kowabunga_kiwi_loglevel:
+        description:
+          - Kahuna Kiwi agent log level.
+        type: str
+        default: INFO
+        choices: ['INFO', 'DEBUG', 'WARNING', 'CRITICAL']
+
+      kowabunga_kiwi_agent_id:
+        description:
+          - ID of the Kowabunga Kiwi agent, as instructed in Kahuna database.
+          - Used by agent to establish WebSocket connection to Kahuna.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: ""
+
+      kowabunga_kiwi_agent_api_key:
+        description:
+          - API key of the Kowabunga Kiwi agent, as instructed in Kahuna database.
+          - Used by agent to establish WebSocket connection to Kahuna.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: ""
+
+      kowabunga_kiwi_powerdns_as_host:
+        description:
+          - PowerDNS authoritative server (AS) host to be used by Kiwi agent to connect to.
+        type: str
+        default: "127.0.0.1"
+
+      kowabunga_kiwi_powerdns_as_port:
+        description:
+          - PowerDNS authoritative server (AS) service port.
+        type: int
+        default: 54
+
+      kowabunga_kiwi_powerdns_as_api_port:
+        description:
+          - PowerDNS authoritative server (AS) API port to be used by Kiwi agent to connect to.
+        type: int
+        default: 9000
+
+      kowabunga_kiwi_powerdns_as_api_key:
+        description:
+          - PowerDNS authoritative server (AS) API key to be used by Kiwi agent to connect to.
+        type: str
+        default: ""
+
+      kowabunga_kiwi_powerdns_recursor_api_port:
+        description:
+          - PowerDNS recursor API port to be used by Kiwi agent to connect to.
+        type: int
+        default: 9001
+
+      kowabunga_kiwi_powerdns_recursor_api_key:
+        description:
+          - PowerDNS recursor API key to be used by Kiwi agent to connect to.
+        type: str
+        default: ""
+
+      kowabunga_kiwi_powerdns_recursor_cluster_group_name:
+        description:
+          - Ansible inventory group name of Kiwi cluster instances.
+        type: str
+        default: kiwi

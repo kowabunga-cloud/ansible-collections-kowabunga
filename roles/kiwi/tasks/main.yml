@@ -1,0 +1,21 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Kowabunga Kiwi agent
+  ansible.builtin.apt:
+    name: kowabunga-kiwi-agent
+    update_cache: true
+    state: latest
+  notify: restart kowabunga-kiwi-agent
+
+- name: Configure Kowabunga Kiwi Agent
+  ansible.builtin.template:
+    src: kiwi.yml.j2
+    dest: /etc/kowabunga/kiwi.yml
+    owner: kiwi
+    group: kowabunga
+    mode: 0640
+  no_log: true
+  notify: restart kowabunga-kiwi-agent
