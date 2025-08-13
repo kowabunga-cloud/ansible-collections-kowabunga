@@ -6,4 +6,5 @@
 - hosts: kiwi
 
   roles:
+    - name: kowabunga.cloud.common
     - name: kowabunga.cloud.kiwi

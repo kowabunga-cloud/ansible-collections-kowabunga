@@ -1,0 +1,8 @@
+## Kowabunga Ubuntu distribution repository
+
+Enabled: yes
+Types: deb
+URIs: {{ kowabunga_apt_repository }}/ubuntu
+Suites: {{ ansible_distribution_release }}
+Components: main
+Signed-By: {{ kowabunga_apt_keyring_local }}

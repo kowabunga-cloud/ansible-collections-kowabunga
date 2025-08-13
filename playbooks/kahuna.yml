@@ -6,4 +6,5 @@
 - hosts: kahuna
 
   roles:
+    - name: kowabunga.cloud.common
     - name: kowabunga.cloud.kahuna

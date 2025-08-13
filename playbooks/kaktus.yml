@@ -6,4 +6,5 @@
 - hosts: kaktus
 
   roles:
+    - name: kowabunga.cloud.common
     - name: kowabunga.cloud.kaktus
