@@ -13,7 +13,8 @@ tags:
   - cloud
   - kowabunga
   - paas
-dependencies: {}
+dependencies:
+  'community.sops': '2.0.0'
 repository: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
 documentation: https://ansible.kowabunga.cloud/kowabunga/cloud/index.html
 homepage: https://github.com/kowabunga-cloud/ansible-collections-kowabunga
