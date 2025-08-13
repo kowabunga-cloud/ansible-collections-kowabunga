@@ -31,6 +31,15 @@
   notify: reload nginx
   when: kowabunga_koala_enabled
 
+- name: Set Caddy virtual host
+  template:
+    src: caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: caddy
+    group: caddy
+    mode: 0644
+  notify: reload caddy
+
 - name: Create nginx SSL directory
   ansible.builtin.file:
    path: "/etc/nginx/ssl/{{ kowabunga_fqdn }}"

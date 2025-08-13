@@ -1,0 +1,27 @@
+{{ kowabunga_fqdn }} {
+  encode
+
+  @api path /api/* /confirm /confirmForgotPassword /latest
+  @ws {
+    path /ws
+    header Connection *Upgrade*
+    header Upgrade    websocket
+  }
+
+  # Kahuna Orchestrator
+  handle @api {
+    reverse_proxy {{ kowabunga_http_address }}:{{ kowabunga_kahuna_http_port }}
+  }
+  handle @ws {
+    reverse_proxy @ws {{ kowabunga_http_address }}:{{ kowabunga_kahuna_http_port }}
+  }
+
+{% if kowabunga_koala_enabled %}
+  # Koala WebUI
+  handle {
+    root * {{ kowabunga_koala_root_dir }}
+    try_files {path} /index.html
+    file_server
+  }
+{% endif %}
+}
