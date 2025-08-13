@@ -5,11 +5,4 @@
 
 kowabunga_fqdn: "{{ kowabunga_public_url | replace('http://', '') | replace('https://', '') }}"
 
-kowabunga_acme_sh_version: 3.1.1
-kowabunga_acme_archive: "https://github.com/acmesh-official/acme.sh/archive/{{ kowabunga_acme_sh_version }}.tar.gz"
-kowabunga_acme_bin: "/usr/share/acme.sh-{{ kowabunga_acme_sh_version }}/acme.sh --force"
-kowabunga_acme_key_type: ec-256
-kowabunga_ssl_key_file: "/etc/nginx/ssl/{{ kowabunga_fqdn }}/key.pem"
-kowabunga_ssl_cert_file: "/etc/nginx/ssl/{{ kowabunga_fqdn }}/cert.pem"
-
 kowabunga_koala_root_dir: /var/www/kowabunga

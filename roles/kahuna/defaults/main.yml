@@ -10,7 +10,6 @@ kowabunga_public_url: "http://{{ kowabunga_http_address }}:{{ kowabunga_http_por
 kowabunga_kahuna_loglevel: INFO
 kowabunga_kahuna_admin_email: ~
 kowabunga_kahuna_http_port: 8080
-kowabunga_kahuna_http_timeout: 1h
 kowabunga_kahuna_jwt_signature: ~
 kowabunga_kahuna_jwt_lifetime_hours: 24
 kowabunga_kahuna_api_key: ~
