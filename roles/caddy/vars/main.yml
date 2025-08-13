@@ -1,0 +1,8 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+caddy_apt_repository: https://dl.cloudsmith.io/public/caddy/stable
+caddy_apt_keyring_remote: "{{ caddy_apt_repository }}/gpg.key"
+caddy_apt_keyring_local: /etc/apt/keyrings/caddy.asc

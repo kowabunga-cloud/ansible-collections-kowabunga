@@ -1,0 +1,27 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Retrieve Caddy GPG pubkey
+  ansible.builtin.get_url:
+    url: "{{ caddy_apt_keyring_remote }}"
+    dest: "{{ caddy_apt_keyring_local }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure Caddy Ubuntu APT sources
+  ansible.builtin.template:
+    src: caddy.sources.j2
+    dest: "/etc/apt/sources.list.d/caddy.sources"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install Caddy Web Server
+  ansible.builtin.apt:
+    name: caddy
+    update_cache: true
+    state: latest
+  notify: restart caddy

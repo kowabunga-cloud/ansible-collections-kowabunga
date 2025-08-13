@@ -7,4 +7,5 @@
 
   roles:
     - name: kowabunga.cloud.common
+    - name: kowabunga.cloud.caddy
     - name: kowabunga.cloud.kahuna
