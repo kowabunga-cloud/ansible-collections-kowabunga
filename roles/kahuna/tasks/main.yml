@@ -5,13 +5,9 @@
 
 - name: Install Kowabunga Kahuna orchestrator
   ansible.builtin.apt:
-    name: "{{ item }}"
+    name: kowabunga-kahuna
     update_cache: true
     state: latest
-  loop:
-    - socat
-    - nginx
-    - kowabunga-kahuna
   notify: restart kowabunga-kahuna
 
 - name: Configure Kahuna
