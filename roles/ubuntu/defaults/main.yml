@@ -8,3 +8,4 @@
 ###################
 
 kowabunga_ubuntu_packages_list_extra: []
+kowabunga_ubuntu_enforced_dist_upgrade: false

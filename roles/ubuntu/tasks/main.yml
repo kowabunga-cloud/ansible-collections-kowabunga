@@ -38,7 +38,7 @@
     upgrade: dist
     dpkg_options: 'force-confold,force-confdef'
     state: latest
-  when: ubuntu_enforced_dist_upgrade
+  when: kowabunga_ubuntu_enforced_dist_upgrade
 
 - name: Install core OS packages to latest releases
   ansible.builtin.apt:
