@@ -30,7 +30,7 @@ def InterfaceAddresses(iface, gateways):
     if vlan_idx != -1 or iface.startswith("vlan"):
         base_query = "sudo cat /proc/net/vlan/" + iface
         dev_query = base_query + " | grep Device | sed \'s/Device: //\'"
-        id_query = base_query + " | head -1 | cut -d \':\' -f 2 | sed \'s% *\([0-9]*\).*%\\1%\'"
+        id_query = base_query + " | head -1 | cut -d \':\' -f 2 | sed \'s% *\\([0-9]*\\).*%\\1%\'"
         s.vlan.dev = subprocess.Popen([dev_query], shell=True, stdout=subprocess.PIPE).communicate()[0].rstrip().decode("utf-8")
         s.vlan.id = subprocess.Popen([id_query], shell=True, stdout=subprocess.PIPE).communicate()[0].rstrip().decode("utf-8")
 
