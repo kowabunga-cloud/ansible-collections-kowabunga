@@ -10,10 +10,10 @@
 
   # Kahuna Orchestrator
   handle @api {
-    reverse_proxy {{ kowabunga_http_address }}:{{ kowabunga_kahuna_http_port }}
+    reverse_proxy {{ kowabunga_kahuna_http_address }}:{{ kowabunga_kahuna_http_port }}
   }
   handle @ws {
-    reverse_proxy @ws {{ kowabunga_http_address }}:{{ kowabunga_kahuna_http_port }}
+    reverse_proxy @ws {{ kowabunga_kahuna_http_address }}:{{ kowabunga_kahuna_http_port }}
   }
 
 {% if kowabunga_koala_enabled %}

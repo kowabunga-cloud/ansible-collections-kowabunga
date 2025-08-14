@@ -6,17 +6,11 @@ argument_specs:
       - Install, configure, and start Kowabunga Kahuna orchestrator and Koala WebUI.
 
     options:
-      kowabunga_http_address:
-        description:
-          - IPv4 address to listen to.
-        type: str
-        default: Instance's private interface IPv4 address.
-
       kowabunga_public_url:
         description:
           - Public URL the server is exposed to.
         type: str
-        default: "http://{{ kowabunga_http_address }}:{{ kowabunga_http_port }}"
+        required: true
 
       kowabunga_kahuna_loglevel:
         description:
@@ -30,6 +24,12 @@ argument_specs:
           - Email address for Kahuna to send emails from
         type: str
         required: true
+
+      kowabunga_kahuna_http_address:
+        description:
+          - IPv4 address for Kahuna to listen to.
+        type: str
+        default: Instance's private interface IPv4 address.
 
       kowabunga_kahuna_http_port:
         description:
