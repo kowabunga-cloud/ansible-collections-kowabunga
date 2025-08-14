@@ -1,0 +1,48 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.ubuntu
+  tags: packages
+
+- ansible.builtin.import_tasks: os.yml
+  tags: os
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.ansible
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.network_detector
+  tags: always
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.ssh
+  tags: ssh
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.logrotate
+  tags: logrotate
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.chrony
+  tags: ntp
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.firewall
+  when: kowabunga_network_firewall_enabled
+  tags: firewall
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.keepalived
+  tags: failover
+
+- ansible.builtin.import_role:
+    name: kowabunga.cloud.hostctl
+
+- ansible.builtin.import_tasks: users.yml
+  tags: users
+
+- ansible.builtin.import_tasks: cleanup.yml
+  tags: cleanup

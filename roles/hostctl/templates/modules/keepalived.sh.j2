@@ -1,0 +1,39 @@
+MOD_NAME="keepalived"
+MOD_PRIO=1
+
+# private functions
+infoKeepalived() {
+    for line in $(cat {{ keepalived_config_dir }}/*.conf|tr '\n' ' '|sed -r 's/vrrp_/\nvrrp_/g'|grep '^vrrp_instance'|sed -r 's/vrrp_instance +([^ ]+).*virtual_ipaddress[ {]*([^ {]+).*$/\1:\2/' | cut -d '/' -f 1); do
+        name=$(echo ${line}|awk -F':' '{print $1}')
+        vip=$(echo ${line}|awk -F':' '{print $2}')
+        ip addr|grep -q "${vip}/"
+        res=$?
+        echo -en "  VIP: ${name} ${vip} is "
+        if [ $res -eq 0 ]; then
+            colored "master" $colorGreen
+        else
+            colored "backup" $colorOrange
+        fi
+    done
+    processInfo "keepalived"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+keepalived_status() {
+    checkService keepalived
+    infoKeepalived
+}
+
+keepalived_stop() {
+    stopService keepalived "" "keepalived"
+}
+
+keepalived_start() {
+    startService keepalived pingService keepalived
+}
+
+keepalived_restart() {
+    restartService keepalived pingService keepalived
+}

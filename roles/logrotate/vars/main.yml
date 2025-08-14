@@ -1,0 +1,34 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+logrotate_config_dir: /etc/logrotate.d
+
+logrotate_timer_service_name: logrotate.timer
+
+logrotate_syslog_files_default:
+  - /var/log/auth.log
+  - /var/log/cron.log
+  - /var/log/daemon.log
+  - /var/log/debug
+  - /var/log/kern.log
+  - /var/log/lpr.log
+  - /var/log/mail.err
+  - /var/log/mail.info
+  - /var/log/mail.log
+  - /var/log/mail.warn
+  - /var/log/messages
+  - /var/log/syslog
+  - /var/log/user.log
+
+logrotate_syslog_files: "{{ logrotate_syslog_files_default + kowabunga_logrotate_syslog_files_extra }}"
+
+logrotate_max_files: 4
+
+# Default to 10% of fs syslog maxsize
+# Rotate will happen every logrotate_max_files log file, meaning logs can take up to 40% of rootfs space
+logrotate_host_rootfs_total_space_gb: "{{ (ansible_mounts | selectattr('mount', 'equalto', '/') | list)[0].size_total / (1024 * 1024 * 1024) }}"
+logrotate_max_file_size_gb_default: "{{ (logrotate_host_rootfs_total_space_gb | float * 0.1) | round | int }}"
+
+logrotate_max_file_size_gb: "{{ (kowabunga_logrotate_max_file_size_gb > 0) | ternary(kowabunga_logrotate_max_file_size_gb, logrotate_max_file_size_gb_default) }}"

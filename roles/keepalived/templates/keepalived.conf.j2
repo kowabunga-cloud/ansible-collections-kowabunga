@@ -1,0 +1,11 @@
+#
+# KeepAlived Configuration
+#
+
+include {{ keepalived_config_dir }}/10-global.conf
+{% if keepalived_use_bfd %}
+include {{ keepalived_config_dir }}/20-bfd.conf
+{% endif %}
+{% for t in keepalived_trackers-%}
+include {{ keepalived_config_dir }}/30-vrrp-{{ t.name }}.conf
+{% endfor %}

@@ -1,0 +1,46 @@
+#!/bin/bash
+if [ -e /etc/ansible.env ]; then
+    . /etc/ansible.env
+fi
+
+date="$(date)"
+load="$(awk '{print $1}' /proc/loadavg)"
+os_release="$(lsb_release -ds)"
+root_usage="$(df -h / | awk '/\// {print $(NF-1)}')"
+memory_usage="$(free -m | awk '/Mem/ { printf("%3.1f%%", $3/$2*100) }')"
+users="$(users | wc -w)"
+
+l=$(last -w)
+la=($l)
+lastname=${la[0]}
+lastip=${la[2]}
+lastdate="${la[3]} ${la[4]} ${la[5]} ${la[6]}"
+
+echo "System information as of: ${date}"
+echo
+printf "System load:\t%s\tMemory usage:\t%s\n" "${load}" "${memory_usage}"
+printf "Usage on /:\t%s\tOS Release:\t%s\n" "${root_usage}" "${os_release}"
+printf "Local users:\t%s \e[1;34m%s\e[m\n" "${users}" "$(users)"
+echo  "ips:"
+ip a show|awk 'BEGIN{itf="";}function print_itf(){if(length(itf)&&length(ips)){printf("%-16s %s",itf,ips);}}/^[0-9]/{print_itf();ips="";itf=$2;sub(":$","",itf);next;}/scope link/{next;}/inet/{anip=$2;sub("/.*$","",anip);if (length(ips)== 0){ips=sprintf("%s%s\n",ips,anip);}else{ips=sprintf("%s%16s %s\n",ips,"",anip);}next;}END{print_itf();}'|sed -r 's/^/    /'
+echo
+
+echo "Last reboot: $(uptime -p), on $(uptime -s)"
+if [ ! -z "$LAST_DEPLOY" ]; then
+    echo -en "Last ansible deployment ($LAST_DEPLOY_PLAYBOOK) has been performed on $LAST_DEPLOY $LAST_DEPLOY_TIME, "
+    daysAgo=$(( ( $(date +'%s') - $(date -ud "$LAST_DEPLOY" +'%s') )/60/60/24 ))
+    if [ "$daysAgo" == 0 ]; then
+        echo -en today
+    elif [ "$daysAgo" == 1 ]; then
+        echo -en yesterday
+    else
+        echo -en "$daysAgo days ago"
+    fi
+    echo -en " by \e[1;34m${LAST_DEPLOY_USER}\e[m"
+    echo
+fi
+echo -e "Last login by \e[1;34m${lastname}\e[m from $lastip on $lastdate"
+
+echo
+echo '  nice commands: help, status, tlog'
+echo

@@ -1,0 +1,56 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install package
+  ansible.builtin.package:
+    name: keepalived
+    state: latest
+  register: keepalived_install
+  until: keepalived_install is succeeded
+  retries: 10
+  delay: 10
+
+- name: Create configuration directory
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
+    state: directory
+  loop:
+    - "{{ keepalived_notify_script_dir }}"
+    - "{{ keepalived_config_dir }}"
+
+- name: Write main configuration
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: "{{ keepalived_base_config_dir }}/keepalived.conf"
+  notify: restart keepalived
+
+- name: Write global configuration
+  ansible.builtin.template:
+    src: "{{ item.file }}.j2"
+    dest: "{{ keepalived_config_dir }}/{{ item.file }}"
+  loop:
+    - file: 10-global.conf
+      when: true
+    - file: 20-bfd.conf
+      when: "{{ keepalived_use_bfd }}"
+  when: item.when
+  notify: restart keepalived
+
+- name: Write VRRP configuration
+  ansible.builtin.template:
+    src: "30-vrrp.conf.j2"
+    dest: "{{ keepalived_config_dir }}/30-vrrp-{{ item.name }}.conf"
+  loop: "{{ keepalived_trackers }}"
+  notify: restart keepalived
+
+- name: Tune sysctl for for virtual IPs binding
+  ansible.builtin.template:
+    src: sysctl-vrrp.j2
+    dest: /etc/sysctl.d/10-vrrp.conf
+    mode: 0644
+  notify: reload sysctl

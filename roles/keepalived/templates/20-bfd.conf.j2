@@ -1,0 +1,11 @@
+{% for node in keepalived_cluster_list %}
+bfd_instance bfd_{{ hostvars[node].name | replace('-', '_') }} {
+  neighbor_ip {{ hostvars[node].ansible_local | json_query('auto.network.devices.private.primary.ip') }}
+  source_ip {{ lan_ip }}
+  min_rx {{ keepalived_bfd_min_interval }}
+  min_tx {{ keepalived_bfd_min_interval }}
+  multiplier {{ keepalived_bfd_down_packets }}
+  weight {{ keepalived_bfd_tracking_weight }}
+}
+
+{% endfor %}

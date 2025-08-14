@@ -1,0 +1,16 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+kowabunga_os_sysctl_settings_extra: []
+
+kowabunga_os_timezone: UTC
+
+kowabunga_os_user_root_password: "{{ vault_kowabunga_os_user_root_password | default('') }}"
+
+kowabunga_os_user_admin_accounts_enabled: []
+kowabunga_os_user_admin_accounts_disabled: []
+kowabunga_os_user_admin_accounts_pubkey_dirs: []
+
+kowabunga_os_user_extra_groups: []

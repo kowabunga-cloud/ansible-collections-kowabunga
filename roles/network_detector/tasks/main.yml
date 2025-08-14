@@ -1,0 +1,41 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install python network libs
+  ansible.builtin.apt:
+    name:
+      - python3-requests
+      - python3-netifaces
+    state: latest
+
+- name: Create ansible facts.d directory
+  ansible.builtin.file:
+    dest: /etc/ansible/facts.d
+    state: directory
+    mode: 0777
+
+- name: Deploy host ethernet detection script
+  ansible.builtin.template:
+    src: network-detector.py.j2
+    dest: /etc/ansible/facts.d/auto.fact
+    mode: 0755
+  register: network_detector
+
+- name: Re-read facts after adding custom detection script
+  ansible.builtin.setup:
+    filter: ansible_local
+  when: network_detector.changed
+
+- name: Check that the /run/systemd/resolve/resolv.conf file exists
+  ansible.builtin.stat:
+    path: /run/systemd/resolve/resolv.conf
+  register: resolvconf_result
+
+- name: Ensure we use resolv.conf from systemd
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+  when: resolvconf_result.stat.exists

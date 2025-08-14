@@ -1,0 +1,41 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Update journald configuration
+  ansible.builtin.template:
+    src: journald.conf.j2
+    dest: /etc/systemd/journald.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure frequency
+  ansible.builtin.template:
+    src: logrotate.timer.j2
+    dest: "/etc/systemd/system/{{ kowabunga_logrotate_timer_service_name }}"
+    mode: 0644
+    owner: root
+    group: root
+  register: logrotate_timer_updated
+
+- name: Syslog logrotate template
+  ansible.builtin.template:
+    src: rsyslog.logrotate.j2
+    dest: "{{ logrotate_config_dir }}/rsyslog"
+    mode: 0644
+  notify: Restart logrotate
+
+- name: Stop and disable logrotate timer
+  ansible.builtin.systemd_service:
+    name: "{{ logrotate_timer_service_name }}"
+    enabled: false
+  when: logrotate_timer_updated.changed
+
+- name: Enable and start logrotate timer
+  ansible.builtin.systemd_service:
+    name: "{{ logrotate_timer_service_name }}"
+    state: started
+    enabled: true
+  when: logrotate_timer_updated.changed

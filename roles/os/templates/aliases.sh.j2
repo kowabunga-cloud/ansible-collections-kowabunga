@@ -1,0 +1,11 @@
+# load up global system-wide aliases
+if [ -e /etc/hostctl/aliases.d ]; then
+  for mod in /etc/hostctl/aliases.d/*; do
+      test -f ${mod} && source ${mod}
+  done
+fi
+
+# load up custom aliases
+if [ -f ~/.bash_aliases_private ]; then
+    . ~/.bash_aliases_private
+fi

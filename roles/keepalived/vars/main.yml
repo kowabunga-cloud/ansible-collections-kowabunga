@@ -1,0 +1,53 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+######################
+# Inherited Settings #
+######################
+
+keepalived_use_vmac: "{{ kowabunga_network_failover_settings.use_vmac | default(true) }}"
+keepalived_use_unicast: "{{ kowabunga_network_failover_settings.use_unicast | default(false) }}"
+keepalived_use_bfd: "{{ kowabunga_network_failover_settings.use_bfd | default(true) }}"
+
+keepalived_cluster_list: "{{ kowabunga_network_failover_settings.peers | default([]) }}"
+keepalived_trackers: "{{ kowabunga_network_failover_settings.trackers | default([] ) }}"
+
+#####################
+# Internal Settings #
+#####################
+
+keepalived_base_config_dir: "/etc/keepalived"
+keepalived_config_dir: "{{ keepalived_base_config_dir }}/conf.d"
+keepalived_notify_script_dir: "{{ keepalived_base_config_dir }}/notify"
+
+keepalived_check_interval: 1
+keepalived_vrrp_garp_master_refresh: 1
+keepalived_script_user: root
+
+# states
+keepalived_state_master: "MASTER"
+keepalived_state_backup: "BACKUP"
+keepalived_state_fault: "FAULT"
+
+# master/slave VRRP priorities
+keepalived_priority_master: 150
+keepalived_priority_slave: 100
+
+# Routing
+keepalived_default_vrrp_route_metric: 50
+
+# BFD default settings
+keepalived_bfd_rt_priority: 50
+keepalived_bfd_min_interval: 10
+keepalived_bfd_down_packets: 3
+keepalived_bfd_tracking_weight: 50
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_keepalived:
+  - name: "keepalived"
+    when: "{{ kowabunga_network_failover_enabled }}"

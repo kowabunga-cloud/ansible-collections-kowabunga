@@ -1,0 +1,10 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- ansible.builtin.import_tasks: install.yml
+  when: kowabunga_network_failover_enabled
+
+- ansible.builtin.import_tasks: uninstall.yml
+  when: not kowabunga_network_failover_enabled

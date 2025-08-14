@@ -1,0 +1,20 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+firewall_chain_wan_fw: WAN_FW
+firewall_chain_wan_redirect: WAN_REDIRECT
+
+firewall_ssh_ports:
+  - 22
+
+firewall_web_ports:
+  - 80
+  - 443
+
+firewall_mail_ports:
+   - 25    # SMTP
+   - 465   # SMTPS
+   - 587   # Submission (eSMTP)
+   - 993   # IMAPS

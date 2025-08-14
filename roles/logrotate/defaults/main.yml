@@ -1,0 +1,12 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+kowabunga_logrotate_timer_frequency: daily
+kowabunga_logrotate_count: 7
+kowabunga_logrotate_max_age_days: 7
+kowabunga_logrotate_max_files: 4
+kowabunga_logrotate_syslog_files_extra: []
+# set to yes to ship message to syslog. can have impact on disk usage
+kowabunga_logrotate_journald_forward_to_syslog: no

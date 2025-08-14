@@ -1,0 +1,21 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+hostctl_root_path: "/etc/hostctl"
+hostctl_functions: "{{ hostctl_root_path }}/functions"
+hostctl_modules_path: "{{ hostctl_root_path }}/modules.d"
+hostctl_aliases_path: "{{ hostctl_root_path }}/aliases.d"
+hostctl_plugin_variable_prefix: "hostctl_plugins_"
+
+hostctl_commands:
+  - clean
+  - collect
+  - help
+  - restart
+  - start
+  - status
+  - stop
+  - stopstart
+  - update

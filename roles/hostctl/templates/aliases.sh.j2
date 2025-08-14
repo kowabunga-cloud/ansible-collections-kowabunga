@@ -1,0 +1,19 @@
+#!/bin/bash
+
+alias hctl='sudo /usr/bin/hostctl -c -i'
+{% for c in hostctl_commands %}
+alias {{ c }}='hctl {{ c }}'
+{% endfor %}
+
+# more useful wrappers
+alias tlog='sudo tail -F /var/log/syslog'
+alias tj='sudo journalctl -xn -f -u'
+alias rm='rm -I --preserve-root' # fail to operate recursively on '/'
+alias mkdir='mkdir -pv' # Create parent directories on demand
+alias j='jobs -l'
+alias psg='ps -edf | /bin/grep -v "/bin/grep" | /bin/grep -i --color'
+alias df='df -h'
+alias ports='sudo netstat -pltun'
+alias fw='echo -e "\e[34m${firewall_mode} firewall:\e[0m" && sudo iptables -L -v|sed -r "s/^/    /"'
+
+function ips(){ ip a show|awk 'BEGIN{itf="";}function print_itf(){if(length(itf)&&length(ips)){printf("%-16s %s",itf,ips);}}/^[0-9]/{print_itf();ips="";itf=$2;sub(":$","",itf);next;}/scope link/{next;}/inet/{anip=$2;sub("/.*$","",anip);if (length(ips)== 0){ips=sprintf("%s%s\n",ips,anip);}else{ips=sprintf("%s%16s %s\n",ips,"",anip);}next;}END{print_itf();}'; }

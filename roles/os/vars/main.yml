@@ -1,0 +1,25 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+###################
+# Sysctl Settings #
+###################
+
+kowabunga_os_sysctl_settings_default:
+  - name: "vm.min_free_kbytes"
+    value: "{{ (ansible_memtotal_mb * 0.01 / ansible_processor_vcpus * 1024) | round | int }}"
+    set: false
+
+kowabunga_os_sysctl_settings: "{{ kowabunga_sysctl_settings_default + kowabunga_sysctl_settings_extra }}"
+
+#####################
+# Users Managements #
+#####################
+
+kowabunga_os_user_aliases: /etc/bash.aliases.kowabunga
+
+kowabunga_os_user_mgmt_scripts:
+  create: /tmp/add_users.sh
+  remove: /tmp/remove_users.sh

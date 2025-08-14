@@ -1,0 +1,42 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Set plugin parameters for {{ hostctl_plugin.name }}
+  ansible.builtin.set_fact:
+    hostctl_module_name: "{{ hostctl_plugin.name }}"
+    hostctl_status_script: "{{ hostctl_plugin.status_script | default('') }}"
+    hostctl_container_name: "{{ hostctl_plugin.container | default('') }}"
+
+- name: Install generic hostctl container-based module extension for {{ hostctl_module_name }}
+  ansible.builtin.template:
+    src: 'modules/generic-container.sh.j2'
+    dest: "{{ hostctl_modules_path }}/{{ hostctl_module_name }}.sh"
+    mode: "0700"
+    owner: root
+    group: root
+  when:
+    - hostctl_plugin.when | default(true)
+    - hostctl_container_name != ''
+
+- name: Install custom hostctl module extension for {{ hostctl_module_name }}
+  ansible.builtin.template:
+    src: 'modules/{{ hostctl_module_name }}.sh.j2'
+    dest: "{{ hostctl_modules_path }}/{{ hostctl_module_name }}.sh"
+    mode: "0700"
+    owner: root
+    group: root
+  when:
+    - hostctl_plugin.when | default(true)
+    - "(role_path + '/templates/modules/' + hostctl_module_name + '.sh.j2') is is_file"
+    - hostctl_container_name == ''
+
+- name: Install custom hostctl module aliases for {{ hostctl_module_name }}
+  ansible.builtin.template:
+    src: 'aliases/{{ hostctl_module_name }}.sh.j2'
+    dest: "{{ hostctl_aliases_path }}/{{ hostctl_module_name }}.sh"
+    mode: "0755"
+  when:
+    - hostctl_plugin.when | default(true)
+    - "(role_path + '/templates/aliases/' + hostctl_module_name + '.sh.j2') is is_file"

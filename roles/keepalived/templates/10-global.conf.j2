@@ -1,0 +1,9 @@
+global_defs {
+{% if keepalived_use_bfd %}
+  bfd_rt_priority {{ keepalived_bfd_rt_priority }}
+{% endif %}
+  vrrp_garp_master_refresh {{ keepalived_vrrp_garp_master_refresh }}
+
+  enable_script_security
+  script_user {{ keepalived_script_user }}
+}

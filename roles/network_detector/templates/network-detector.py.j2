@@ -1,0 +1,39 @@
+#jinja2: lstrip_blocks: "false"
+#!/usr/bin/env python3
+
+import json
+
+{% include 'addict.py' %}
+
+{% include 'virt.py' %}
+
+{% include 'network.py' %}
+
+{% include 'devices.py' %}
+
+{% include 'aws.py' %}
+
+class NetworkSettings(object):
+    def __init__(self):
+        self.params = Dict()
+
+    def __str__(self):
+        return json.dumps(self.params, indent=4, sort_keys=True)
+
+settings = NetworkSettings()
+DetectAwsSettings()
+DetectVirtualization()
+DetectNetworkInterfaces()
+
+# possibly set by Ansible override
+forced_primary_private_interface="{{ kowabunga_network_primary_lan_interface }}"
+forced_secondary_private_interface="{{ kowabunga_network_secondary_lan_interface }}"
+forced_primary_public_interface="{{ kowabunga_network_primary_wan_interface }}"
+
+# time to compute all settings #
+interfaces = settings.params.network.interfaces
+set_private_devices(interfaces)
+set_public_devices(interfaces)
+finalize_devices()
+
+print(settings)

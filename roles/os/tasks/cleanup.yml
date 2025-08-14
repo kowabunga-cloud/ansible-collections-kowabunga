@@ -1,0 +1,16 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Clean unwanted packages and dependencies
+  ansible.builtin.apt:
+    autoclean: true
+
+- name: Purge configuration files for removed packages
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  ansible.builtin.meta: flush_handlers

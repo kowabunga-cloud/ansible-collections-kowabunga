@@ -1,0 +1,27 @@
+MOD_NAME="caddy"
+MOD_PRIO=4
+
+# private functions
+infoCaddy() {
+    processInfo "/usr/sbin/caddy"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+caddy_status() {
+    checkService caddy
+    infoCaddy
+}
+
+caddy_stop() {
+    stopService caddy "" caddy
+}
+
+caddy_start() {
+    startService caddy pingService caddy
+}
+
+caddy_restart() {
+    restartLoad caddy
+}

@@ -1,0 +1,32 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Add temporary admin user accounts creation script
+  ansible.builtin.template:
+    src: add_users.sh.j2
+    dest: "{{ kowabunga_os_user_mgmt_scripts.create }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create admin user accounts
+  ansible.builtin.command: "{{ kowabunga_os_user_mgmt_scripts.create }}"
+
+- name: Remove temporary admin user accounts creation script
+  ansible.builtin.file:
+    path: "{{ kowabunga_os_user_mgmt_scripts.create }}"
+    state: absent
+
+- name: Install admin user accounts public SSH keys
+  ansible.builtin.copy:
+    src: "{{ item.1 }}/{{ item.0 }}"
+    dest: "/home/{{ item.0 }}/.ssh/authorized_keys"
+    owner: "{{ item.0 }}"
+    group: "{{ item.0 }}"
+    mode: 0600
+  loop: "{{ kowabunga_os_user_admin_accounts_enabled | product(kowabunga_os_user_admin_accounts_pubkey_dirs) | list }}"
+  when:
+    - kowabunga_os_user_admin_accounts_pubkey_dirs != []
+    - (item.1 ~ '/' ~ item.0) is is_file

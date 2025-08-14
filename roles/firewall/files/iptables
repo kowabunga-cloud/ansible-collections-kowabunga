@@ -1,0 +1,3 @@
+#!/bin/bash
+test -e /etc/iptables.rules && iptables-restore -c /etc/iptables.rules
+exit 0

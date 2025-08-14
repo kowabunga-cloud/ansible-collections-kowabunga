@@ -1,0 +1,27 @@
+MOD_NAME="kowabunga_kiwi_agent"
+MOD_PRIO=7
+
+# private functions
+infoKowabungaAgent() {
+    processInfo "/usr/bin/kiwi"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+kowabunga_kiwi_agent_status() {
+    checkService kowabunga-kiwi-agent kowabunga-kiwi-agent
+    infoKowabungaAgent
+}
+
+kowabunga_kiwi_agent_stop() {
+    stopService kowabunga-kiwi-agent "" kowabunga-kiwi-agent
+}
+
+kowabunga_kiwi_agent_start() {
+    startService kowabunga-kiwi-agent pingService kowabunga-kiwi-agent
+}
+
+kowabunga_kiwi_agent_restart() {
+    restartService kowabunga-kiwi-agent pingService kowabunga-kiwi-agent
+}

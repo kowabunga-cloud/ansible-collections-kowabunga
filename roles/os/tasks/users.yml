@@ -1,0 +1,31 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Set root password
+  ansible.builtin.shell: echo 'root:{{ kowabunga_os_user_root_password }}' | chpasswd
+  when: kowabunga_os_user_root_password != ''
+  no_log: true
+
+- name: Create extra admin groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ kowabunga_os_user_extra_groups }}"
+
+- name: Add global shell aliases
+  ansible.builtin.template:
+    src: aliases.sh.j2
+    dest: "{{ kowabunga_os_user_aliases }}"
+    owner: root
+    group: root
+    mode: 0664
+
+- name: Add admin user accounts
+  ansible.builtin.import_tasks: add_users.yml
+  when: kowabunga_os_user_admin_accounts_enabled != []
+
+- name: Remove deprecated admin user accounts
+  ansible.builtin.import_tasks: remove_users.yml
+  when: kowabunga_os_user_admin_accounts_disabled != []

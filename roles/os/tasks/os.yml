@@ -1,0 +1,49 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Configure sysctl values
+  ansible.builtin.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: "{{ item.set | default(true) }}"
+    state: "{{ item.state | default('present') }}"
+    reload: "{{ item.reload | default(true) }}"
+  when: item.enabled | default(true)
+  loop: "{{ kowabunga_os_sysctl_settings }}"
+
+- name: Disable all swap
+  ansible.builtin.command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Remove swap entry from /etc/fstab
+  ansible.builtin.mount:
+    name: swap
+    fstype: swap
+    state: absent
+
+- name: Really ensure no swap is present in /etc/fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '.*swap.*'
+    state: absent
+
+- name: Check if pkexec exists
+  ansible.builtin.stat:
+    path: /usr/bin/pkexec
+  register: pkexec
+
+- name: Remove setuid permission for pkexec to mitigate Linux PolicyKit security vulnerability
+  ansible.builtin.file:
+    path: /usr/bin/pkexec
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - pkexec.stat.isreg is defined
+    - pkexec.stat.isreg
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ kowabunga_os_timezone }}"

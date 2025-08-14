@@ -1,0 +1,50 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Ensure that the Ubuntu version is supported
+  ansible.builtin.assert:
+    that: ansible_distribution_version in kowabunga_ubuntu_supported_versions
+
+- name: Stop snapd from coming back
+  ansible.builtin.dpkg_selections:
+    name: snapd
+    selection: deinstall
+
+- name: Retrieve GPG pubkey
+  ansible.builtin.get_url:
+    url: "{{ kowabunga_apt_keyring_remote }}"
+    dest: "{{ kowabunga_apt_keyring_local }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure Kowabunga Ubuntu APT sources
+  ansible.builtin.template:
+    src: kowabunga.sources.j2
+    dest: "/etc/apt/sources.list.d/kowabunga.sources"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Update APT cache
+
+- name: Update OS packages cache
+  ansible.builtin.meta: flush_handlers
+
+- name: Upgrade OS packages to latest releases
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    dpkg_options: 'force-confold,force-confdef'
+    state: latest
+  when: ubuntu_enforced_dist_upgrade
+
+- name: Install core OS packages to latest releases
+  ansible.builtin.apt:
+    name: "{{ kowabunga_ubuntu_packages_list }}"
+    state: latest
+  register: apt_result
+  until: apt_result is succeeded
+  retries: 10
+  delay: 10

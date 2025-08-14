@@ -1,0 +1,20 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Add temporary admin user accounts deletion script
+  ansible.builtin.template:
+    src: remove_users.sh.j2
+    dest: "{{ kowabunga_os_user_mgmt_scripts.remove }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Delete deprecated/disabled admin user accounts
+  ansible.builtin.command: "{{ kowabunga_os_user_mgmt_scripts.remove }}"
+
+- name: Remove temporary admin user accounts deletion script
+  ansible.builtin.file:
+    path: "{{ kowabunga_os_user_mgmt_scripts.remove }}"
+    state: absent

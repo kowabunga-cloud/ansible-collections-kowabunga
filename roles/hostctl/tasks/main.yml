@@ -1,0 +1,60 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Create hostctl plugins directories
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0775
+    state: directory
+  loop:
+    - "{{ hostctl_modules_path }}"
+    - "{{ hostctl_aliases_path }}"
+
+- name: Add host management script
+  ansible.builtin.copy:
+    src: hostctl.sh
+    dest: /usr/bin/hostctl
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add bash custom functions (for check script)
+  ansible.builtin.copy:
+    src: functions.sh
+    dest: "{{ hostctl_functions }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Add hostctl aliases
+  ansible.builtin.template:
+    src: aliases.sh.j2
+    dest: "{{ hostctl_aliases_path }}/hostctl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Gather list of hostctl plugins
+  ansible.builtin.set_fact:
+    hostctl_requested_plugins: "{{ vars.keys() | list | select('search', hostctl_plugin_variable_prefix) | list }}"
+
+- name: Compute plugins list
+  ansible.builtin.set_fact:
+    hostctl_enabled_plugins: "{{ hostctl_enabled_plugins | default([]) + lookup('vars', item) }}"
+  loop: "{{ hostctl_requested_plugins | default([]) }}"
+  when:
+    - hostctl_requested_plugins is defined
+    - hostctl_requested_plugins != []
+
+- name: Install hostctl plugins
+  include_tasks: plugin_install.yml
+  vars:
+    hostctl_plugin: "{{ item }}"
+  loop: "{{ hostctl_enabled_plugins }}"
+  when:
+    - hostctl_enabled_plugins is defined
+    - hostctl_enabled_plugins != []

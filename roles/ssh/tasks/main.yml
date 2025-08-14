@@ -1,0 +1,29 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Remove SSH config from cloud-init, if any
+  ansible.builtin.file:
+    path: "{{ ssh_config_dir }}/{{ item }}"
+    state: absent
+  loop:
+    - 50-cloud-init.conf
+    - 60-cloudimg-settings.conf
+  notify: Reload SSH
+
+- name: Set hardened SSH settings
+  ansible.builtin.template:
+    src: sshd.conf.j2
+    dest: "{{ ssh_config_dir }}/99-kowabunga.conf"
+    mode: "0600"
+    owner: root
+    group: root
+  notify: Reload SSH
+
+- name: Enable SSH service
+  ansible.builtin.systemd_service:
+    name: ssh
+    state: reloaded
+    enabled: true
+  failed_when: false

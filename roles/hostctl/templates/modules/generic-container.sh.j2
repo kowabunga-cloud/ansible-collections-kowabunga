@@ -1,0 +1,30 @@
+# Generic hostctl container-based wrapper for {{ hostctl_module_name }}
+
+{% set mod_name = hostctl_module_name | replace(' ', '_') | replace('-', '_') %}
+
+MOD_NAME="{{ mod_name }}"
+MOD_PRIO=4
+
+# private functions
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+{{ mod_name }}_status() {
+    checkContainer {{ hostctl_container_name }}
+    {% if hostctl_status_script != '' %}
+    [ $? -eq 0 -a -e {{ hostctl_status_script }} ] && {{ hostctl_status_script }}
+    {% endif %}
+}
+
+{{ mod_name }}_stop() {
+    stopContainer {{ hostctl_container_name }}
+}
+
+{{ mod_name }}_start() {
+    startContainer {{ hostctl_container_name }} pingContainer {{ hostctl_container_name }}
+}
+
+{{ mod_name }}_restart() {
+    restartContainer {{ hostctl_container_name }} pingContainer {{ hostctl_container_name }}
+}

@@ -3,9 +3,8 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
-- hosts: kahuna
-
-  roles:
-    - name: kowabunga.cloud.os
-    - name: kowabunga.cloud.caddy
-    - name: kowabunga.cloud.kahuna
+- name: Restart chrony
+  ansible.builtin.systemd_service:
+    name: chrony
+    state: restarted
+    enabled: true

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+users=({% for user in kowabunga_os_user_admin_accounts_enabled %}{{ user }}{% if not loop.last %} {% endif %}{% endfor %})
+
+add_user() {
+    id $1 >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Creating user $1 ..."
+        adduser --shell /bin/bash --disabled-password --gecos "" $1
+    fi
+}
+
+add_user_group() {
+    groups $1 | grep $2 >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Adding user $1 to group $2 ..."
+        usermod -a -G $2 $1
+    fi
+}
+
+add_shell_aliases() {
+    echo "Adding shell aliases to $1 ..."
+    f="/home/$1/.bash_aliases"
+    rm -f "$f"
+    ln -s {{ kowabunga_os_user_aliases }} "$f"
+}
+
+add_sudoers() {
+    echo "Adding sudoers rights to $1 ..."
+    f="/etc/sudoers.d/$1"
+    cat <<EOF > "$f"
+$1 ALL=(ALL) NOPASSWD:ALL
+EOF
+    chown root:root "$f"
+    chmod 440 "$f"
+}
+
+add_ssh() {
+    [ "$1" == "root" ] && d="/root" || d="/home/$1"
+    ssh_dir="$d/.ssh"
+    mkdir -p "${ssh_dir}"
+    chown -R $u:$u "${ssh_dir}"
+    chmod 700 "${ssh_dir}"
+}
+
+for u in ${users[@]}; do
+    add_user $u
+    {% for group in kowabunga_os_user_extra_groups %}
+    add_user_group $u {{ group }}
+    {% endfor %}
+    add_shell_aliases $u
+    add_sudoers $u
+    add_ssh $u
+done

@@ -1,0 +1,27 @@
+MOD_NAME="chrony"
+MOD_PRIO=2
+
+# private functions
+infoChrony() {
+    processInfo "/usr/sbin/chronyd"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+chrony_status() {
+    checkService chrony chrony
+    infoChrony
+}
+
+chrony_stop() {
+    stopService chrony "" chrony
+}
+
+chrony_start() {
+    startService chrony pingService chrony
+}
+
+chrony_restart() {
+    restartService chrony pingService chrony
+}

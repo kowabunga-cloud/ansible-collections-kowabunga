@@ -1,0 +1,33 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Get current date (ansible caches it into facts)
+  ansible.builtin.shell: "date '+%Y-%m-%d'"
+  register: run_ts_date
+  tags: always
+
+- name: Get current time (ansible caches it into facts)
+  ansible.builtin.shell: "date '+%H:%M:%S %Z'"
+  register: run_ts_time
+  tags: always
+
+- name: Save the ansible deployment status on host
+  ansible.builtin.template:
+    src: ansible.env.j2
+    dest: /etc/ansible.env
+    owner: root
+    group: root
+    mode: 0644
+  changed_when: false
+  tags: always
+
+- name: Add custom message-of-the-day prompt
+  ansible.builtin.template:
+    src: motd.sh.j2
+    dest: /etc/update-motd.d/99-kowabunga
+    mode: 0755
+    owner: root
+    group: root
+  notify: Update MOTD

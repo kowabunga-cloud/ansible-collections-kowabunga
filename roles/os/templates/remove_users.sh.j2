@@ -1,0 +1,17 @@
+#!/bin/bash
+
+users=({% for user in kowabunga_os_user_admin_accounts_disabled %}{% if user != ansible_user and user != 'root' %}{{ user }}{% if not loop.last %} {% endif %}{% endif %}{% endfor %})
+
+remove_user() {
+    id $1 >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "Removing user $1 ..."
+        deluser $1
+    fi
+    [ -d "/home/$1" ] && rm -rf "/home/$1" # be cautious, due to -rf
+    rm -f "/etc/sudoers.d/$1"
+}
+
+for u in ${users[@]}; do
+    remove_user $u
+done

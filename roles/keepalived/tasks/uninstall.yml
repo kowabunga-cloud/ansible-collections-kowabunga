@@ -1,0 +1,21 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Uninstall package
+  ansible.builtin.package:
+    name: keepalived
+    state: absent
+  notify: stop keepalived
+
+- name: Uninstall configuration
+  ansible.builtin.file:
+    dest: "{{ keepalived_base_config_dir }}"
+    state: absent
+
+- name: Remove sysctl tuning
+  ansible.builtin.file:
+    dest: /etc/sysctl.d/10-vrrp.conf
+    state: absent
+  notify: reload sysctl

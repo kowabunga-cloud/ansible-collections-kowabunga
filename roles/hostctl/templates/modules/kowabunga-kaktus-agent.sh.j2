@@ -1,0 +1,27 @@
+MOD_NAME="kowabunga_kaktus_agent"
+MOD_PRIO=7
+
+# private functions
+infoKowabungaAgent() {
+    processInfo "/usr/bin/kaktus"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+kowabunga_kaktus_agent_status() {
+    checkService kowabunga-kaktus-agent kowabunga-kaktus-agent
+    infoKowabungaAgent
+}
+
+kowabunga_kaktus_agent_stop() {
+    stopService kowabunga-kaktus-agent "" kowabunga-kaktus-agent
+}
+
+kowabunga_kaktus_agent_start() {
+    startService kowabunga-kaktus-agent pingService kowabunga-kaktus-agent
+}
+
+kowabunga_kaktus_agent_restart() {
+    restartService kowabunga-kaktus-agent pingService kowabunga-kaktus-agent
+}

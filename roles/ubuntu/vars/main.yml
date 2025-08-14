@@ -1,0 +1,59 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+################################
+# Core Ubuntu APT Repositories #
+################################
+
+kowabunga_ubuntu_supported_versions: ["24.04"]
+
+############################
+# Kowabunga APT Repository #
+############################
+
+kowabunga_apt_repository: https://packages.kowabunga.cloud
+kowabunga_apt_keyring_remote: "{{ kowabunga_apt_repository }}/kowabunga.asc"
+kowabunga_apt_keyring_local: /etc/apt/keyrings/kowabunga.asc
+
+###################
+# Ubuntu Packages #
+###################
+
+kowabunga_ubuntu_packages_list_default:
+  - apt-transport-https
+  - apt-listchanges
+  - apt-show-versions
+  - bash-completion
+  - bwm-ng
+  - ca-certificates
+  - ccze
+  - curl
+  - debian-goodies
+  - debsecan
+  - debsums
+  - dnsutils
+  - glances
+  - haveged
+  - htop
+  - iotop
+  - iproute2
+  - jq
+  - language-pack-en
+  - libpam-tmpdir
+  - mc
+  - moreutils
+  - nano
+  - net-tools
+  - nfs-common
+  - pv
+  - rsync
+  - software-properties-common
+  - tcpdump
+  - unattended-upgrades
+  - unzip
+  - update-motd
+  - zip
+
+kowabunga_ubuntu_packages_list: "{{ kowabunga_ubuntu_packages_list_default + kowabunga_ubuntu_packages_list_extra }}"

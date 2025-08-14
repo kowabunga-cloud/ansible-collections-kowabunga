@@ -1,0 +1,11 @@
+[Unit]
+Description=Rotation of log files
+Documentation=man:logrotate(8) man:logrotate.conf(5)
+
+[Timer]
+OnCalendar={{ kowabunga_logrotate_timer_frequency }}
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

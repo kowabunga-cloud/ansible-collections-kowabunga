@@ -1,0 +1,107 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Cleanup any custom firewall rules
+  ansible.builtin.iptables:
+    flush: true
+    chain: "{{ item.chain }}"
+    table: "{{ item.table }}"
+  loop:
+    - { chain: "{{ firewall_chain_wan_fw }}",       table: "filter" }
+    - { chain: "{{ firewall_chain_wan_redirect }}", table: "nat" }
+  ignore_errors: yes
+
+- name: Define new chain for firewall and redirect
+  command: /usr/sbin/iptables -t "{{ item.table }}" -N "{{ item.target }}"
+  loop:
+    - { chain: "INPUT",      table: "filter", target: "{{ firewall_chain_wan_fw }}" }
+    - { chain: "PREROUTING", table: "nat",    target: "{{ firewall_chain_wan_redirect }}" }
+  ignore_errors: yes
+
+- name: Jump to new chain for firewall and redirect
+  ansible.builtin.iptables:
+    table: "{{ item.table }}"
+    chain: "{{ item.chain }}"
+    jump: "{{ item.target }}"
+  loop:
+    - { chain: "INPUT",      table: "filter", target: "{{ firewall_chain_wan_fw }}" }
+    - { chain: "PREROUTING", table: "nat",    target: "{{ firewall_chain_wan_redirect }}" }
+
+- name: Explicitly enable ICMP echo-reply on public interface from IaaS public gateway
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    protocol: icmp
+    icmp_type: echo-reply
+    source: "{{ wan_gw }}"
+    jump: ACCEPT
+
+- name: Explicitly disable ICMP echo-request on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    protocol: icmp
+    icmp_type: echo-request
+    source: "0/0"
+    jump: DROP
+
+- name: Explicitly disable ICMP timestamp-request on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    protocol: icmp
+    icmp_type: timestamp-request
+    jump: DROP
+
+- name: Explicitly open TCP ports on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    protocol: tcp
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+  loop: "{{ kowabunga_firewall_open_tcp_ports | flatten(levels=1) }}"
+
+- name: Explicitly open UDP ports on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    protocol: udp
+    destination_port: "{{ item }}"
+    jump: ACCEPT
+  loop: "{{ kowabunga_firewall_open_udp_ports | flatten(levels=1) }}"
+
+- name: Authorize return traffic on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    ctstate: RELATED,ESTABLISHED
+    jump: ACCEPT
+
+- name: Disable all other incoming traffic on public interface
+  ansible.builtin.iptables:
+    chain: "{{ firewall_chain_wan_fw }}"
+    in_interface: "{{ wan_dev }}"
+    jump: DROP
+
+- name: Save up iptables configuration
+  ansible.builtin.shell: /usr/sbin/iptables-save > /etc/iptables.rules
+  ignore_errors: yes
+
+- name: Create iptables safe point
+  ansible.builtin.copy:
+    src: iptables
+    dest: /etc/network/if-pre-up.d/iptables
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Use networkd dispatcher
+  ansible.builtin.copy:
+    src: networkd-ifup-hooks
+    dest: /etc/networkd-dispatcher/routable.d/50-ifup-hooks
+    owner: root
+    group: root
+    mode: 0755

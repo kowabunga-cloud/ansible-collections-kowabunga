@@ -1,0 +1,27 @@
+MOD_NAME="kowabunga_kahuna"
+MOD_PRIO=7
+
+# private functions
+infoKahuna() {
+    processInfo "/usr/bin/kahuna"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+kowabunga_kahuna_status() {
+    checkService kowabunga-kahuna kowabunga-kahuna
+    infoKahuna
+}
+
+kowabunga_kahuna_stop() {
+    stopService kowabunga-kahuna "" kowabunga-kahuna
+}
+
+kowabunga_kahuna_start() {
+    startService kowabunga-kahuna pingService kowabunga-kahuna
+}
+
+kowabunga_kahuna_restart() {
+    restartService kowabunga-kahuna pingService kowabunga-kahuna
+}

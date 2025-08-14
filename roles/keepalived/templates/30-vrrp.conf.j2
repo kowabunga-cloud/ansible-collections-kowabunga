@@ -1,0 +1,107 @@
+{% macro vrrp_script() -%}
+vrrp_script chk_{{ item.name }} {
+  script "{{ item.checkscript }}"
+  interval {{ keepalived_check_interval }}
+  weight 0
+}
+{%- endmacro %}
+
+{% macro vrrp_vmac(cfg) %}
+  use_vmac vrrp{{ cfg.vrid }}
+  vmac_xmit_base
+  advert_int 1
+{%- endmacro %}
+
+{%- macro vip_priority(cfg, hostname) %}
+  {%- if cfg.priority is defined -%}
+    {{ cfg.priority }}
+  {%- elif cfg.primary is defined -%}
+    {{ (hostname == cfg.primary) | ternary(keepalived_priority_master, keepalived_priority_slave) }}
+  {%- else -%}
+    {{ keepalived_priority_master }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro notify(type) -%}
+  notify_{{ type.lower() }} "{{ item.notifyscript }} INSTANCE {{ item.name }} {{ type.upper()}}"
+{%- endmacro %}
+
+{% macro vrrp_instance(cfg) -%}
+
+
+vrrp_instance VI_{{ item.name }} {
+  interface {{ cfg.control_interface | default(lan_dev) }}
+
+{% if keepalived_use_unicast %}
+  unicast_src_ip {{ lan_ip }}
+  unicast_peer {
+{% for h in ansible_play_hosts %}
+    {% if h != ansible_default_ipv4.address %}{{ h }}{% endif %}
+{% endfor %}
+
+  }
+{% endif %}
+
+  state {{ keepalived_state_master if cfg.primary is not defined else (ansible_hostname == cfg.primary) | ternary(keepalived_state_master, keepalived_state_backup) }}
+  virtual_router_id {{ cfg.vrid }}
+  priority {{ vip_priority(cfg, ansible_hostname) }}
+{% if cfg.nopreempt | default(false) | bool %}
+  nopreempt
+{% endif %}
+{% if keepalived_use_vmac -%}
+  {{ vrrp_vmac(cfg) }}
+{% endif %}
+
+  virtual_ipaddress {
+{% if cfg.vip is iterable and (cfg.vip is not string and cfg.vip is not mapping) %}
+{% for ip in cfg.vip %}
+    {{ ip }} {% if ip | ansible.utils.ipaddr('public') %}dev {{ cfg.interface | default(wan_eth) }}{% endif %}
+{% endfor %}
+{% else %}
+    {{ cfg.vip }} {% if cfg.vip | ansible.utils.ipaddr('public') %}dev {{ cfg.interface | default(wan_eth) }}{% endif %}
+{% endif %}
+
+  }
+
+{% if cfg.routes is defined and cfg.routes != [] %}
+  virtual_routes {
+{% for route in cfg.routes %}
+    {{ route.destination }} via {{ route.gateway }} dev {{ cfg.interface | default(lan_dev) }} metric {{ route.metric | default(keepalived_default_vrrp_route_metric) }}
+{% endfor %}
+  }
+{% endif %}
+  track_script {
+    chk_{{ item.name }}
+  }
+
+{% if item.notifyscript is defined %}
+  {{ notify(keepalived_state_master) }}
+  {{ notify(keepalived_state_backup) }}
+  {{ notify(keepalived_state_fault) }}
+{% endif %}
+
+{% if keepalived_use_bfd %}
+  track_bfd {
+{% for node in keepalived_cluster_list %}
+    bfd_{{ hostvars[node].name | replace('-', '_') }} weight {{ vip_priority(cfg, hostvars[node].name) }}
+{% endfor %}
+  }
+{% endif %}
+
+{% if cfg.password | default('') != '' %}
+  authentication {
+      auth_type PASS
+      auth_pass {{ cfg.password }}
+  }
+{% endif %}
+}
+{%- endmacro %}
+
+# VRRP config for {{ item.name }}
+{% for cfg in item.configs -%}
+{% if item.checkscript is defined -%}
+{{ vrrp_script() }}
+{%- endif %}
+
+{{ vrrp_instance(cfg)  }}
+{%- endfor %}
