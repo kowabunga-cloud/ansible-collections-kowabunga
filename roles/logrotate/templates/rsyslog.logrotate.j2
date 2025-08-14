@@ -2,7 +2,7 @@
 {{ file }}
 {% endfor %}
 {
-  rotate {{ kowabunga_logrotate_max_files }}
+  rotate {{ logrotate_max_files }}
   maxsize {{ logrotate_max_file_size_gb }}G
   weekly
   missingok
