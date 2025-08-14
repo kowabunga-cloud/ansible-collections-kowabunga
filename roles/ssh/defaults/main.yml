@@ -3,4 +3,4 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
-kowabunga_ssh_listen_addr: "{{ lan_ip }}"
+kowabunga_ssh_listen_addr: "{{ lan_ip if lan_ip != '' else wan_ip }}"
