@@ -31,7 +31,7 @@
 
 - ansible.builtin.import_role:
     name: kowabunga.cloud.firewall
-  when: kowabunga_network_firewall_enabled
+  when: kowabunga_firewall_enabled
   tags: firewall
 
 - ansible.builtin.import_role:
