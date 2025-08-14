@@ -12,7 +12,7 @@ kowabunga_os_sysctl_settings_default:
     value: "{{ (ansible_memtotal_mb * 0.01 / ansible_processor_vcpus * 1024) | round | int }}"
     set: false
 
-kowabunga_os_sysctl_settings: "{{ kowabunga_sysctl_settings_default + kowabunga_sysctl_settings_extra }}"
+kowabunga_os_sysctl_settings: "{{ kowabunga_os_sysctl_settings_default + kowabunga_os_sysctl_settings_extra }}"
 
 #####################
 # Users Managements #
