@@ -4,7 +4,7 @@ if (rs.status().ok == 0 && rs.status().code == 94) {
       _id: "{{ kowabunga_mongodb_rs_name }}",
       members: [
 {% for host in mongodb_rs_hosts %}
-          { _id: {{ loop.index0 }}, host: "{{ host }}:{{ mongodb_port }}" }{% if not loop.last %},{% endif %}
+          { _id: {{ loop.index0 }}, host: "{{ host if host | ansible.utils.ipaddr('private') else '127.0.0.1' }}:{{ mongodb_port }}" }{% if not loop.last %},{% endif %}
 
 {% endfor %}
           ]
