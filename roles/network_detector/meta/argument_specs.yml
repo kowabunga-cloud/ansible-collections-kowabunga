@@ -1,0 +1,28 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start network detector script.
+    description:
+      - Install, configure, and start Kowabunga network detector script.
+
+    options:
+      kowabunga_network_primary_lan_interface:
+        description:
+          - Enforce name of the primary private network interface, if any.
+          - Auto-detected if unspecified.
+        type: str
+        default: ""
+
+      kowabunga_network_secondary_lan_interface:
+        description:
+          - Enforce name of the secondary private network interface, if any.
+          - Auto-detected if unspecified.
+        type: str
+        default: ""
+
+      kowabunga_network_primary_wan_interface:
+        description:
+          - Enforce name of the primary public network interface, if any.
+          - Auto-detected if unspecified.
+        type: str
+        default: ""

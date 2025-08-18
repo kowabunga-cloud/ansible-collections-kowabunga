@@ -1,0 +1,15 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start chrony NTP server.
+    description:
+      - Install, configure, and start Chrony NTP server.
+
+    options:
+      kowabunga_ntp_servers:
+        description:
+          - List of remote NTP servers to synchronize with.
+          - Uses Ubuntu default ones if unspecified.
+        type: list
+        elements: str
+        default: []

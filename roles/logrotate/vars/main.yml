@@ -32,3 +32,6 @@ logrotate_host_rootfs_total_space_gb: "{{ (ansible_mounts | selectattr('mount', 
 logrotate_max_file_size_gb_default: "{{ (logrotate_host_rootfs_total_space_gb | float * 0.1) | round | int }}"
 
 logrotate_max_file_size_gb: "{{ (kowabunga_logrotate_max_file_size_gb > 0) | ternary(kowabunga_logrotate_max_file_size_gb, logrotate_max_file_size_gb_default) }}"
+
+# set to yes to ship message to syslog. can have impact on disk usage
+kowabunga_logrotate_journald_forward_to_syslog: no

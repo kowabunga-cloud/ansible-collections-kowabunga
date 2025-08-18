@@ -1,0 +1,21 @@
+argument_specs:
+
+  main:
+    short_description: Install and configure Ubuntu OS settings.
+    description:
+      - Install and configure Ubuntu OS settings.
+
+    options:
+      kowabunga_ubuntu_packages_list_extra:
+        description:
+          - Defines a list of extra system packages to be installed on the platform.
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_ubuntu_enforced_dist_upgrade:
+        description:
+          - Defines whether base OS packages must be upgraded at play or kept to present version.
+          - Enforced upgrades improves security and bug-fixing but might cause unexpected regressions or service restarts.
+        type: bool
+        default: false

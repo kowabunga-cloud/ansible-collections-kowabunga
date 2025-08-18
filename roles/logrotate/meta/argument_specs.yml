@@ -1,0 +1,43 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start logrotate.
+    description:
+      - Install, configure, and start logrotate.
+
+    options:
+      kowabunga_logrotate_timer_frequency:
+        description:
+          - Defines timer frequency for log rotation, as to prevent filesystem's exhaustion.
+        type: str
+        choices: ['hourly', 'daily', 'weekly', 'monthly', 'yearly']
+        default: daily
+
+      kowabunga_logrotate_count:
+        description:
+          - Defines how many times log files are rotated before being removed.
+          - If count is 0, old versions are removed rather than rotated.
+          - If count is  -1, old logs are not removed at all, except they are affected by <max_age_days> variable.
+        type: int
+        default: 7
+
+      kowabunga_logrotate_max_age_days:
+        description:
+          - Instruct logrotate to remove rotated log files older than <count> days.
+          - The age is only checked if the logfile is to be rotated.
+        type: int
+        default: 7
+
+      kowabunga_logrotate_max_file_size_gb:
+        description:
+          - Defines maximum log file size (in GB) before log rotation process if enforced.
+          - Defaults to 10% of the root filesystem if unspecified (0).
+        type: int
+        default: 0
+
+      kowabunga_logrotate_syslog_files_extra:
+        description:
+          - List of extra syslog-formatted files to be processed by log rotation mechanism.
+        type: list
+        elements: str
+        default: []

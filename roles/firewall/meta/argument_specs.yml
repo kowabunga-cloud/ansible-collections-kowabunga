@@ -1,0 +1,30 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start iptables-based firewall.
+    description:
+      - Install, configure, and start iptables-based firewall.
+
+    options:
+      kowabunga_firewall_enabled:
+        description:
+          - Turn on iptables on public (i.e. Internet-facing) network interface.
+          - Useless if no public network interface is to be found.
+          - Setup a deny-all filtering policy, with blocked ICMP requests and explicitly opened UDP/TCP ports.
+          - Private network interface remains unfiltered.
+        type: bool
+        default: false
+
+      kowabunga_firewall_open_tcp_ports:
+        description:
+          - List of TCP ports to be explictly opened on network firewall.
+        type: list
+        elements: int
+        default: []
+
+      kowabunga_firewall_open_udp_ports:
+        description:
+          - List of UDP ports to be explictly opened on network firewall.
+        type: list
+        elements: int
+        default: []

@@ -1,0 +1,104 @@
+argument_specs:
+
+  main:
+    short_description: Install and configure core operating system settings.
+    description:
+      - Install and configure Kowabunga core operating system settings.
+
+    options:
+      kowabunga_os_sysctl_settings_extra:
+        description:
+          - Defines custom sysctl tuning settings
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - Sysctl setting name
+              - "Example: 'net.ipv4.ip_forward'"
+            type: str
+            required: true
+          value:
+            description:
+              - Sysctl setting value
+            type: str
+            required: true
+          enabled:
+            description:
+              - Ansible condition for setting's application.
+              - Always enabled if unspecified.
+            type: bool
+            default: true
+          set:
+            description:
+              - Whether to keep setting persistent across reboots.
+              - Always enabled if unspecified.
+            type: bool
+            defautl: true
+          state:
+            description:
+              - Ansible sysctl state.
+              - Use 'absent' for setting removal.
+            type: str
+            choices: ['present', 'absent']
+            default: present
+          reload:
+            description:
+              - Defines whether to reload sysctl daemon after setting's enablement.
+              - Always enabled if unspecified.
+            type: bool
+            default: true
+
+      kowabunga_os_timezone:
+        description:
+          - Defines the system's current timezone for proper time management.
+          - Refer to system's /usr/share/zoneinfo/ content for list of eligible timezones.
+          - It is highly recommended to keep it set to UTC (default, Universal Time Coordinated), making any collaboration between global teams way easier when it comes to troubleshooting.
+        type: str
+        default: UTC
+
+      kowabunga_os_user_root_password:
+        description:
+          - Optionally allows setting a password for root/admin system user.
+          - Note that SSH server policy strictly prohibits remote root login, making it safe against remote brute-force attacks.
+          - Setting root password can however comes in handy when system is stuck and you need physical terminal access to the system as last resort option.
+          - Defaults to vault-encrypted vault_kowabunga_os_user_root_password secret variable, if unspecified.
+        type: str
+        default: "{{ vault_kowabunga_os_user_root_password | default('') }}"
+
+      kowabunga_os_user_admin_accounts_enabled:
+        description:
+          - Optionally defines a list of UNIX admin accounts to be created locally on system.
+          - Admin accounts are nominative (one per user).
+          - Admin accounts have password-less escalation privileges. sudo command grants root rights.
+          - Admin accounts have no password set.
+          - Admin accounts require public key SSH authentication.
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_os_user_admin_accounts_disabled:
+        description:
+          - Optionally defines a list of deprecated UNIX admin accounts to be removed locally from the system.
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_os_user_admin_accounts_pubkey_dirs:
+        description:
+          - Defines a list of local directories (relative to playbook execution one) where to look for public SSH key files.
+          - Multiple directories can be passed for Ansible to look into.
+          - Public SSH certificates must be PEM-formatted and labelled per account.
+          - "Example: If <jdoe> is part of <kowabunga_os_user_admin_accounts_enabled> list, Ansible will look for a pem-formatted <jdoe> file in one of the directories provided in <kowabunga_os_user_admin_accounts_pubkey_dirs> variable. If found, user's public key will be automatically pushed to the system."
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_os_user_extra_groups:
+        description:
+          - Optionally defines list of extra UNIX groups to be created.
+          - All enabled user admin accounts will be part of the specified groups.
+        type: list
+        elements: str
+        default: []

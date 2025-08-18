@@ -1,0 +1,13 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start OpenSSH server.
+    description:
+      - Install, configure, and start OpenSSH server.
+
+    options:
+      kowabunga_ssh_listen_addr:
+        description:
+          - Network IP address for SSH daemon to listen to.
+          - Defaults to private interface IP address if supported, public one otherwise.
+        type: str

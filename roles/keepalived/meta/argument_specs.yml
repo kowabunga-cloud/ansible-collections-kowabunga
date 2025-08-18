@@ -1,0 +1,147 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start Keepalived IP failover.
+    description:
+      - Install, configure, and start Keepalived IP failover.
+
+    options:
+      kowabunga_network_failover_enabled:
+        description:
+          - Defines whether network redundancy and virtual IP failover mechanisms must be enabled.
+          - Disabled if unspecified.
+        type: bool
+        default: false
+
+      kowabunga_network_failover_settings:
+        description:
+          - Configuration settings for failover mechanisms (useless if disabled)
+        type: dict
+        default:
+          use_vmac: true
+          use_unicast: false
+          use_bfd: true
+          peers: []
+          trackers: []
+        options:
+          use_vmac:
+            description:
+              -  Defines whether virtual MAC addresses (VMAC) must be used (formatted as 00:00:5e:00:00:xx).
+              - Useful if not supported by underlying network interface (e.g. VMware vSwitch with MAC address range restriction)
+              - Enabled if unspecified.
+            type: bool
+            default: true
+          use_unicast:
+            description:
+              - Forces peer-to-peer unicast VRRP communication over multicast.
+              - Only supported with 2 peers failover.
+              - Disabled if unspecified.
+            type: bool
+            default: false
+          use_bfd:
+            description:
+              - Defines whether to enable fast failure detection with point-to-point Bidirectional Forwarding Detection (BFD).
+              - Enabled if unspecified.
+            type: bool
+            default: true
+          peers:
+            description:
+              - List of hosts used as peers in a highly-available failover setup
+              - Recommended to use Ansible special variables like groups['ROLE']
+            type: list
+            elements: str
+            default: []
+          trackers:
+            description:
+              - List of VRRP trackers to be configured to managed virtual IP addresses.
+            type: list
+            elements: dict
+            default: []
+            options:
+              name:
+                description:
+                  - Tracker name
+                type: str
+                required: true
+              configs:
+                description:
+                  - List of tracker configuration settings
+                type: list
+                elements: dict
+                options:
+                  vip:
+                    description:
+                      - Virtual IP address (VIP) to be assigned, must be unique in your network.
+                      - Can be used either as a simple string or a list of strings to handle multiple IP addresses.
+                    type: str
+                    required: true
+                  vrid:
+                    description:
+                      - Virtual Router Identification, integer in 1..255 range.
+                      - Required to be unique on a given L2/L3 segment.
+                    type: int
+                    required: true
+                  control_interface:
+                    description:
+                      - Network interface to use for VRRP messages communication.
+                      - Defaults to private network one if unspecified.
+                    type: str
+                  interface:
+                    description:
+                      - Network interface to use to attacj virtual IP address.
+                      - Defaults to private network one if unspecified.
+                    type: str
+                  password:
+                    description:
+                      - Password to authenticate VRRP messages between peers.
+                    type: str
+                  primary:
+                    description:
+                      - Hostname from inventory of the expected master host.
+                      - Overriden when priority is set.
+                    type: str
+                  nopreempt:
+                    description:
+                      - Allows lower priority machine to maintain the master role and prevent unnecessary VIP flapping.
+                      - Disabled if unspecified.
+                    type: bool
+                    default: false
+                  priority:
+                    description:
+                      - Enforce priority (1..250).
+                      - The lower value will be selected as master host.
+                    type: int
+                    default: 100
+                  routes:
+                    description:
+                      - Set custom route when virtual IP is acquired.
+                    type: list
+                    elements: dict
+                    default: []
+                    options:
+                      destination:
+                        description:
+                          - Route's destination CIDR.
+                        type: str
+                        required: true
+                      gateway:
+                        description:
+                          - Route's gateway IPv4 address.
+                        type: str
+                        required: true
+                      metric:
+                        description:
+                          - Route's weight
+                        type: str
+                        required: true
+              checkscript:
+                description:
+                  - Used to determine the condition under which a given instance goes from PRIMARY to BACKUP state.
+                  - If unset, failover is performed when one server fails (crash, reboot, ...)
+                  - "Example: '/usr/bin/killall -0 myapp'"
+                type: str
+              notifyscript:
+                description:
+                  - Path to post-actions script, called at state change.
+                  - "Example: '/opt/keepalived-notify-myapp.sh'"
+                type: str
