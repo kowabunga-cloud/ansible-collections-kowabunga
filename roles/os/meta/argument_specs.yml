@@ -63,7 +63,7 @@ argument_specs:
           - Optionally allows setting a password for root/admin system user.
           - Note that SSH server policy strictly prohibits remote root login, making it safe against remote brute-force attacks.
           - Setting root password can however comes in handy when system is stuck and you need physical terminal access to the system as last resort option.
-          - Defaults to vault-encrypted vault_kowabunga_os_user_root_password secret variable, if unspecified.
+          - Defaults to vault-encrypted V(vault_kowabunga_os_user_root_password) secret variable, if unspecified.
         type: str
         default: "{{ vault_kowabunga_os_user_root_password | default('') }}"
 
