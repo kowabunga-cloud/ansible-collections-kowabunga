@@ -60,5 +60,6 @@
     mode: 0400
     owner: mongodb
     group: mongodb
+  no_log: true
   when: kowabunga_mongodb_rs_enabled
   notify: restart mongodb
