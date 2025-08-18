@@ -35,7 +35,7 @@ argument_specs:
               - Whether to keep setting persistent across reboots.
               - Always enabled if unspecified.
             type: bool
-            defautl: true
+            default: true
           state:
             description:
               - Ansible sysctl state.
