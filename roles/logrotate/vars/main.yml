@@ -32,3 +32,10 @@ logrotate_host_rootfs_total_space_gb: "{{ (ansible_mounts | selectattr('mount', 
 logrotate_max_file_size_gb_default: "{{ (logrotate_host_rootfs_total_space_gb | float * 0.1) | round | int }}"
 
 logrotate_max_file_size_gb: "{{ (kowabunga_logrotate_max_file_size_gb > 0) | ternary(kowabunga_logrotate_max_file_size_gb, logrotate_max_file_size_gb_default) }}"
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_logrotate:
+  - name: logrotate

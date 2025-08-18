@@ -4,3 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_fqdn: "{{ kowabunga_public_url | replace('http://', '') | replace('https://', '') }}"
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_kaktus:
+  - name: kowabunga-kaktus
