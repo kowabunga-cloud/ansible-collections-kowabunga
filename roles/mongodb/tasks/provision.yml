@@ -1,0 +1,65 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Setup replica set configuration
+  ansible.builtin.template:
+    src: rs-init.js.j2
+    owner: root
+    group: root
+    dest: "{{ mongodb_script_rs_init }}"
+    mode: 0600
+  when: kowabunga_mongodb_rs_enabled
+
+- name: Create replica set
+  ansible.builtin.shell: mongosh 'mongodb://127.0.0.1:{{ mongodb_port }}/?directConnection=true' < {{ mongodb_script_rs_init }}
+  run_once: true
+  when: kowabunga_mongodb_rs_enabled
+
+- name: Setup admin configuration
+  ansible.builtin.template:
+    src: admin.js.j2
+    owner: root
+    group: root
+    dest: "{{ mongodb_script_admin_init }}"
+    mode: 0600
+  no_log: true
+
+- name: Create admin account
+  ansible.builtin.shell: mongosh admin < {{ mongodb_script_admin_init }}
+  register: mongo_admin_create
+  failed_when:
+    - mongo_admin_create.rc != 0
+    - not ('there are no users authenticated' in mongo_admin_create.stdout or 'not authorized on admin to execute command' in mongo_admin_create.stdout or 'command createUser requires authentication' in mongo_admin_create.stdout)
+  no_log: true
+
+- name: Setup users configuration
+  ansible.builtin.template:
+    src: users.js.j2
+    owner: root
+    group: root
+    dest: "{{ mongodb_script_users_init }}"
+    mode: 0600
+  no_log: true
+
+- name: Create users (rs)
+  ansible.builtin.shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@{{ kowabunga_mongodb_listen_addr | split(",")[0] }}:{{ mongodb_port }}/admin?authSource=admin&readPreference=primary&replicaSet={{ kowabunga_mongodb_rs_name }}&w=majority&retryWrites=true' < {{ mongodb_script_users_init }}
+  run_once: true
+  when: kowabunga_mongodb_rs_enabled
+  no_log: true
+
+- name: Create users (no rs)
+  shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@{{ kowabunga_mongodb_listen_addr | split(",")[0] }}:{{ mongodb_port }}/admin?authSource=admin' < {{ mongodb_script_users_init }}
+  run_once: true
+  when: not kowabunga_mongodb_rs_enabled
+  no_log: true
+
+- name: Delete log and user creation files
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ mongodb_script_rs_init }}"
+    - "{{ mongodb_script_admin_init }}"
+    - "{{ mongodb_script_users_init }}"

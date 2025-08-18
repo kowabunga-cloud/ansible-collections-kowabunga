@@ -1,0 +1,8 @@
+## MongoDB Ubuntu distribution repository
+
+Enabled: yes
+Types: deb
+URIs: https://repo.mongodb.org/apt/ubuntu
+Suites: {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }}
+Components: multiverse
+Signed-By: {{ mongodb_apt_keyring_local }}

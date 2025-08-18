@@ -1,0 +1,20 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install python libs
+  ansible.builtin.apt:
+    name:
+      - python3-humanize
+      - python3-pymongo
+      - python3-setuptools
+      - python3-terminaltables
+      - python3-termcolor
+    state: latest
+
+- name: Copy mongo-status script
+  ansible.builtin.template:
+    src: mongo-status.py.j2
+    dest: /usr/bin/mongo-status
+    mode: 0755

@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8
+
+try:
+    from pymongo import MongoClient
+    from termcolor import colored
+    from terminaltables import AsciiTable
+    from datetime import datetime
+    import humanize
+    # import pprint
+    from enum import Enum
+    from datetime import timedelta
+    from argparse import ArgumentParser
+    import sys
+except Exception as e:
+    print('import error: %s'%str(e))
+    print('you may want to try:\n pip3 install pymongo terminaltables humanize termcolor')
+    exit(1)
+
+tkv = 30
+t1 = 55
+t2 = 10
+t3 = 10
+uri = 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@127.0.0.1:{{ mongodb_port }}/admin'
+client = MongoClient(uri)
+db = client['admin']
+# pp = pprint.PrettyPrinter(indent=1)
+
+# parser = ArgumentParser()
+# parser.add_argument('-verbose', action='store', default=1)
+# args = parser.parse_args()
+# verbose = args.verbose
+#
+class RsMemberState(Enum):
+    STARTUP = 0
+    PRIMARY = 1
+    SECONDARY = 2
+    RECOVERING = 3
+    STARTUP2 = 5
+    UNKNOWN = 6
+    ARBITER = 7
+    DOWN = 8
+    ROLLBACK = 9
+    REMOVED = 10
+
+    def __str__(self):
+        if self.value in [1]:
+            color = 'green'
+        elif self.value in [2, 7]:
+            color = 'yellow'
+        else:
+            color = 'red'
+        return colored(self.name, color)
+
+try:
+    serverStatus = db.command("serverStatus")
+    rsStatus = db.command("replSetGetStatus")
+    rsConf = db.command("replSetGetConfig")
+except Exception as e:
+    print(colored("  Mongo error: %s"%str(e), 'red'))
+    exit(1)
+try:
+    compatVersion = client.admin.command({'getParameter': 1, 'featureCompatibilityVersion': 1}).get('featureCompatibilityVersion')
+    if isinstance(compatVersion, dict) and 'version' in compatVersion:
+         compatVersion = compatVersion.get('version')
+    compatVersion = str(compatVersion)
+except Exception as e:
+    compatVersion = "???"
+# pp.pprint(rsConf)
+# pp.pprint(serverStatus)
+# pp.pprint(rsStatus)
+
+bytesCurrentlyInCache = serverStatus.get('wiredTiger', {}).get('cache', {}).get('bytes currently in the cache', "")
+maxBytesConfigured = serverStatus.get('wiredTiger', {}).get('cache', {}).get('maximum bytes configured', "")
+bytesReadIntoCache = serverStatus.get('wiredTiger', {}).get('cache', {}).get('bytes read into cache', "")
+uptime = serverStatus.get('uptime', "")
+uptimeString = str(timedelta(seconds=uptime))
+isMaster = serverStatus.get('repl', {}).get('primary') == serverStatus.get('repl', {}).get('me')
+isSecondary = serverStatus.get('repl', {}).get('secondary')
+isHidden = serverStatus.get('repl', {}).get('hidden')
+if isMaster:
+    role = "PRIMARY"
+    roleColor = "green"
+elif isHidden:
+    role = "HIDDEN"
+    roleColor = "yellow"
+elif isSecondary:
+    role = "SECONDARY"
+    roleColor = "yellow"
+else:
+    role = "UNKNOWN"
+    roleColor = "red"
+if maxBytesConfigured and bytesCurrentlyInCache:
+    cacheUsage = (bytesCurrentlyInCache / maxBytesConfigured * 100)
+    if cacheUsage <= 80:
+        cacheColor = "green"
+    elif cacheUsage <= 95:
+        cacheColor = "yellow"
+    else:
+        cacheColor = "red"
+    cacheUsage = "%.2f" % cacheUsage + "%"
+else:
+    cacheUsage = "unknown"
+    cacheColor = "red"
+percBytesRead = bytesReadIntoCache / maxBytesConfigured
+if percBytesRead == 0:
+    cacheRotation = u'∞'
+else:
+    cacheRotation = (uptime / percBytesRead)
+    cacheRotation = str(timedelta(seconds=round(cacheRotation)))
+host = serverStatus.get('host', "")
+if ':' in host:
+    host = host.split(':')[0] + ':' + colored(host.split(':', 1)[1], 'blue')
+else:
+    host = host + ':' + colored('27017', 'blue')
+print('  Host: '.ljust(tkv) + host)
+if compatVersion in serverStatus.get('version', ""):
+    compatVersionColor = 'green'
+else:
+    compatVersionColor = 'red'
+print('  Version: '.ljust(tkv) + serverStatus.get('version', "") + " (compat: " + colored(compatVersion, compatVersionColor) + ")")
+print('  Uptime: '.ljust(tkv) + uptimeString + " " + serverStatus.get('process', "") + "[" + str(serverStatus.get('pid', "")) + "]")
+print('  ReplicaSet: '.ljust(tkv) + str(serverStatus.get('repl', {}).get('setName', "")) + " " + colored(role, roleColor))
+# print('  Current connections: '.ljust(tkv) + str(serverStatus.get('connections', {}).get('current', "")))
+print('  WiredTiger cache size: '.ljust(tkv) + humanize.naturalsize(bytesCurrentlyInCache) + "/" +
+      humanize.naturalsize(maxBytesConfigured) + " (" +
+      colored(cacheUsage, cacheColor) + ") (rotation: " +  str(cacheRotation) + ")")
+#colored(serverStatus.get('', {}), 'red')
+
+rsId = rsConf.get('config', {}).get('_id', '???')
+# print('')
+# print('  Replicaset: '.ljust(tkv) + rsId)
+
+# print('  Members: ')
+
+rsConfMembers = rsConf.get('config', {}).get('members', [])
+primaryMember = None
+members = [['host', 'role', 'optime', 'tags', 'priority', 'votes']]
+electionDate = None
+for member in rsStatus.get('members', []):
+    if "electionDate" in member:
+        electionDate = member["electionDate"]
+    state = member.get('state', -1)
+    if state == 1:
+        primaryMember = member
+        break
+if electionDate:
+    print('  RS electionDate: '.ljust(tkv) + str(electionDate) + ' (' + str(datetime.now() - electionDate) + ' ago)')
+if primaryMember:
+    members[0] += ['opDelay']
+index = 0
+primaryCount = 0
+for member in rsStatus.get('members', []):
+    memberState = member.get('state', -1)
+    opDelay = member.get('state', 0)
+    isMe = member.get('self', 0)
+    if memberState > -1:
+        rsMemberState = RsMemberState(memberState)
+        if memberState == 1:
+            primaryCount += 1
+    else:
+        rsMemberState = "???"
+    tags = ' '.join(['{}={}'.format(k, v) for k, v in rsConfMembers[index].get('tags', {}).items()])
+    isHidden = rsConfMembers[index].get('hidden')
+    isArbiterOnly = rsConfMembers[index].get('arbiterOnly')
+    priority = rsConfMembers[index].get('priority')
+    votes = rsConfMembers[index].get('votes')
+    state = str(rsMemberState)
+    if (isArbiterOnly):
+        state += ' (A)'
+    if (isHidden):
+        state += ' (H)'
+    name = member.get('name', '???')
+    optime = '' if isArbiterOnly else member.get('optimeDate', '???')
+    if isMe:
+        name = '* ' + name
+    memberData = [name, state, optime, tags, priority, votes]
+    if primaryMember:
+        if memberState==1 or memberState==2:
+            optimeDurable = member.get('optime').get('ts', False)
+            optimeDurablePrimary = primaryMember.get('optime').get('ts', False)
+            if optimeDurablePrimary:
+                optimeDurablePrimary = optimeDurablePrimary.time
+            if optimeDurable:
+               optimeDurable = optimeDurable.time
+            if optimeDurablePrimary and optimeDurable:
+               opDelay = optimeDurablePrimary - optimeDurable
+               if (opDelay > -11 and opDelay < 11):
+                   opDelay = colored(opDelay, 'green')
+               else:
+                   opDelay = colored(opDelay, 'red')
+            else:
+                opDelay = '???'
+        else:
+           opDelay= '' if isArbiterOnly else 'N/A'
+        memberData.append(opDelay)
+        members.append(memberData)
+    index += 1
+membersTable = AsciiTable(members)
+print(membersTable.table)
+
+if primaryCount > 1:
+    sys.exit(2)

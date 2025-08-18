@@ -1,0 +1,14 @@
+use admin
+try {
+  db.createUser(
+    {
+      user: "{{ kowabunga_mongodb_admin_username }}",
+      pwd: "{{ kowabunga_mongodb_admin_password }}",
+      roles: [
+        { role: "root", db: "admin" },
+      ]
+    }
+  )
+} catch (err) {
+    print (err);
+}

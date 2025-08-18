@@ -1,0 +1,62 @@
+/**
+  src: https://docs.mongodb.com/manual/reference/built-in-roles
+On one db:
+  dbOwner: The database owner can perform any administrative action on the database. This role combines the privileges granted by the readWrite, dbAdmin and userAdmin roles.
+  userAdmin: Provides the ability to create and modify roles and users on the current database. Since the userAdmin role allows users to grant any privilege to any user, including themselves, the role also indirectly provides superuser access to either the database or, if scoped to the admin database, the cluster.
+  dbAdmin: Provides the ability to perform administrative tasks such as schema-related tasks, indexing, and gathering statistics. This role does not grant privileges for user and role management. used for migrations scripts, changestream...
+  readWrite: Provides all the privileges of the read role plus ability to modify data on all non-system collections (including indexes) and the system.js collection.
+  read: Provides the ability to read data on all non-system collections and the system.js collection.
+On all dbs:
+  dbAdminAnyDatabase: Provides the same privileges as dbAdmin on all databases except local and config. The role also provides the listDatabases action on the cluster as a whole.
+  readWriteAnyDatabase: Provides the same privileges as readWrite on all databases except local and config. The role also provides the listDatabases action on the cluster as a whole.
+  readAnyDatabase: Provides the same read-only privileges as read on all databases except local and config. The role also provides the listDatabases action on the cluster as a whole.
+  clusterAdmin: Provides the greatest cluster-management access. This role combines the privileges granted by the clusterManager, clusterMonitor, and hostManager roles. Additionally, the role provides the dropDatabase action.
+  clusterManager: Provides management and monitoring actions on the cluster. A user with this role can access the config and local databases, which are used in sharding and replication, respectively.
+  clusterMonitor: Provides read-only access to monitoring tools, such as the MongoDB Cloud Manager and Ops Manager monitoring agent.
+**/
+
+{% macro roles(user) %}
+{% if user.readWrite %}
+            { role: "dbAdmin", db: "{{ user.base }}" },
+            { role: "readWrite", db: "{{ user.base }}" },
+{% else %}
+            { role: "read", db: "{{ user.base }}" },
+{% endif %}
+{% if user.anyDatabase is defined and user.anyDatabase %}
+{% if user.readWrite %}
+            { role: "readWriteAnyDatabase", db: "admin" },
+            { role: "clusterManager", db: "admin" },
+            { role: "dbAdminAnyDatabase", db: "admin" },
+{% else %}
+            { role: "readAnyDatabase", db: "admin" },
+            { role: "clusterMonitor", db: "admin" },
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+var errors = 0;
+
+{% for user in kowabunga_mongodb_users | flatten(levels=1) %}
+try {
+    db = db.getSiblingDB('admin');
+    if (db.system.users.find({_id:"{{ user.base }}.{{ user.username }}"}).count() != 1) {
+      db = db.getSiblingDB('{{ user.base }}');
+      print('Creating {{ user.username }} user');
+      db.createUser({user: "{{ user.username }}", pwd: "{{ user.password }}", roles: [
+{{ roles(user) }}
+      ]});
+    } else {
+      db = db.getSiblingDB('{{ user.base }}');
+      print('Updating {{ user.username }} user');
+      db.updateUser("{{ user.username }}",{pwd: "{{ user.password }}", roles: [
+    {{ roles(user) }}
+      ]});
+    }
+} catch (err) {
+    print ("!! user {{ user.username }} creation error !!");
+    print (err);
+    var errors = ++errors;
+}
+{% endfor %}
+
+quit(errors);

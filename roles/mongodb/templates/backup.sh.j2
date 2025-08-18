@@ -1,0 +1,37 @@
+#!/bin/bash
+
+LOCAL_FACT="/etc/ansible/facts.d/mongodb.fact"
+
+FORCE=0
+BASE_DIR="{{ kowabunga_mongodb_backup_dir }}"
+BACKUP_OUT="${BASE_DIR}/dump_$(hostname)_$(date -u '+%F')"
+MONGOD_CFG="/etc/mongod.conf"
+
+DUMP_OPTS="{% if kowabunga_mongodb_rs_enabled %}--oplog{% endif %}"
+
+# To log a message to host's syslog (user.xxx facility)
+#   Param $1: The alert to log
+# where severity is one of: debug info notice warning err crit alert emerg
+syslog() {
+    logger -t "mongod-backup" -p user."$1" "$2"
+}
+
+die() {
+    syslog warning "$0: $1"
+    echo "$0: $1"
+    exit 1
+}
+
+MONGO_DUMP_CMD="mongodump --port {{ mongodb_port }} -u '{{ kowabunga_mongodb_admin_username }}' -p '{{ kowabunga_mongodb_admin_password }}' --authenticationDatabase 'admin' --out ${BACKUP_OUT}"
+
+echo "Backing up all MongoDB databases ..."
+syslog info "Backing up all MongoDB databases ..."
+
+eval ${MONGO_DUMP_CMD} ${DUMP_OPTS}
+
+tar -zcf ${BACKUP_OUT}.tgz ${BACKUP_OUT}/
+rm -rf ${BACKUP_OUT}
+
+syslog info "Backup finished"
+
+exit 0

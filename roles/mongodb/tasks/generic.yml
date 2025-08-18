@@ -1,0 +1,63 @@
+---
+- name: Retrieve MongoDB GPG pubkey
+  ansible.builtin.get_url:
+    url: "{{ mongodb_apt_keyring_remote }}"
+    dest: "{{ mongodb_apt_keyring_local }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure MongoDB Ubuntu APT sources
+  ansible.builtin.template:
+    src: mongodb.sources.j2
+    dest: "/etc/apt/sources.list.d/mongodb.sources"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Unhold packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  changed_when: false
+  loop: "{{ mongodb_packages_list }}"
+
+- name: Install packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  loop: "{{ mongodb_packages_list }}"
+
+- name: Hold packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  changed_when: false
+  loop: "{{ mongodb_packages_list }}"
+
+- name: Create database directory
+  ansible.builtin.file:
+    dest: "{{ mongodb_dbpath }}"
+    mode: 0755
+    owner: mongodb
+    group: mongodb
+    state: directory
+
+- name: Create logs directory
+  ansible.builtin.file:
+    dest: "{{ mongodb_logpath }}"
+    mode: 0755
+    owner: mongodb
+    group: mongodb
+    state: directory
+
+- name: Write replica set key file
+  ansible.builtin.template:
+    src: key.j2
+    dest: "{{ mongodb_keyfile }}"
+    mode: 0400
+    owner: mongodb
+    group: mongodb
+  when: kowabunga_mongodb_rs_enabled
+  notify: restart mongodb

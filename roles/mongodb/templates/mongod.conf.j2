@@ -1,0 +1,75 @@
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# where to write logging data.
+systemLog:
+  verbosity: 0 # default: 0, debug: 1-5
+  quiet: false
+  traceAllExceptions: false
+  syslogFacility: user
+  logAppend: true
+  logRotate: reopen
+  destination: syslog
+  timeStampFormat: iso8601-utc
+
+# process management
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+  fork: false # fork is done by systemd/init
+
+# network interfaces
+net:
+  port: {{ mongodb_port }}
+  bindIp: {{ kowabunga_mongodb_listen_addr }}
+  maxIncomingConnections: {{ mongodb_max_connections }}
+  wireObjectCheck: true
+  ipv6: false
+  unixDomainSocket:
+    enabled: true
+
+# security configuration
+security:
+{% if kowabunga_mongodb_rs_enabled %}
+  keyFile: {{ mongodb_keyfile }}
+  clusterAuthMode: keyFile
+{% endif %}
+  authorization: enabled
+  javascriptEnabled: false
+
+# set MongoDB server parameters
+# (see https://docs.mongodb.com/manual/reference/parameters/ )
+setParameter:
+  enableLocalhostAuthBypass: true
+  ttlMonitorEnabled: true
+  diagnosticDataCollectionEnabled: true
+
+# Where and how to store data.
+storage:
+  dbPath: {{ mongodb_dbpath }}
+  journal:
+    enabled: true
+    commitIntervalMs: 50 # default: 50
+  directoryPerDB: true
+  syncPeriodSecs: 60 # default: 60
+  engine: wiredTiger
+  wiredTiger:
+    engineConfig:
+      journalCompressor: snappy # default: snappy
+      directoryForIndexes: true
+    collectionConfig:
+      blockCompressor: snappy
+    indexConfig:
+      prefixCompression: true
+
+# profiling configuration
+operationProfiling:
+  slowOpThresholdMs: 1000
+  mode: {{ mongodb_profiling }} # slows down operations, turn it 'off' otherwise
+
+{% if kowabunga_mongodb_rs_enabled %}
+# replication configuration
+replication:
+  replSetName: {{ kowabunga_mongodb_rs_name }}
+{% endif %}

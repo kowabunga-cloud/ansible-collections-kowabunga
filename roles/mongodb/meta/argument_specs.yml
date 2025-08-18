@@ -1,0 +1,102 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start local MongoDB cluster.
+    description:
+      - Install, configure, and start local MongoDB cluster.
+
+    options:
+      kowabunga_mongodb_enabled:
+        description:
+          - Defines whether a local MongoDB cluster should be deployed.
+          - Useless if you already have a remote MongoDB cluster.
+          - Disabled if unspecified.
+        type: bool
+        default: false
+
+      kowabunga_mongodb_listen_addr:
+        description:
+          - Local IP addresses for MongoDB server to bind to.
+          - Private network address is required if you intend to setup a cluster (i.e. non standalone instance).
+          - Comma-separated list of IP addresses.
+        type: str
+        default: "127.0.0.1,{{ lan_ip if lan_ip != '' else wan_ip }}"
+
+      kowabunga_mongodb_rs_enabled:
+        description:
+          - Defines whether to enable support for MongoDB replicaset.
+          - Required for clustering.
+          - Harmless on a standalone instance (allows for future scale up).
+        type: bool
+        default: true
+
+      kowabunga_mongodb_rs_key:
+        description:
+          - Replicaset clustering authentication key.
+          - Free string, as much complex as expected.
+          - Requires by cluster peers to interconnect.
+        type: str
+        required: true
+
+      kowabunga_mongodb_rs_name:
+        description:
+          - Replicaset cluster name
+          - Free string.
+        type: str
+        required: true
+
+      kowabunga_mongodb_admin_username:
+        description:
+          - Name of the MongoDB admin user
+        type: str
+        default: admin
+
+      kowabunga_mongodb_admin_password:
+        description:
+          - Password for MongoDB admin user.
+          - Suggested to be store securely into a vaulted variable.
+        type: str
+        required: true
+
+      kowabunga_mongodb_backup_enabled:
+        description:
+          - Defines whether daily backups of MongoDB database must be performed.
+          - Backups occur daily at 5am local time.
+          - Enabled if unspecified.
+          type: bool
+          default: true
+
+      kowabunga_mongodb_backup_dir:
+        description:
+          - Location on local machine to dump MongoDB database backup.
+        type: str
+        default: /opt/mongodb
+
+      kowabunga_mongodb_users:
+        description:
+          - List of local MongoDB users to be created.
+        type: list
+        elements: dict
+        default: []
+        options:
+          base:
+            description:
+              - MongoDB database name the user manages.
+            type: str
+            required: true
+          username:
+            description:
+              - MongoDB user name.
+            type: str
+            required: true
+          password:
+            description:
+              - MongoDB user password.
+              - Suggested to be store securely into a vaulted variable.
+            type: str
+            required: true
+          readWrite:
+            description:
+              - Defines whether the user has read-only or read-write privilege on the selected database.
+            type: bool
+            default: true

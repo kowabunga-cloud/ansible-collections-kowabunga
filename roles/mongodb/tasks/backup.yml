@@ -1,0 +1,26 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Create backup directory
+  ansible.builtin.file:
+    dest: "{{ kowabunga_mongodb_backup_dir }}"
+    mode: 0755
+    owner: mongodb
+    group: mongodb
+    state: directory
+
+- name: Install backup script
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: /usr/bin/mongodb-backup
+    mode: 0755
+
+- name: Setup crontab to dump all databases
+  ansible.builtin.cron:
+    name: "Dump MongoDB database"
+    minute: 0
+    hour: 5
+    user: mongodb
+    job: /usr/bin/mongodb-backup
