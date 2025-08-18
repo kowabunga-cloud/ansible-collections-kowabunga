@@ -1,7 +1,7 @@
 if (rs.status().ok == 0 && rs.status().code == 94) {
   rs.initiate(
       {
-      _id: "{{ mongodb_rs_name }}",
+      _id: "{{ kowabunga_mongodb_rs_name }}",
       members: [
 {% for host in mongodb_rs_hosts %}
           { _id: {{ loop.index0 }}, host: "{{ host }}:{{ mongodb_port }}" }{% if not loop.last %},{% endif %}
