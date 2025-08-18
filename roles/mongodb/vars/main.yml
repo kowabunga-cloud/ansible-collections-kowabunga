@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 mongodb_version: 8.0
-mongodb_apt_keyring_remote: "https://pgp.mongodb.com/server-{{ mongodb_major_version }}.asc"
+mongodb_apt_keyring_remote: "https://pgp.mongodb.com/server-{{ mongodb_version }}.asc"
 mongodb_apt_keyring_local: /etc/apt/keyrings/mongodb.asc
 mongodb_dbpath: /var/lib/mongodb
 mongodb_logpath: /var/log/mongodb
