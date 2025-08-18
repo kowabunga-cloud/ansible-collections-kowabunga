@@ -1,0 +1,35 @@
+MOD_NAME="mongod"
+MOD_PRIO=2
+
+# private functions
+infoMongod() {
+    processInfo "/usr/bin/mongod --config /etc/mongod"
+}
+
+pingMongo() {
+    mongo --eval "{ping:1}" >/dev/null 2>&1
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+mongod_status() {
+    checkService mongod mongodb-org-server
+    [ $? == 0 ] && infoMongod
+    {% if kowabunga_mongodb_rs_enabled %}
+    [ $? -eq 0 -a -e /usr/bin/mongo-status ] && /usr/bin/mongo-status -verbose 1
+    {% endif %}
+
+}
+
+mongod_stop() {
+    stopService mongod "" "/usr/bin/mongod"
+}
+
+mongod_start() {
+    startService mongod pingMongo
+}
+
+mongod_restart() {
+    restartService mongod pingMongo
+}
