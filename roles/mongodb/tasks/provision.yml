@@ -44,13 +44,13 @@
   no_log: true
 
 - name: Create users (rs)
-  ansible.builtin.shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@127.0.0.1 }}:{{ mongodb_port }}/admin?authSource=admin&readPreference=primary&replicaSet={{ kowabunga_mongodb_rs_name }}&w=majority&retryWrites=true' < {{ mongodb_script_users_init }}
+  ansible.builtin.shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@127.0.0.1:{{ mongodb_port }}/admin?authSource=admin&readPreference=primary&replicaSet={{ kowabunga_mongodb_rs_name }}&w=majority&retryWrites=true' < {{ mongodb_script_users_init }}
   run_once: true
   when: kowabunga_mongodb_rs_enabled
   no_log: true
 
 - name: Create users (no rs)
-  shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@{{ kowabunga_mongodb_listen_addr | split(",")[0] }}:{{ mongodb_port }}/admin?authSource=admin' < {{ mongodb_script_users_init }}
+  shell: mongosh 'mongodb://{{ kowabunga_mongodb_admin_username }}:{{ kowabunga_mongodb_admin_password }}@127.0.0.1:{{ mongodb_port }}/admin?authSource=admin' < {{ mongodb_script_users_init }}
   run_once: true
   when: not kowabunga_mongodb_rs_enabled
   no_log: true
