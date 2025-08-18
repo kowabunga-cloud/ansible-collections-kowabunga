@@ -90,7 +90,7 @@ argument_specs:
           - Defines a list of local directories (relative to playbook execution one) where to look for public SSH key files.
           - Multiple directories can be passed for Ansible to look into.
           - Public SSH certificates must be PEM-formatted and labelled per account.
-          - "Example: If <jdoe> is part of <kowabunga_os_user_admin_accounts_enabled> list, Ansible will look for a pem-formatted <jdoe> file in one of the directories provided in <kowabunga_os_user_admin_accounts_pubkey_dirs> variable. If found, user's public key will be automatically pushed to the system."
+          - "Example: If <jdoe> is part of V(kowabunga_os_user_admin_accounts_enabled) list, Ansible will look for a pem-formatted <jdoe> file in one of the directories provided in V(kowabunga_os_user_admin_accounts_pubkey_dirs) variable. If found, user's public key will be automatically pushed to the system."
         type: list
         elements: str
         default: []
