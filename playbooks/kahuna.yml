@@ -8,4 +8,6 @@
   roles:
     - name: kowabunga.cloud.os
     - name: kowabunga.cloud.caddy
+    - name: kowabunga.cloud.mongodb
+      when: "{{ kowabunga_mongodb_enabled }}"
     - name: kowabunga.cloud.kahuna
