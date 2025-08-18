@@ -21,6 +21,7 @@
     selection: install
   changed_when: false
   loop: "{{ mongodb_packages_list }}"
+  failed_when: false
 
 - name: Install packages
   ansible.builtin.apt:
