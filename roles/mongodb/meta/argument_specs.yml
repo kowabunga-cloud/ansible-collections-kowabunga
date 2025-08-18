@@ -63,8 +63,8 @@ argument_specs:
           - Defines whether daily backups of MongoDB database must be performed.
           - Backups occur daily at 5am local time.
           - Enabled if unspecified.
-          type: bool
-          default: true
+        type: bool
+        default: true
 
       kowabunga_mongodb_backup_dir:
         description:
