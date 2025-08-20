@@ -7,7 +7,7 @@ kowabunga_os_sysctl_settings_extra: []
 
 kowabunga_os_timezone: UTC
 
-kowabunga_os_user_root_password: "{{ vault_kowabunga_os_user_root_password | default('') }}"
+kowabunga_os_user_root_password: "{{ secret_kowabunga_os_user_root_password | default('') }}"
 
 kowabunga_os_user_admin_accounts_enabled: []
 kowabunga_os_user_admin_accounts_disabled: []
