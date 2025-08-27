@@ -16,7 +16,7 @@ network:
   version: 2
   renderer: networkd
 
-{{ global.config('ethernets', eth, kowabunag_netplan_config.ethernet | default([])) }}
+{{ global.config('ethernets', eth, kowabunga_netplan_config.ethernet | default([])) }}
 {{ global.config('bonds', bond, kowabunga_netplan_config.bond | default([])) }}
 {{ global.config('vlans', vlan, kowabunga_netplan_config.vlan | default([])) }}
 {{ global.config('bridges', bridge, kowabunga_netplan_config.bridge | default([])) }}
