@@ -14,8 +14,8 @@ kowabunga_kiwi_loglevel: INFO
 # Agent Credentials #
 #####################
 
-kowabunga_kiwi_agent_id: ~
-kowabunga_kiwi_agent_api_key: ~
+kowabunga_kiwi_agent_id: "{{ secret_kowabunga_kiwi_agent_id }}"
+kowabunga_kiwi_agent_api_key: "{{ secret_kowabunga_kiwi_agent_api_key }}"
 
 #####################
 # PowerDNS Settings #
@@ -24,8 +24,8 @@ kowabunga_kiwi_agent_api_key: ~
 kowabunga_kiwi_powerdns_as_host: "127.0.0.1"
 kowabunga_kiwi_powerdns_as_port: 54
 kowabunga_kiwi_powerdns_as_api_port: 9000
-kowabunga_kiwi_powerdns_as_api_key: ~
+kowabunga_kiwi_powerdns_as_api_key: "{{ secret_kowabunga_kiwi_powerdns_as_api_key }}"
 
 kowabunga_kiwi_powerdns_recursor_api_port: 9001
-kowabunga_kiwi_powerdns_recursor_api_key: ~
+kowabunga_kiwi_powerdns_recursor_api_key: "{{ secret_kowabunga_kiwi_powerdns_recursor_api_key }}"
 kowabunga_kiwi_powerdns_recursor_cluster_group_name: "kiwi"
