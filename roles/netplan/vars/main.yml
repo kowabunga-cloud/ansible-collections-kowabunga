@@ -1,0 +1,21 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+netplan_cloud_init_default_config_file: /etc/netplan/50-cloud-init.yaml
+netplan_cloud_init_disable_config_file: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+
+netplan_address_route_metric_default: 100
+netplan_address_nameserver_search_default: []
+netplan_address_nameserver_dns_default:
+  - 9.9.9.9
+  - 149.112.112.112
+
+netplan_bond_mode_default: 802.3ad
+netplan_bond_lacp_rate_default: fast
+netplan_bond_mii_monitor_interval_default: 100
+netplan_bond_transmit_hash_policy_default: layer2+3
+
+netplan_bridge_stp_default: true
+netplan_bridge_forward_delay_default: 4

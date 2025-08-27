@@ -1,0 +1,380 @@
+argument_specs:
+
+  main:
+    short_description: Install and configures host network through Netplan.
+    description:
+      - Install and configures host network through Netplan.
+
+    options:
+      kowabunga_netplan_disable_cloud_init:
+        description:
+          - Defines whether Netplan's cloud-init generated configuration should remain.
+          - Kept if unspecified.
+        type: bool
+        default: false
+
+      kowabunga_netplan_apply_enabled:
+        description:
+          - Defines whether Netplan's generated configuration should be applied.
+          - Disabled if unspecified.
+        type: bool
+        default: false
+
+      kowabunga_netplan_config:
+        description:
+          - Network configuration settings for Netplan.
+          - No change unless specified.
+        type: dict
+        default: {}
+        options:
+          ethernet:
+            description:
+              - Defines low-level ethernet network interfaces configuration settings.
+            type: list
+            default: []
+            elements: dict
+            options:
+              name:
+                description:
+                  - Linux interface name.
+                  - "Example: eth0, eno1 ..."
+                type: str
+                required: true
+              mac:
+                description:
+                  - Interface physical MAC address.
+                  - "Example: aa:bb:cc:dd:ee:ff"
+                type: str
+                required: true
+              dhcp:
+                description:
+                  - Defines whether interface should be configured manually (default) or through DCHP.
+                type: bool
+                default: false
+              metric:
+                description:
+                  - Defines interface's gateway route metric priority.
+                  - Routes with lower values are preferred.
+                type: int
+                default: 100
+              ips:
+                description:
+                  - List of IP addresses to be associated to the configured interface.
+                  - None if empty (i.e. unconfigured).
+                type: list
+                elements: str
+                default: []
+              search:
+                description:
+                  - List of search domains to be used.
+                type: list
+                elements: str
+                default: []
+              dns:
+                description:
+                  - List of DNS servers to be used.
+                type: list
+                elements: str
+                default:
+                  - 9.9.9.9
+                  - 149.112.112.112
+              routes:
+                description:
+                  - List of routes to be configured through the specified network interface.
+                type: list
+                elements: dict
+                default: []
+                options:
+                  to:
+                    description:
+                      - Destination network to be reached.
+                      - Formated as CIDR (e.g. 10.0.0.0/8)
+                    type: str
+                    required: true
+                  via:
+                    description:
+                      - Network gateway IP address.
+                    type: str
+                    required: true
+                  metric:
+                    description:
+                      - Defines interface's gateway route metric priority.
+                      - Routes with lower values are preferred.
+                    type: int
+                    default: 100
+          bond:
+            description:
+              - Defines IEEE 802.3ad LACP (Link Aggregation Control Protocol) (i.e. interface bonding/teaming) network interface configuration settings, if any.
+            type: list
+            default: []
+            elements: dict
+            options:
+              name:
+                description:
+                  - Linux bonding interface name.
+                  - "Example: bond0"
+                type: str
+                required: true
+              interfaces:
+                description:
+                  - List of network interface names to be bonded together.
+                type: list
+                elements: str
+                required: true
+              mac:
+                description:
+                  - Bonding interface physical MAC address.
+                  - "Example: aa:bb:cc:dd:ee:ff"
+                type: str
+                required: true
+              mode:
+                description:
+                  - Bonding mode for the interface.
+                type: str
+                default: 802.3ad
+                choices: ['balance-rr', 'active-backup', 'balance-xor', 'broadcast', '802.3ad', 'balance-tlb', 'balance-alb']
+              lacp_rate:
+                description:
+                  - Set the rate at which LACPDUs are transmitted.
+                  - This is only useful in 802.3ad mode.
+                type: str
+                default: fast
+                choices: ['fast', 'slow']
+              mii_interval:
+                description:
+                  - Specifies the interval for MII monitoring (verifying if an interface of the bond has carrier).
+                  - A value of 0 disables MII monitoring.
+                  - The value is interpreted as milliseconds.
+                type: int
+                default: 100
+              policy:
+                description:
+                  - Specifies the transmit hash policy for the selection of ports.
+                  - This is only useful in 'balance-xor', '802.3ad' and 'balance-tlb' modes.
+                type: str
+                default: layer2+3
+                choices: ['layer2', 'layer3+4', 'layer2+3', 'encap2+3', 'encap3+4']
+              dhcp:
+                description:
+                  - Defines whether interface should be configured manually (default) or through DCHP.
+                type: bool
+                default: false
+              metric:
+                description:
+                  - Defines interface's gateway route metric priority.
+                  - Routes with lower values are preferred.
+                type: int
+                default: 100
+              ips:
+                description:
+                  - List of IP addresses to be associated to the configured interface.
+                  - None if empty (i.e. unconfigured).
+                type: list
+                elements: str
+                default: []
+              search:
+                description:
+                  - List of search domains to be used.
+                type: list
+                elements: str
+                default: []
+              dns:
+                description:
+                  - List of DNS servers to be used.
+                type: list
+                elements: str
+                default:
+                  - 9.9.9.9
+                  - 149.112.112.112
+              routes:
+                description:
+                  - List of routes to be configured through the specified network interface.
+                type: list
+                elements: dict
+                default: []
+                options:
+                  to:
+                    description:
+                      - Destination network to be reached.
+                      - Formated as CIDR (e.g. 10.0.0.0/8)
+                    type: str
+                    required: true
+                  via:
+                    description:
+                      - Network gateway IP address.
+                    type: str
+                    required: true
+                  metric:
+                    description:
+                      - Defines interface's gateway route metric priority.
+                      - Routes with lower values are preferred.
+                    type: int
+                    default: 100
+          vlan:
+            description:
+              - Defines IEEE 802.1q (i.e. VLAN) network interface configuration settings, if any.
+            type: list
+            default: []
+            elements: dict
+            options:
+              name:
+                description:
+                  - Linux VLAN interface name.
+                  - "Example: vlan100"
+                type: str
+                required: true
+              id:
+                description:
+                  - Associated VLAN ID.
+                  - Ranges from 0 to 4094.
+                type: int
+                required: true
+              link:
+                description:
+                  - Name fo the underlying network interface to add VLAN on top of.
+                  - "Example: eth0"
+                type: str
+                required: true
+              dhcp:
+                description:
+                  - Defines whether interface should be configured manually (default) or through DCHP.
+                type: bool
+                default: false
+              metric:
+                description:
+                  - Defines interface's gateway route metric priority.
+                  - Routes with lower values are preferred.
+                type: int
+                default: 100
+              ips:
+                description:
+                  - List of IP addresses to be associated to the configured interface.
+                  - None if empty (i.e. unconfigured).
+                type: list
+                elements: str
+                default: []
+              search:
+                description:
+                  - List of search domains to be used.
+                type: list
+                elements: str
+                default: []
+              dns:
+                description:
+                  - List of DNS servers to be used.
+                type: list
+                elements: str
+                default:
+                  - 9.9.9.9
+                  - 149.112.112.112
+              routes:
+                description:
+                  - List of routes to be configured through the specified network interface.
+                type: list
+                elements: dict
+                default: []
+                options:
+                  to:
+                    description:
+                      - Destination network to be reached.
+                      - Formated as CIDR (e.g. 10.0.0.0/8)
+                    type: str
+                    required: true
+                  via:
+                    description:
+                      - Network gateway IP address.
+                    type: str
+                    required: true
+                  metric:
+                    description:
+                      - Defines interface's gateway route metric priority.
+                      - Routes with lower values are preferred.
+                    type: int
+                    default: 100
+          bridge:
+            description:
+              - Defines IEEE 802.1d network interface bridging settings, if any.
+            type: list
+            default: []
+            elements: dict
+            options:
+              name:
+                description:
+                  - Linux bridged interface name.
+                  - "Example: br0"
+                type: str
+                required: true
+              interfaces:
+                description:
+                  - List of network interface names o be part of the bridged interface..
+                type: list
+                elements: str
+                required: true
+              stp:
+                description:
+                  - Define whether the bridge should use Spanning Tree Protocol.
+                  - Enabled if unspecified.
+                type: bool
+                default: true
+              delay:
+                description:
+                  - Specify the period of time the bridge will remain in Listening and Learning states before getting to the Forwarding state.
+                  - The value is interpreted as seconds.
+                type: int
+                default: 4
+              dhcp:
+                description:
+                  - Defines whether interface should be configured manually (default) or through DCHP.
+                type: bool
+                default: false
+              metric:
+                description:
+                  - Defines interface's gateway route metric priority.
+                  - Routes with lower values are preferred.
+                type: int
+                default: 100
+              ips:
+                description:
+                  - List of IP addresses to be associated to the configured interface.
+                  - None if empty (i.e. unconfigured).
+                type: list
+                elements: str
+                default: []
+              search:
+                description:
+                  - List of search domains to be used.
+                type: list
+                elements: str
+                default: []
+              dns:
+                description:
+                  - List of DNS servers to be used.
+                type: list
+                elements: str
+                default:
+                  - 9.9.9.9
+                  - 149.112.112.112
+              routes:
+                description:
+                  - List of routes to be configured through the specified network interface.
+                type: list
+                elements: dict
+                default: []
+                options:
+                  to:
+                    description:
+                      - Destination network to be reached.
+                      - Formated as CIDR (e.g. 10.0.0.0/8)
+                    type: str
+                    required: true
+                  via:
+                    description:
+                      - Network gateway IP address.
+                    type: str
+                    required: true
+                  metric:
+                    description:
+                      - Defines interface's gateway route metric priority.
+                      - Routes with lower values are preferred.
+                    type: int
+                    default: 100

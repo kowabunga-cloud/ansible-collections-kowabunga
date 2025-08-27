@@ -1,0 +1,8 @@
+{% macro config(name, module, cfg) %}
+{% if cfg | length > 0 %}
+  {{ name }}:
+{% for c in cfg %}
+    {{ module.config(c) }}
+{%- endfor -%}
+{% endif %}
+{% endmacro %}

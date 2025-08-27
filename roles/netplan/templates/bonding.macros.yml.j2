@@ -1,0 +1,16 @@
+{% import "address.macros.yml.j2" as address with context -%}
+
+{% macro config(b) -%}
+    {{ b.name }}:
+      interfaces:
+{% for i in b.interfaces %}
+        - {{ i }}
+{% endfor %}
+      macaddress: {{ b.mac }}
+      parameters:
+        mode: {{ b.mode | default(netplan_bond_mode_default) }}
+        lacp-rate: {{ b.lacp_rate | default(netplan_bond_lacp_rate_default) }}
+        mii-monitor-interval: {{ b.mii_interval | default(netplan_bond_mii_monitor_interval_default) }}
+        transmit-hash-policy: {{ b.policy | default(netplan_bond_transmit_hash_policy_default) }}
+      {{ address.config(b) }}
+{%- endmacro %}

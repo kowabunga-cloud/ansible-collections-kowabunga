@@ -1,0 +1,9 @@
+{% import "address.macros.yml.j2" as address with context -%}
+
+{% macro config(e) -%}
+    {{ e.name }}:
+      set-name: {{ e.name }}
+      match:
+        macaddress: {{ e.mac }}
+      {{ address.config(e) }}
+{%- endmacro %}

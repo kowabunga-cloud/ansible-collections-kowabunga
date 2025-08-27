@@ -1,0 +1,13 @@
+{% import "address.macros.yml.j2" as address with context -%}
+
+{% macro config(b) -%}
+    {{ b.name }}:
+      interfaces:
+{% for i in b.interfaces %}
+        - {{ i }}
+{% endfor %}
+      parameters:
+        stp: {{ b.stp | default(netplan_bridge_stp_default) | bool | lower }}
+        forward-delay: {{ b.delay | default(netplan_bridge_forward_delay_default) }}
+      {{ address.config(b) }}
+{%- endmacro %}

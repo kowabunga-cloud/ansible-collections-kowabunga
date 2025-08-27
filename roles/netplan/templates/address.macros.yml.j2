@@ -1,0 +1,51 @@
+{% macro dhcp(enabled, metric) -%}
+      dhcp4: {{ enabled | lower }}
+{% if enabled %}
+      dhcp4-overrides:
+        route-metric: {{ metric }}
+{%- endif %}
+{% endmacro %}
+
+{% macro static(e) -%}
+{% if e.ips | default([]) | length > 0 %}
+      addresses:
+{% for a in e.ips %}
+        - {{ a }}
+{% endfor %}
+{%- set search = e.search | default(netplan_address_nameserver_search_default) -%}
+{%- set dns = e.dns | default(netplan_address_nameserver_dns_default) -%}
+{% if (dns | length > 0) or (search | length > 0) %}
+      nameservers:
+{% if search | length > 0 %}
+        search:
+{% for s in e.search | default(netplan_address_nameserver_search_default) %}
+          - {{ s }}
+{% endfor %}
+{% endif %}
+{% if dns | length > 0 %}
+        addresses:
+{% for d in e.dns | default(netplan_address_nameserver_dns_default) %}
+          - {{ d }}
+{% endfor %}
+{% endif %}
+{%- endif %}
+{% if (e.routes | default([]) | length > 0) %}
+      routes:
+{% for r in e.routes %}
+        - to: {{ r.to }}
+          via: {{ r.via }}
+          metric: {{ r.metric | default(netplan_address_route_metric_default) }}
+{% endfor %}
+{%- endif %}
+{%- endif %}
+{%- endmacro %}
+
+{% macro config(a) -%}
+      link-local: []
+      accept-ra: false
+      {% set dhcp_enabled = a.dhcp | default(false) | bool -%}
+      {{ dhcp(dhcp_enabled, a.metric | default(netplan_address_route_metric_default)) }}
+{% if not dhcp_enabled -%}
+      {{ static(a) }}
+{%- endif %}
+{% endmacro %}

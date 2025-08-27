@@ -1,0 +1,8 @@
+{% import "address.macros.yml.j2" as address with context -%}
+
+{% macro config(v) -%}
+    {{ v.name }}:
+      id: {{ v.id }}
+      link: {{ v.link }}
+      {{ address.config(v) }}
+{%- endmacro %}

@@ -1,0 +1,30 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Remove cloud-init netplan configuration
+  ansible.builtin.file:
+    path: "{{ netplan_cloud_init_default_config_file }}"
+    state: absent
+  when: kowabunga_netplan_disable_cloud_init
+
+- name: Disable cloud-init netplan configuration for good
+  ansible.builtin.copy:
+    src: cloud-init.cfg
+    dest: "{{ netplan_cloud_init_disable_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: kowabunga_netplan_disable_cloud_init
+
+- name: Generate netplan custom configuration
+  ansible.builtin.template:
+    src: netplan.yml.j2
+    dest: /etc/netplan/99-kowabunga.yaml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Generate netplan
+    - Apply netplan
