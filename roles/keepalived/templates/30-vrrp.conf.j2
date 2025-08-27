@@ -29,7 +29,7 @@ vrrp_script chk_{{ item.name }} {
 {% macro vrrp_instance(cfg) -%}
 
 
-vrrp_instance VI_{{ item.name }} {
+vrrp_instance VI_{{ item.name }}_{{ cfg.vrid }} {
   interface {{ cfg.control_interface | default(lan_dev) }}
 
 {% if keepalived_use_unicast %}
