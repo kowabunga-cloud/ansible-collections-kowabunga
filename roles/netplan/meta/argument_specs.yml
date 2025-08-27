@@ -90,6 +90,7 @@ argument_specs:
                     description:
                       - Destination network to be reached.
                       - Formated as CIDR (e.g. 10.0.0.0/8)
+                      - Accepts "default" for native route.
                     type: str
                     required: true
                   via:
@@ -199,6 +200,7 @@ argument_specs:
                     description:
                       - Destination network to be reached.
                       - Formated as CIDR (e.g. 10.0.0.0/8)
+                      - Accepts "default" for native route.
                     type: str
                     required: true
                   via:
@@ -281,6 +283,7 @@ argument_specs:
                     description:
                       - Destination network to be reached.
                       - Formated as CIDR (e.g. 10.0.0.0/8)
+                      - Accepts "default" for native route.
                     type: str
                     required: true
                   via:
@@ -369,6 +372,7 @@ argument_specs:
                     description:
                       - Destination network to be reached.
                       - Formated as CIDR (e.g. 10.0.0.0/8)
+                      - Accepts "default" for native route.
                     type: str
                     required: true
                   via:
