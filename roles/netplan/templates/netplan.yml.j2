@@ -18,5 +18,5 @@ network:
 
 {{ global.config('ethernets', eth, kowabunag_netplan_config.ethernet | default([])) }}
 {{ global.config('bonds', bond, kowabunga_netplan_config.bond | default([])) }}
-{{ global.config('vlans', vlan, kowabunga_netplan_config.vlan | default([]) }}
+{{ global.config('vlans', vlan, kowabunga_netplan_config.vlan | default([])) }}
 {{ global.config('bridges', bridge, kowabunga_netplan_config.bridge | default([])) }}
