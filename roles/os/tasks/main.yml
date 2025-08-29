@@ -30,13 +30,15 @@
   tags: ntp
 
 - ansible.builtin.import_role:
+    name: kowabunga.cloud.keepalived
+  tags:
+    - failover
+    - firewall
+
+- ansible.builtin.import_role:
     name: kowabunga.cloud.firewall
   when: kowabunga_firewall_enabled
   tags: firewall
-
-- ansible.builtin.import_role:
-    name: kowabunga.cloud.keepalived
-  tags: failover
 
 - ansible.builtin.import_role:
     name: kowabunga.cloud.hostctl
