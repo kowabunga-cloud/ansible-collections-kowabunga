@@ -3,6 +3,16 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
+kowabunga_os_kernel_modules_enabled:
+  - nf_log_ipv4
+
+kowabunga_os_kernel_modules_disabled:
+  - iptable_nat
+
 kowabunga_os_sysctl_settings_extra:
   - name: net.ipv4.ip_forward
     value: 1
+  - name: net.netfilter.nf_log.2
+    value: nf_log_ipv4
+
+kowabunga_firewall_mode: nftables
