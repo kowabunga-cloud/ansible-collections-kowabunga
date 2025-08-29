@@ -3,6 +3,27 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
+- name: Insert kernel modules
+  ansible.builtin.modprobe:
+    name: "{{ item }}"
+    state: present
+    persistent: present
+  loop: "{{ kowabunga_os_kernel_modules_enabled }}"
+
+- name: Remove blaklisted kernel modules
+  ansible.builtin.modprobe:
+    name: "{{ item }}"
+    state: absent
+  ignore_errors: true
+  loop: "{{ kowabunga_os_kernel_modules_disabled }}"
+
+- name: Blacklist kernel modules
+  ansible.module.kernel_blacklist:
+    name: "{{ item }}"
+    state: present
+  ignore_errors: true
+  loop: "{{ kowabunga_os_kernel_modules_disabled }}"
+
 - name: Configure sysctl values
   ansible.builtin.sysctl:
     name: "{{ item.name }}"

@@ -6,6 +6,20 @@ argument_specs:
       - Install and configure Kowabunga core operating system settings.
 
     options:
+      kowabunga_os_kernel_modules_enabled:
+        description:
+          - List of custom Linux kernel drivers/modules to be loaded.
+          - Persistent across reboots.
+        type: list
+        elements: str
+        default: []
+      kowabunga_os_kernel_modules_disabled:
+        description:
+          - List of custom Linux kernel drivers/modules to prvent being loaded.
+          - Persistent across reboots.
+        type: list
+        elements: str
+        default: []
       kowabunga_os_sysctl_settings_extra:
         description:
           - Defines custom sysctl tuning settings
