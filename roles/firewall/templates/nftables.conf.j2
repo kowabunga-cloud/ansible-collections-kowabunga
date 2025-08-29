@@ -1,0 +1,35 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+flush ruleset
+
+include "{{ firewall_nftables_config_dir }}/defines.nft"
+
+table nat {
+  chain prerouting {
+    type nat hook prerouting priority 0;
+{% for r in kowabunga_firewall_dnat_rules %}
+{% if r.name is defined %}
+    # DNAT rule: {{ r.name }}
+{% endif %}
+    iif {{ r.iface }} {{ r.protocol }} dport { {{ r.ports | join(',') }} } dnat to {{ r.dest }}
+{% endfor %}
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority 0;
+    oifname $nic_wan masquerade
+  }
+}
+
+table inet firewall {
+  chain global {
+    ct state established,related accept
+  }
+
+  chain accept_icmp {
+    ip protocol icmp accept
+    ip6 nexthdr icmpv6 accept
+  }
+
+  include "{{ firewall_nftables_config_dir }}/forward-rules.nft"
+  include "{{ firewall_nftables_config_dir }}/local-rules.nft"
+}

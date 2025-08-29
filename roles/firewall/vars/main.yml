@@ -18,3 +18,5 @@ firewall_mail_ports:
    - 465   # SMTPS
    - 587   # Submission (eSMTP)
    - 993   # IMAPS
+
+firewall_nftables_config_dir: /etc/nftables

@@ -1,0 +1,56 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install nftables
+  ansible.builtin.apt:
+    name: nftables
+    state: latest
+
+- name: Ensure nftables startup waits for keepalived
+  ansible.builtin.ini_file:
+    path: /usr/lib/systemd/system/nftables.service
+    section: Unit
+    option: After
+    value: keepalived.service
+    mode: 0644
+    owner: root
+  when: kowabunga_network_failover_enabled
+
+- name: Ensure nftables is started and enabled
+  ansible.builtin.service:
+    name: nftables
+    state: started
+    enabled: true
+
+- name: Create rules folder
+  ansible.builtin.file:
+    dest: "{{ firewall_nftables_config_dir }}"
+    mode: 0755
+    state: directory
+
+- name: Template main firewall script
+  ansible.builtin.template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+    mode: 0644
+  notify: Reload nftables firewall
+
+- name: Templates firewall rules
+  ansible.builtin.template:
+    src: "{{ item }}.nft.j2"
+    dest: "{{ firewall_nftables_config_dir }}/{{ item }}.nft"
+    mode: 0644
+  loop:
+    - defines
+    - local-rules
+    - forward-rules
+  notify: Reload nftables firewall
+
+- name: Copy bogons filter file
+  ansible.builtin.copy:
+    src: bogons.nft
+    dest: "{{ firewall_nftables_config_dir }}/bogons.nft"
+    mode: 0644
+  notify: Reload nftables firewall

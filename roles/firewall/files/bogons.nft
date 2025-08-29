@@ -1,0 +1,6 @@
+# drop bogon
+ip saddr 10.0.0.0/8 drop
+ip saddr 127.0.0.0/8 drop
+ip saddr 172.16.0.0/12 drop
+ip saddr 192.168.0.0/16 drop
+ip6 saddr fc00::/7 drop

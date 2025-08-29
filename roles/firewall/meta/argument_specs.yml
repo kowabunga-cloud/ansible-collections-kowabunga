@@ -1,9 +1,9 @@
 argument_specs:
 
   main:
-    short_description: Install, configure, and start iptables-based firewall.
+    short_description: Install, configure, and start iptables or nftables based firewall.
     description:
-      - Install, configure, and start iptables-based firewall.
+      - Install, configure, and start iptables or nftables based firewall.
 
     options:
       kowabunga_firewall_enabled:
@@ -14,6 +14,13 @@ argument_specs:
           - Private network interface remains unfiltered.
         type: bool
         default: false
+
+      kowabunga_firewall_mode:
+        description:
+          - Defines which firewalling stack is to be configured
+        type: str
+        default: iptables
+        choices: ['iptables', 'nftables']
 
       kowabunga_firewall_open_tcp_ports:
         description:
@@ -27,4 +34,131 @@ argument_specs:
           - List of UDP ports to be explictly opened on network firewall.
         type: list
         elements: int
+        default: []
+
+      kowabunga_firewall_dnat_rules:
+        description:
+          - List of DNAT rules to be applied.
+          - Only relevant when nftables firewall mode is enabled.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - User-friendly rule name, description or comment.
+            type: str
+          iface:
+            description:
+              - Name of the network interface.
+              - Usually the one holding the public IP address.
+            type: str
+            required: true
+          dest:
+            description:
+              - Destination IP address to NAT to.
+            type: str
+            required: true
+          protocol:
+            description:
+              - Protocol to accept
+            required: true
+            choices: ['tcp', 'udp']
+          ports:
+            description:
+              - List of ports to NAT to (e.g. 80, 443 ...)
+            type: list
+            elements: str
+            required: true
+
+      kowabunga_firewall_forward_interfaces:
+        description:
+          - List of network interfaces that shall be added as accept all in LAN/VLAN interfaces.
+          - Used for inter-VLANs communication.
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_firewall_lan_extra_nft_rules:
+        description:
+          - List of extra LAN firewall rules to be applied.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - User friendly rule name, description or comment.
+            type: str
+          from:
+            description:
+              - Source IP address, CIDR formatted.
+            type: str
+            required: true
+          to:
+            description:
+              - Destination IP address, CIDR formatted.
+            type: str
+            required: true
+          protocol:
+            description:
+              - Name of network protocol to be used.
+              - "Example: udp, tcp, other custom ones ..."
+            type: str
+          dport:
+            description:
+              - Destination port.
+              - All if unspecified.
+            type: str
+          action:
+            description:
+              - Action to be performed.
+            type: str
+            choices: ['accept', 'drop', 'reject', 'log']
+            required: true
+
+      kowabunga_firewall_wan_extra_nft_rules:
+        description:
+          - List of extra WAN firewall rules to be applied.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - User friendly rule name, description or comment.
+            type: str
+          from:
+            description:
+              - Source IP address, CIDR formatted.
+            type: str
+            required: true
+          to:
+            description:
+              - Destination IP address, CIDR formatted.
+            type: str
+            required: true
+          protocol:
+            description:
+              - Name of network protocol to be used.
+              - "Example: udp, tcp, other custom ones ..."
+            type: str
+          dport:
+            description:
+              - Destination port.
+              - All if unspecified.
+            type: str
+          action:
+            description:
+              - Action to be performed.
+            type: str
+            choices: ['accept', 'drop', 'reject', 'log']
+            required: true
+
+      kowabunga_firewall_trusted_public_ips:
+        description:
+          - List of remote public IP addresses to be trusted, accepting SSH traffic from
+          - CIDR formatted.
+        type: list
+        elements: str
         default: []

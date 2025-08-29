@@ -6,7 +6,7 @@
 dependencies: []
 galaxy_info:
   author: The Kowabunga Project
-  description: Install and configures iptables-based firewall.
+  description: Install and configures iptables or nftables based firewall.
   license: Apache-2.0
   min_ansible_version: "2.9"
   platforms:

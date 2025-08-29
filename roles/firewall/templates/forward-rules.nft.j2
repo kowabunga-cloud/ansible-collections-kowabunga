@@ -1,0 +1,84 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+# WAN interface
+chain wan {
+  include "{{ firewall_nftables_config_dir }}/bogons.nft"
+{% for r in kowabunga_firewall_wan_extra_nft_rules %}
+{% if r.name is defined %}
+  # {{ rule.name }}
+{% endif %}
+  ip saddr {{ r.from }} ip daddr {{ r.to }}{% if r.protocol is defined %} {{ r.protocol }}{% endif %}{% if r.dport is defined %} dport {{ r.dport }}{% endif %} {{ r.action }}
+{% endfor %}
+}
+
+# LAN interface
+chain lan {
+  oifname $nic_wan accept
+{% for iface in kowabunga_firewall_forward_interfaces %}
+  oifname {{ iface }} accept
+{% endfor %}
+{% for r in kowabunga_firewall_lan_extra_nft_rules %}
+{% if r.name is defined %}
+  # Forward rule: {{ rr.name }}
+{% endif %}
+  ip saddr {{ r.from }} ip daddr {{ r.to }}{% if r.protocol is defined %} {{ r.protocol }}{% endif %}{% if r.dport is defined %} dport {{ r.dport }}{% endif %} {{ r.action }}
+{% endfor %}
+}
+
+{% if kowabunga_netplan_config.vlan != [] %}
+# VLAN interfaces (LAN only)
+{% for vlan in kowabunga_netplan_config.vlan %}
+# vlan {{ vlan.id }} ({{ vlan.name | default ("unset name") }}) interface
+chain vlan{{ vlan.id }} {
+  oifname $nic_wan accept
+{% for iface in kowabunga_firewall_forward_interfaces %}
+  oifname {{ iface }} accept
+{% endfor %}
+}
+{% endfor %}
+{% endif %}
+
+# VRRP interfaces
+{% if kowabunga_network_failover_enabled %}
+{% for tracker in kowabunga_network_failover_settings.trackers %}
+{% for cfg in tracker.configs %}
+# vrrp{{ cfg.vrid }} interface
+chain vrrp{{ cfg.vrid }} {
+  oifname $nic_wan accept
+{% for iface in kowabunga_firewall_forward_interfaces %}
+  oifname {{ iface }} accept
+{% endfor %}
+}
+
+{% endfor %}
+{% endfor %}
+
+# VRRP configuration
+chain vrrp {
+  oifname $nic_lan accept
+  oifname $nic_wan accept
+}
+
+{% endif %}
+
+chain forward {
+  type filter hook forward priority 0; policy drop;
+  jump global
+  iifname vmap {
+    $nic_lan: jump lan,
+{% if (not NET_WAN_IS_NAT and wan_dev != lan_dev) %}
+    $nic_wan : jump wan,
+{% endif %}
+{% for iface in ansible_local.auto.network.interfaces %}
+    $vlan_{{ vlan.id }}: jump lan,
+{% endfor %}
+
+{% if kowabunga_network_failover_enabled %}
+{% for tracker in kowabunga_network_failover_settings.trackers %}
+{% for cfg in tracker.configs %}
+    $nic_vrrp_{{ cfg.vrid }} : jump {% if cfg.vip | ansible.utils.ipaddr('public') %}wan{% else %}lan{% endif %},
+{% endfor %}
+{% endfor %}
+{% endif %}
+  }
+}

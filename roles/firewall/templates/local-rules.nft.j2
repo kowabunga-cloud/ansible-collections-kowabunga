@@ -1,0 +1,58 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+chain input {
+  type filter hook input priority 0 ; policy drop;
+  jump global
+  jump accept_icmp
+
+  # allow connection on lo interface
+  iifname $nic_lo accept
+
+  # Allow SSH from WAN trusted IPs if any
+{% for src in kowabunga_firewall_trusted_public_ips  %}
+  iifname $nic_wan ip saddr {{ src }} tcp dport ssh accept
+{% endfor %}
+
+{% if kowabunga_network_failover_enabled %}
+  ###################################################
+  # VRRP interfaces : allow VRRP protocol           #
+  ###################################################
+{% for tracker in kowabunga_network_failover_settings.trackers %}
+{% for cfg in tracker.configs %}
+  iifname {{ cfg.interface }} ip protocol vrrp accept
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if kowabunga_netplan_config.vlan != [] %}
+  ###################################################
+  # VLAN interfaces                                 #
+  ###################################################
+{% for vlan in kowabunga_netplan_config.vlan %}
+  iifname {{ '$vlan_' + vlan.id }} accept
+{% endfor %}
+{% endif %}
+
+{% if kowabunga_network_failover_enabled %}
+  ###################################################
+  # LAN trust : VRRP lan interfaces                 #
+  ###################################################
+{% for tracker in kowabunga_network_failover_settings.trackers %}
+{% for cfg in tracker.configs %}
+{% if cfg.vip | ansible.utils.ipaddr('private') %}
+  iifname $nic_vrrp_{{ cfg.vrid }} accept
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+  ###################################################
+  # LAN                                             #
+  ###################################################
+  iifname $nic_lan accept
+}
+
+chain output {
+  type filter hook output priority 0 ; policy accept;
+  jump global
+}

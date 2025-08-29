@@ -4,4 +4,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 - import_tasks: iptables.yml
-  when: wan_access
+  when:
+    - wan_access
+    - kowabunga_firewall_mode == 'iptables'
+
+- import_tasks: nftables.yml
+  when:
+    - wan_access
+    - kowabunga_firewall_mode == 'nftables'

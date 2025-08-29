@@ -1,0 +1,29 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+# Loopback interface
+define nic_lo = lo
+
+# WAN interface
+define nic_wan = "{{ wan_dev }}"
+define nic_wan_ip = {{ wan_ip }}
+
+# LAN interface
+define nic_lan = "{{ lan_dev }}"
+define nic_lan_ip = {{ lan_ip }}
+
+{% if kowabunga_netplan_config.vlan != [] %}
+# VLAN interfaces (LAN only)
+{% for vlan in kowabunga_netplan_config.vlan %}
+define vlan_{{ vlan.id }}={{ vlan.name }}
+{% endfor %}
+{% endif %}
+
+# VRRP interfaces
+{% if kowabunga_network_failover_enabled %}
+{% for tracker in kowabunga_network_failover_settings.trackers %}
+{% for cfg in tracker.configs }
+define nic_vrrp_{{ cfg.vrid }} = "vrrp{{ cfg.vrid }}"
+define nic_vrrp_{{ cfg.vrid }}_ip = {{ cfg.vip | ipaddr("address") }}
+{% endfor %}
+{% endfor %}
+{% endif %}
