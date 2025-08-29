@@ -5,3 +5,4 @@
 
 kowabunga_os_sysctl_settings_extra:
   - name: net.ipv4.ip_forward
+    value: 1
