@@ -10,7 +10,7 @@ table nat {
 {% if r.name is defined %}
     # DNAT rule: {{ r.name }}
 {% endif %}
-    iif {{ r.iface }} {{ r.protocol }} dport { {{ r.ports | join(',') }} } dnat to {{ r.dest }}
+    iif {{ r.iface }} {{ r.protocol }} dport { {{ r.ports | string | join(',') }} } dnat to {{ r.dest }}
 {% endfor %}
   }
 

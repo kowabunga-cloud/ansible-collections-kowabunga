@@ -21,7 +21,7 @@ define vlan_{{ vlan.id }}={{ vlan.name }}
 # VRRP interfaces
 {% if kowabunga_network_failover_enabled %}
 {% for tracker in kowabunga_network_failover_settings.trackers %}
-{% for cfg in tracker.configs }
+{% for cfg in tracker.configs %}
 define nic_vrrp_{{ cfg.vrid }} = "vrrp{{ cfg.vrid }}"
 define nic_vrrp_{{ cfg.vrid }}_ip = {{ cfg.vip | ipaddr("address") }}
 {% endfor %}

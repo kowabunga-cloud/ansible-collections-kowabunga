@@ -25,7 +25,7 @@ chain lan {
 {% endfor %}
 }
 
-{% if kowabunga_netplan_config.vlan != [] %}
+{% if kowabunga_netplan_config.vlan is defined %}
 # VLAN interfaces (LAN only)
 {% for vlan in kowabunga_netplan_config.vlan %}
 # vlan {{ vlan.id }} ({{ vlan.name | default ("unset name") }}) interface
@@ -69,10 +69,11 @@ chain forward {
 {% if (not NET_WAN_IS_NAT and wan_dev != lan_dev) %}
     $nic_wan : jump wan,
 {% endif %}
-{% for iface in ansible_local.auto.network.interfaces %}
+{% if kowabunga_netplan_config.vlan is defined %}
+{% for vlan in kowabunga_netplan_config.vlan %}
     $vlan_{{ vlan.id }}: jump lan,
 {% endfor %}
-
+{% endif %}
 {% if kowabunga_network_failover_enabled %}
 {% for tracker in kowabunga_network_failover_settings.trackers %}
 {% for cfg in tracker.configs %}
