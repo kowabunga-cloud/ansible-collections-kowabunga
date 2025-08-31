@@ -24,33 +24,46 @@
     state: started
     enabled: true
 
-- name: Create rules folder
-  ansible.builtin.file:
-    dest: "{{ firewall_nftables_config_dir }}"
-    mode: 0755
-    state: directory
-
-- name: Template main firewall script
-  ansible.builtin.template:
-    src: nftables.conf.j2
+- name: Copy firewall pass-through configuration
+  ansible.builtin.copy:
+    src: nftables.conf
     dest: /etc/nftables.conf
     mode: 0644
+  when: kowabunga_firewall_passthrough_enabled
   notify: Reload nftables firewall
 
-- name: Templates firewall rules
-  ansible.builtin.template:
-    src: "{{ item }}.nft.j2"
-    dest: "{{ firewall_nftables_config_dir }}/{{ item }}.nft"
-    mode: 0644
-  loop:
-    - defines
-    - local-rules
-    - forward-rules
-  notify: Reload nftables firewall
+- name: Template firewall configuration script
+  when:
+    - wan_access
+    - not kowabunga_firewall_passthrough_enabled
+  block:
+    - name: Create rules folder
+      ansible.builtin.file:
+        dest: "{{ firewall_nftables_config_dir }}"
+        mode: 0755
+        state: directory
 
-- name: Copy bogons filter file
-  ansible.builtin.copy:
-    src: bogons.nft
-    dest: "{{ firewall_nftables_config_dir }}/bogons.nft"
-    mode: 0644
-  notify: Reload nftables firewall
+    - name: Template main firewall script
+      ansible.builtin.template:
+        src: nftables.conf.j2
+        dest: /etc/nftables.conf.new
+        mode: 0644
+        notify: Reload nftables firewall
+
+    - name: Templates firewall rules
+      ansible.builtin.template:
+        src: "{{ item }}.nft.j2"
+        dest: "{{ firewall_nftables_config_dir }}/{{ item }}.nft"
+        mode: 0644
+      loop:
+        - defines
+        - local-rules
+        - forward-rules
+      notify: Reload nftables firewall
+
+    - name: Copy bogons filter file
+      ansible.builtin.copy:
+        src: bogons.nft
+        dest: "{{ firewall_nftables_config_dir }}/bogons.nft"
+        mode: 0644
+      notify: Reload nftables firewall

@@ -15,6 +15,15 @@ argument_specs:
         type: bool
         default: false
 
+      kowabunga_firewall_passthrough_enabled:
+        description:
+          - Turn firewall as a pass-through router.
+          - Source/Destination NAT will be enabled from/to any interface.
+          - Only relevant when nftables firewall mode is enabled.
+          - "Dangerous: recommended not to use on Internet-exposed instances."
+        type: bool
+        default: false
+
       kowabunga_firewall_mode:
         description:
           - Defines which firewalling stack is to be configured

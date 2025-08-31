@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_firewall_enabled: false
+kowabunga_firewall_passthrough_enabled: false
 kowabunga_firewall_mode: iptables
 kowabunga_firewall_open_tcp_ports: []
 kowabunga_firewall_open_udp_ports: []
