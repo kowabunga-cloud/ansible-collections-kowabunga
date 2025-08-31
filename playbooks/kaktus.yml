@@ -7,4 +7,7 @@
 
   roles:
     - name: kowabunga.cloud.os
+    - name: kowabunga.cloud.netplan
+      when: kowabunga_netplan_config != {}
+      tags: netplan
     - name: kowabunga.cloud.kaktus
