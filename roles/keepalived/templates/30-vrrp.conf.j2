@@ -30,7 +30,7 @@ vrrp_script chk_{{ item.name }} {
 
 
 vrrp_instance VI_{{ item.name }}_{{ cfg.vrid }} {
-  interface {{ cfg.control_interface | default(lan_dev) }}
+  interface {{ cfg.control_interface | default(cfg.interface) }}
 
 {% if keepalived_use_unicast %}
   unicast_src_ip {{ lan_ip }}
@@ -53,20 +53,13 @@ vrrp_instance VI_{{ item.name }}_{{ cfg.vrid }} {
 {% endif %}
 
   virtual_ipaddress {
-{% if cfg.vip is iterable and (cfg.vip is not string and cfg.vip is not mapping) %}
-{% for ip in cfg.vip %}
-    {{ ip }} {% if ip | ansible.utils.ipaddr('public') %}dev {{ cfg.interface | default(wan_eth) }}{% endif %}
-{% endfor %}
-{% else %}
-    {{ cfg.vip }} {% if cfg.vip | ansible.utils.ipaddr('public') %}dev {{ cfg.interface | default(wan_eth) }}{% endif %}
-{% endif %}
-
+    {{ cfg.vip }} dev {{ cfg.interface }}
   }
 
 {% if cfg.routes is defined and cfg.routes != [] %}
   virtual_routes {
 {% for route in cfg.routes %}
-    {{ route.destination }} via {{ route.gateway }} dev {{ cfg.interface | default(lan_dev) }} metric {{ route.metric | default(keepalived_default_vrrp_route_metric) }}
+    {{ route.destination }} via {{ route.gateway }} dev {{ cfg.interface }} metric {{ route.metric | default(keepalived_default_vrrp_route_metric) }}
 {% endfor %}
   }
 {% endif %}

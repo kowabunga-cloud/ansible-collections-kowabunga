@@ -88,9 +88,10 @@ argument_specs:
                     type: str
                   interface:
                     description:
-                      - Network interface to use to attacj virtual IP address.
+                      - Network interface to use to attach virtual IP address.
                       - Defaults to private network one if unspecified.
                     type: str
+                    required: true
                   password:
                     description:
                       - Password to authenticate VRRP messages between peers.
