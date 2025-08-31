@@ -16,3 +16,4 @@ kowabunga_os_sysctl_settings_extra:
     value: nf_log_ipv4
 
 kowabunga_firewall_mode: nftables
+kowabunga_network_failover_enabled: true

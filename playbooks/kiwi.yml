@@ -5,9 +5,6 @@
 
 - hosts: kiwi
 
-  vars:
-    kowabunga_network_failover_enabled: true
-
   roles:
     - name: kowabunga.cloud.os
     - name: kowabunga.cloud.netplan
