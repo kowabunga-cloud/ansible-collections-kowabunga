@@ -24,7 +24,7 @@
     dest: /etc/netplan/99-kowabunga.yaml
     owner: root
     group: root
-    mode: 0644
+    mode: 0600
   notify:
     - Generate netplan
     - Apply netplan
