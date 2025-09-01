@@ -25,3 +25,10 @@
   }
 {% endif %}
 }
+
+{% if kowabunga_metrology_dashboard_enabled | default(false) %}
+{{ kowabunga_metrology_dashboard_public_url | replace('http://', '') | replace('https://', '') }} {
+  encode
+  reverse_proxy {{ grafana_listen_addr | default('127.0.0.1') }}:{{ grafana_http_port | default(3000) }}
+}
+{% endif %}
