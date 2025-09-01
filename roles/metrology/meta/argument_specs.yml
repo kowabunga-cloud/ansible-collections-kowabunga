@@ -18,6 +18,27 @@ argument_specs:
           - Enable logs/metrics dashboard component.
           - Provided by Grafana.
 
+      kowabunga_metrology_dashboard_admin_user:
+        description:
+          - Admin user name for dashboard component.
+        type: str
+        default: kowabunga
+
+      kowabunga_metrology_dashboard_admin_password:
+        description:
+          - Admin password fordashboard component.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Empty if unspecified.
+        type: str
+        default: "{{ secret_kowabunga_metrology_dashboard_admin_password }}"
+
+      kowabunga_metrology_dashboard_public_url:
+        description:
+          - Public FQDN for dashboard component.
+          - Usually something such as "https://grafana.acme.com".
+        type: str
+        default: ''
+
       kowabunga_metrology_agent_metrics_enabled:
         description:
           - Enable metrics collection agent on host.

@@ -8,5 +8,8 @@
     kowabunga_metrology_agent_metrics_enabled or
     kowabunga_metrology_agent_logs_enabled
 
+- ansible.builtin.import_tasks: grafana.yml
+  when: kowabunga_metrology_dashboard_enabled
+
 - ansible.builtin.import_tasks: victoriametrics.yml
   when: kowabunga_metrology_server_metrics_enabled

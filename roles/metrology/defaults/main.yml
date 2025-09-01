@@ -5,6 +5,9 @@
 
 kowabunga_metrology_enabled: false
 kowabunga_metrology_dashboard_enabled: false
+kowabunga_metrology_dashboard_admin_user: kowabunga
+kowabunga_metrology_dashboard_admin_password: "{{ secret_kowabunga_metrology_dashboard_admin_password | default('') }}"
+kowabunga_metrology_dashboard_public_url: '' # something like "https://grafana.acme.com"
 kowabunga_metrology_agent_metrics_enabled: false
 kowabunga_metrology_agent_logs_enabled: false
 kowabunga_metrology_server_metrics_enabled: false

@@ -1,0 +1,35 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Grafana
+  ansible.builtin.apt_role:
+    name: grafana
+    state: latest
+  notify: Restart grafana
+
+- name: Create data directory
+  ansible.builtin.file:
+    dest: "{{ grafana_data_dir }}"
+    owner: "{{ grafana_system_user }}"
+    group: "{{ grafana_system_group }}"
+    mode: 0755
+    state: directory
+
+- name: Template configuration
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: "{{ grafana_config_dir }}/grafana.ini"
+    owner: "{{ grafana_system_user }}"
+    group: "{{ grafana_system_group }}"
+    mode: 0644
+  notify: Restart grafana
+
+- name: Install plugins
+  ansible.builtin.command: grafana-cli plugins install {{ item }}
+  register: grafana_install_plugin_result
+  failed_when: grafana_install_plugin_result.rc != 0
+  changed_when: false
+  loop: "{{ grafana_plugins }}"
+  notify: Restart grafana
