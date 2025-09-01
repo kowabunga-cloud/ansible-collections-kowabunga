@@ -13,6 +13,7 @@ grafana_apt_keyring_local: /etc/apt/keyrings/grafana.asc
 grafana_system_user: "grafana"
 grafana_system_group: "{{ grafana_system_user }}"
 
+grafana_org_name: Kowabunga
 grafana_data_dir: "/var/lib/grafana"
 grafana_config_dir: /etc/grafana
 
@@ -22,6 +23,8 @@ grafana_api_uri: "http://{{ lan_ip }}:{{ grafana_http_port }}/api"
 grafana_datasource_uri: "{{ grafana_api_uri }}/datasources"
 
 grafana_plugins: []
+
+grafana_datasource_prometheus_name: prometheus
 
 ####################
 # Victoria Metrics #

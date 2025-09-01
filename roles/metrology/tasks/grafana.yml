@@ -37,3 +37,57 @@
   changed_when: false
   loop: "{{ grafana_plugins }}"
   notify: Restart grafana
+
+- name: Enable and start systemd services
+  ansible.builtin.systemd_service:
+    name: grafana-server
+    enabled: true
+    daemon_reload: true
+    state: started
+
+- name: Ensure grafana is up
+  ansible.builtin.uri:
+    url: "{{ grafana_api_uri }}/org"
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    force_basic_auth: true
+  register: result
+  until: result.status == 200
+  retries: 20
+  delay: 3
+  changed_when: false
+
+- name: Update main organization's name
+  ansible.builtin.uri:
+    url: "{{ grafana_api_uri }}/orgs/1"
+    method: PUT
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    body_format: json
+    body: { "name": "{{ grafana_org_name }}" }
+    force_basic_auth: true
+    status_code: 200
+  run_once: true
+
+- name: Check if Prometheus datasource is configured in Grafana
+  ansible.builtin.uri:
+    url: "{{ grafana_datasource_uri }}/name/{{ grafana_datasource_prometheus_name }}"
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    force_basic_auth: true
+  register: grafana_ds_prometheus
+  failed_when: grafana_ds_prometheus.status == 401
+  changed_when: false
+
+- name: Enable Prometheus datasource
+  ansible.builtin.uri:
+    url: "{{ grafana_datasource_uri }}"
+    method: POST
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    body_format: json
+    body: "{{ lookup('template', 'prometheus-datasource.json.j2') }}"
+    force_basic_auth: true
+    status_code: 200
+  run_once: true
+  when: grafana_ds_prometheus.status in [403, 404]

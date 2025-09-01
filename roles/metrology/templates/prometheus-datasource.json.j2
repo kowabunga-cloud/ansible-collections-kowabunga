@@ -1,0 +1,10 @@
+{
+  "name": "{{ grafana_datasource_prometheus_name  }}",
+  "type": "prometheus",
+  "url": "http://{{ victoriametrics_listen_addr }}:{{ victoriametrics_port }}",
+  "access": "proxy",
+  "jsonData": {
+    "timeInterval": "60s"
+  },
+  "isDefault": true
+}
