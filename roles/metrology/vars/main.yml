@@ -21,8 +21,7 @@ grafana_http_port: 3000
 grafana_api_uri: "http://{{ lan_ip }}:{{ grafana_http_port }}/api"
 grafana_datasource_uri: "{{ grafana_api_uri }}/datasources"
 
-grafana_plugins:
-  - grafana-piechart-panel
+grafana_plugins: []
 
 ####################
 # Victoria Metrics #
