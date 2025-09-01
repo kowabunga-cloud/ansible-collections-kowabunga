@@ -8,9 +8,12 @@
   roles:
     - name: kowabunga.cloud.os
     - name: kowabunga.cloud.caddy
+      tags: caddy
     - name: kowabunga.cloud.mongodb
       when: kowabunga_mongodb_enabled
+      tags: mongodb
     - name: kowabunga.cloud.metrology
       when: kowabunga_metrology_enabled
       tags: metrology
     - name: kowabunga.cloud.kahuna
+      tags: kahuna
