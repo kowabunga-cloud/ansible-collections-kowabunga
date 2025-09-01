@@ -5,9 +5,3 @@
 
 - ansible.builtin.import_tasks: victoriametrics.yml
   when: kowabunga_metrology_server_metrics_enabled
-
-  kowabunga_metrology_enabled: false
-kowabunga_metrology_agent_metrics_enabled: false
-kowabunga_metrology_agent_logs_enabled: false
-kowabunga_metrology_server_metrics_enabled: false
-kowabunga_metrology_server_logs_enabled: false
