@@ -18,3 +18,7 @@
     owner: root
     group: root
     mode: 0644
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
