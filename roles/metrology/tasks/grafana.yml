@@ -91,3 +91,20 @@
     status_code: 200
   run_once: true
   when: grafana_ds_prometheus.status in [403, 404]
+
+- name: Register additional users
+  ansible.builtin.uri:
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    force_basic_auth: true
+    method: POST
+    url: "{{ grafana_api_uri }}/admin/users"
+    body_format: json
+    status_code: [200, 412] # returns http 412 when user is already created
+    body:
+      name: "{{ item.name }}"
+      email: "{{ item.email }}"
+      login: "{{ item.username }}"
+      password: "{{ item.password }}"
+      # default viewer role is enough
+  loop: "{{ kowabunga_metrology_dashboard_extra_users }}"

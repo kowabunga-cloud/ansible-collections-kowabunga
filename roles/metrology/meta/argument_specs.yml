@@ -26,11 +26,42 @@ argument_specs:
 
       kowabunga_metrology_dashboard_admin_password:
         description:
-          - Admin password fordashboard component.
+          - Admin password for dashboard component.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
           - Empty if unspecified.
         type: str
         default: "{{ secret_kowabunga_metrology_dashboard_admin_password }}"
+
+      kowabunga_metrology_dashboard_extra_users:
+        description:
+          - A list of extra users to be added to dashboard component.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - Friendly user name.
+              - "Example: John Doe."
+            type: str
+            required: true
+          email:
+            description:
+              - User email address.
+            type: str
+            required: true
+          login:
+            description:
+              - User short name (a.k.a. login id).
+              - "Example: 'jdoe'."
+            type: str
+            required: true
+          password:
+            description:
+              - User password.
+              - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+            type: str
+            required: true
 
       kowabunga_metrology_dashboard_public_url:
         description:
