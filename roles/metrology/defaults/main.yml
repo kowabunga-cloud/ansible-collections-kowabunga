@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_metrology_enabled: false
+kowabunga_metrology_dashboard_enabled: false
 kowabunga_metrology_agent_metrics_enabled: false
 kowabunga_metrology_agent_logs_enabled: false
 kowabunga_metrology_server_metrics_enabled: false

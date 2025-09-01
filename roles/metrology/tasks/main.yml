@@ -3,5 +3,10 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
+- ansible.builtin.import_tasks: generic.yml
+  when: kowabunga_metrology_dashboard_enabled or
+    kowabunga_metrology_agent_metrics_enabled or
+    kowabunga_metrology_agent_logs_enabled
+
 - ansible.builtin.import_tasks: victoriametrics.yml
   when: kowabunga_metrology_server_metrics_enabled

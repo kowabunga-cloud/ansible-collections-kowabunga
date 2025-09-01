@@ -3,6 +3,13 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
+###########
+# Grafana #
+###########
+
+grafana_apt_keyring_remote: "https://apt.grafana.com/gpg.key"
+grafana_apt_keyring_local: /etc/apt/keyrings/grafana.asc
+
 ####################
 # Victoria Metrics #
 ####################

@@ -1,0 +1,20 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Retrieve Grafana Labs GPG pubkey
+  ansible.builtin.get_url:
+    url: "{{ grafana_apt_keyring_remote }}"
+    dest: "{{ grafana_apt_keyring_local }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure Grafana Labs Ubuntu APT sources
+  ansible.builtin.template:
+    src: grafana.sources.j2
+    dest: "/etc/apt/sources.list.d/grafana.sources"
+    owner: root
+    group: root
+    mode: 0644

@@ -13,15 +13,22 @@ argument_specs:
         type: bool
         default: false
 
+      kowabunga_metrology_dashboard_enabled:
+        description:
+          - Enable logs/metrics dashboard component.
+          - Provided by Grafana.
+
       kowabunga_metrology_agent_metrics_enabled:
         description:
           - Enable metrics collection agent on host.
+          - Provided by Grafana Alloy.
         type: bool
         default: false
 
       kowabunga_metrology_agent_logs_enabled:
         description:
           - Enable logs collection agent on host.
+          - Provided by Grafana Alloy.
         type: bool
         default: false
 
