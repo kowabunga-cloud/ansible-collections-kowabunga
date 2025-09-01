@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 - name: Install Grafana
-  ansible.builtin.apt_role:
+  ansible.builtin.apt:
     name: grafana
     state: latest
   notify: Restart grafana
