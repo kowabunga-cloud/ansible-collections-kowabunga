@@ -11,11 +11,15 @@
 
 - name: Create data directory
   ansible.builtin.file:
-    dest: "{{ grafana_data_dir }}"
+    dest: "{{ item }}"
     owner: "{{ grafana_system_user }}"
     group: "{{ grafana_system_group }}"
     mode: 0755
     state: directory
+  loop:
+    - "{{ grafana_data_dir }}"
+    - "{{ grafana_data_dir }}/plugins"
+    - "{{ grafana_data_dir }}/dashboards"
 
 - name: Template configuration
   ansible.builtin.template:
