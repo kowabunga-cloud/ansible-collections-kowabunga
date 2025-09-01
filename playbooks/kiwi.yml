@@ -12,5 +12,8 @@
       tags: netplan
     - name: kowabunga.cloud.keepalived
       tags: keepalived
+    - name: kowabunga.cloud.metrology
+      when: kowabunga_metrology_enabled
+      tags: metrology
     - name: kowabunga.cloud.kiwi
       tags: agent

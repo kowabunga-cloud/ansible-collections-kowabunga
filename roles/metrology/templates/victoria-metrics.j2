@@ -1,0 +1,11 @@
+# Set the command-line arguments to pass to the server.
+# Due to shell escaping, to pass backslashes for regexes, you need to double
+# them (\\d for \d). If running under systemd, you need to double them again
+# (\\\\d to mean \d), and escape newlines too.
+
+ARGS="-storageDataPath={{ victoriametrics_data_dir }} \
+      -selfScrapeInterval={{ victoriametrics_self_scrape_interval }} \
+      -retentionPeriod={{ kowabunga_metrology_server_metrics_retention_period }} \
+      -maxConcurrentInserts={{ victoriametrics_max_concurrent_inserts }} \
+      -search.maxUniqueTimeseries={{ victoriametrics_search_max_unique_timeseries }} \
+      -httpListenAddr={{ victoriametrics_listen_addr }}:{{ victoriametrics_port }}"

@@ -1,0 +1,46 @@
+argument_specs:
+
+  main:
+    short_description: Install and configures client-side and server-side metrology components.
+    description:
+      - Install and configures client-side and server-side metrology components.
+
+    options:
+      kowabunga_metrology_enabled:
+        description:
+          - Enable metrology-related components deployment.
+          - Useless if you do not care about monitoring or are using your own metrology agents.
+        type: bool
+        default: false
+
+      kowabunga_metrology_agent_metrics_enabled:
+        description:
+          - Enable metrics collection agent on host.
+        type: bool
+        default: false
+
+      kowabunga_metrology_agent_logs_enabled:
+        description:
+          - Enable logs collection agent on host.
+        type: bool
+        default: false
+
+      kowabunga_metrology_server_metrics_enabled:
+        description:
+          - Enable metrics collection server on host.
+          - Provided by Victoria Metrics.
+        type: bool
+        default: false
+
+      kowabunga_metrology_server_metrics_retention_period:
+        description:
+          - Set server-side metrics retention period.
+        type: str
+        default: 30d
+
+      kowabunga_metrology_server_logs_enabled:
+        description:
+          - Enable logs collection server on host.
+          - Provided by Victoria Logs.
+        type: bool
+        default: false

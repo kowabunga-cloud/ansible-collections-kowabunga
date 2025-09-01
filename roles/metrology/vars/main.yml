@@ -1,0 +1,27 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+####################
+# Victoria Metrics #
+####################
+
+victoriametrics_system_user: "_victoria-metrics"
+victoriametrics_system_group: "{{ victoriametrics_system_user }}"
+victoriametrics_data_dir: "/var/lib/victoria-metrics/"
+victoriametrics_config_file: "/etc/default/victoria-metrics"
+
+victoriametrics_listen_addr: "{{ lan_ip if lan_ip != '' else '127.0.0.1' }}"
+victoriametrics_self_scrape_interval: 15s
+victoriametrics_max_concurrent_inserts: 32
+victoriametrics_search_max_unique_timeseries: 900000
+victoriametrics_port: 8428
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_metrology:
+  - name: "victoria-metrics"
+    when: "{{ kowabunga_metrology_server_metrics_enabled }}"

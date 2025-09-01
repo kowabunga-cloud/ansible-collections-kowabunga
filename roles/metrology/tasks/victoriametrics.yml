@@ -1,0 +1,26 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Victoria Metrics
+  ansible.builtin.apt:
+    name: victoria-metrics
+    state: latest
+
+- name: Create data directory
+  ansible.builtin.file:
+    dest: "{{ victoriametrics_data_dir }}"
+    owner: "{{ victoriametrics_system_user }}"
+    group: "{{ victoriametrics_system_group }}"
+    mode: 0755
+    state: directory
+
+- name: Setup configuration
+  ansible.builtin.template:
+    src: victoria-metrics.j2
+    dest: "{{ victoriametrics_config_file }}"
+    owner: "{{ victoriametrics_system_user }}"
+    group: "{{ victoriametrics_system_group }}"
+    mode: 0755
+  notify: Restart VictoriaMetrics
