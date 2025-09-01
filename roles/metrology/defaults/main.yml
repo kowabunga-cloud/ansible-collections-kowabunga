@@ -4,14 +4,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_metrology_enabled: false
+
 kowabunga_metrology_dashboard_enabled: false
 kowabunga_metrology_dashboard_admin_user: kowabunga
 kowabunga_metrology_dashboard_admin_password: "{{ secret_kowabunga_metrology_dashboard_admin_password | default('') }}"
 kowabunga_metrology_dashboard_extra_users: []
+kowabunga_metrology_dashboard_public_url: ''
 
-kowabunga_metrology_dashboard_public_url: '' # something like "https://grafana.acme.com"
 kowabunga_metrology_agent_metrics_enabled: false
 kowabunga_metrology_agent_logs_enabled: false
+
 kowabunga_metrology_server_metrics_enabled: false
 kowabunga_metrology_server_metrics_retention_period: 30d
+kowabunga_metrology_server_metrics_public_url: ''
+
 kowabunga_metrology_server_logs_enabled: false
+kowabunga_metrology_server_logs_public_url: ''

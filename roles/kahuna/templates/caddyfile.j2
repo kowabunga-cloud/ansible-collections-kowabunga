@@ -26,9 +26,21 @@
 {% endif %}
 }
 
-{% if kowabunga_metrology_dashboard_enabled | default(false) %}
+{% if kowabunga_metrology_dashboard_enabled | default(false) and kowabunga_metrology_dashboard_public_url != '' %}
 {{ kowabunga_metrology_dashboard_public_url | replace('http://', '') | replace('https://', '') }} {
   encode
   reverse_proxy {{ grafana_listen_addr | default('127.0.0.1') }}:{{ grafana_http_port | default(3000) }}
+}
+{% endif %}
+
+{% if kowabunga_metrology_server_metrics_enabled | default(false) and kowabunga_metrology_server_metrics_public_url != '' %}
+{{ kowabunga_metrology_server_metrics_public_url | replace('http://', '') | replace('https://', '') }} {
+  encode
+
+  @remote_write path /api/v1/write
+
+  handle @remote_write {
+    reverse_proxy {{ victoriametrics_listen_addr | default('127.0.0.1') }}:{{ victoriametrics_port | default(8428) }}
+  }
 }
 {% endif %}

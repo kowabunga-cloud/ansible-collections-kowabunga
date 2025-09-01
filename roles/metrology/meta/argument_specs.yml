@@ -97,9 +97,23 @@ argument_specs:
         type: str
         default: 30d
 
+      kowabunga_metrology_server_metrics_public_url:
+        description:
+          - Public FQDN for metrics collection server.
+          - Usually something such as "https://metrics.acme.com".
+        type: str
+        default: ''
+
       kowabunga_metrology_server_logs_enabled:
         description:
           - Enable logs collection server on host.
           - Provided by Victoria Logs.
         type: bool
         default: false
+
+      kowabunga_metrology_server_logs_public_url:
+        description:
+          - Public FQDN for logs collection server.
+          - Usually something such as "https://logs.acme.com".
+        type: str
+        default: ''
