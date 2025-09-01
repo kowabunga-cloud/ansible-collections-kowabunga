@@ -271,8 +271,8 @@ enabled = true
 host = {{ kowabunga_kahuna_smtp_host | default('127.0.0.1') }}:{{ kowabunga_kahuna_smtp_port | default('587') }}
 user = {{ kowabunga_kahuna_smtp_username | default('') }}
 password = {{ kowabunga_kahuna_smtp_password | default('') }}
-from_address = {{ if '<' in kowabunga_kahuna_smtp_from then kowabunga_kahuna_smtp_from | split('<')[1] | split('>')[0] else kowabunga_kahuna_smtp_from }}
-from_name = {{ if '<' in kowabunga_kahuna_smtp_from then kowabunga_kahuna_smtp_from | split('<')[0] else kowabunga_kahuna_smtp_from | default('') }}
+from_address = {% if '<' in kowabunga_kahuna_smtp_from then kowabunga_kahuna_smtp_from | split('<')[1] | split('>')[0] else kowabunga_kahuna_smtp_from %}
+from_name = {% if '<' in kowabunga_kahuna_smtp_from then kowabunga_kahuna_smtp_from | split('<')[0] else kowabunga_kahuna_smtp_from | default('') %}
 
 [emails]
 welcome_email_on_sign_up = true
