@@ -40,6 +40,12 @@
   @remote_write path /api/v1/write
 
   handle @remote_write {
+{% if tmp_metrics_auth_password_hash !=  '' %}
+    basic_auth {
+      {{ kowabunga_metrology_server_metrics_auth_user }} {{ tmp_metrics_auth_password_hash }}
+    }
+{% endif %}
+
     reverse_proxy {{ victoriametrics_listen_addr | default('127.0.0.1') }}:{{ victoriametrics_port | default(8428) }}
   }
 }

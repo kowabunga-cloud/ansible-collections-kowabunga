@@ -104,6 +104,21 @@ argument_specs:
         type: str
         default: ''
 
+      kowabunga_metrology_server_metrics_auth_user:
+        description:
+          - User name used by metrology agent to push metrics to server.
+          - Used for HTTPS basic authentication.
+        type: str
+        default: metrics
+
+      kowabunga_metrology_server_metrics_auth_password:
+        description:
+          - User password used by metrology agent to push metrics to server.
+          - Used for HTTPS basic authentication (disabled if unspecified).
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: "{{ secret_kowabunga_metrology_server_metrics_auth_password }}"
+
       kowabunga_metrology_server_logs_enabled:
         description:
           - Enable logs collection server on host.

@@ -6,3 +6,5 @@
 kowabunga_fqdn: "{{ kowabunga_public_url | replace('http://', '') | replace('https://', '') }}"
 
 kowabunga_koala_root_dir: /var/www/kowabunga
+
+tmp_metrics_auth_password_hash: ''

@@ -27,6 +27,18 @@
   notify: reload caddy
   when: kowabunga_koala_enabled
 
+- name: Hash metric password
+  when: kowabunga_metrology_server_metrics_auth_password != ''
+  block:
+    - name: Generate random metric password hash
+      ansible.builtin.command: caddy hash-password -p '{{ kowabunga_metrology_server_metrics_auth_password }}'
+      register: metrics_hash
+
+    - name: Assign hash
+      ansible.builtin.set_fact:
+        tmp_metrics_auth_password_hash: "{{ metrics_hash.stdout }}"
+      when: metrics_hash.rc == 0
+
 - name: Set Caddy virtual host
   template:
     src: caddyfile.j2
