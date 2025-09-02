@@ -57,8 +57,31 @@ alloy_metrics_scrape_interval_default: "15s"
 alloy_remote_shipping_timeout: 5m
 alloy_remote_max_backoff: 15m
 
-alloy_metrics_builtin_exporters: []
-alloy_metrics_external_exporters: []
+alloy_remote_write_targets:
+  - name: Kowabunga
+    prometheus:
+      endpoint: "{{ kowabunga_metrology_server_metrics_public_url }}"
+      path: /api/v1/write
+      username: "{{ kowabunga_metrology_server_metrics_auth_user }}"
+      password: "{{ kowabunga_metrology_server_metrics_auth_password }}"
+
+alloy_metrics_builtin_mongodb_exporter: "{{ kowabunga_mongodb_enabled | ternary(['mongodb'], []) }}"
+alloy_metrics_builtin_exporters: "{{ [] + alloy_metrics_builtin_mongodb_exporter }}"
+
+alloy_metrics_external_exporters: "{{ kowabunga_metrology_agent_metrics_extra_exporters }}"
+
+alloy_targets_relabel_rules: "{{ kowabunga_metrology_agent_target_relabelling_rules }}"
+alloy_metrics_relabel_rules: "{{ kowabunga_metrology_agent_metrics_relabelling_rules }}"
+alloy_metrics_extra_labels: "{{ kowabunga_metrology_agent_metrics_extra_labels }}"
+
+# list of collected metrics regex to be dropped (i.e. not remotely shipped)
+alloy_metrics_blacklisted_regex_default:
+  - "go_.*"
+  - "process_.*"
+  - "promhttp_.*"
+  - "scrape_.*'"
+
+alloy_metrics_blacklisted_regex: "{{ alloy_metrics_blacklisted_regex_default + kowabunga_metrology_agent_metrics_blacklisted_regex }}"
 
 # list of external log files to pull from (globbing is supported)
 alloy_external_log_files_default:
@@ -66,11 +89,86 @@ alloy_external_log_files_default:
   - /var/log/kern.log
   - /var/log/syslog
 
-alloy_external_log_files: "{{ alloy_linux_external_log_files_default }}"
+alloy_external_log_files: "{{ alloy_external_log_files_default + kowabunga_metrology_agent_logs_files_extra }}"
 
 alloy_loki_journal_rules:
   - sources: ["__journal__systemd_unit"]
     target: "unit"
+
+# Specify collectors to be enabled.
+# Complete list (Linux-target) is:
+# arp, bcache, bonding, btrfs, buddyinfo, conntrack, cpu, cpufreq, diskstats, dmi, drbd, drm, edac, entropy,
+# ethtool, fibrechannel, filefd, filesystem, hwmon, infiniband, interrupts, ipvs, ksmd, lnstat, loadavg, logind,
+# mdadm, meminfo, meminfo_numa, mountstats, netclass, netdev, netstat, network_route, nfs, nfsd, ntp, nvme,
+# os, perf, powersupplyclass, pressure, processes, qdisc, rapl, runit, schedstat, sockstat, softirqs, softnet,
+# stat, supervisord, sysctl, systemd, tapestats, tcpstat, textfile, thermal_zone, time, timex, udp_queues,
+# uname, vmstat, wifi, xfs, zfs, zoneinfo
+# See https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.unix/#collectors-list
+
+alloy_unix_enabled_metrics:
+  - cpu
+  - diskstats
+  - filesystem
+  - loadavg
+  - meminfo
+  - netdev
+  - netstat
+  - nfs
+  - os
+  - stat
+  - textfile
+  - vmstat
+
+alloy_unix_metrics_relabelling_rules:
+  # drop series
+  - sources: ["__name__"]
+    regex: 'scrape_.*'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_scrape_collector_success'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_network_(receive|transmit)_(carrier|colls|compressed|drop|fifo|frame|multicast|packets)_total'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_disk_(discard|flush_).*'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_disk_info'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_disk_io_(now|time_weighted_seconds_total)'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_disk_(reads|writes)_merged_total'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_filesystem_(device_error|files)'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'node_systemd_socket_.*|node_systemd_timer_.*|node_systemd_version|node_systemd_system_running'
+    action: drop
+    when: "{{ 'systemd' in alloy_unix_enabled_metrics }}"
+  - sources: ["name"]
+    regex: '.*\.(path|socket|target)$'
+    action: drop
+    when: "{{ 'systemd' in alloy_unix_enabled_metrics }}"
+
+alloy_mongodb_exporter_target:
+  host: "{{ kowabunga_mongodb_listen_addr }}"
+  port: 27017
+  user: "{{ kowabunga_mongodb_admin_username }}"
+  password: "{{ kowabunga_mongodb_admin_password }}"
+  rs: "{{ kowabunga_mongodb_rs_name }}"
+
+alloy_mongodb_metrics_relabelling_rules:
+  # drop series
+  - sources: ["__name__"]
+    regex: 'collector_scrape_.*'
+    action: drop
+  - sources: ["__name__"]
+    regex: 'mongodb_(asserts|collstats|dbstats|electionCandidateMetrics|indexstats|mongod_wiredtiger|oplog_stats|ss|sys|top)_.*'
+    action: drop
 
 #######################
 # Host Control Plugin #

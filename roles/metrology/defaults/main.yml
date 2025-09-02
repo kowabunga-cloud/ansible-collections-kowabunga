@@ -11,8 +11,16 @@ kowabunga_metrology_dashboard_admin_password: "{{ secret_kowabunga_metrology_das
 kowabunga_metrology_dashboard_extra_users: []
 kowabunga_metrology_dashboard_public_url: ''
 
+kowabunga_metrology_agent_target_relabelling_rules: []
+
 kowabunga_metrology_agent_metrics_enabled: false
+kowabunga_metrology_agent_metrics_extra_exporters: []
+kowabunga_metrology_agent_metrics_relabelling_rules: []
+kowabunga_metrology_agent_metrics_extra_labels: {}
+kowabunga_metrology_agent_metrics_blacklisted_regex: []
+
 kowabunga_metrology_agent_logs_enabled: false
+kowabunga_metrology_agent_logs_files_extra: []
 
 kowabunga_metrology_server_metrics_enabled: false
 kowabunga_metrology_server_metrics_retention_period: 30d
@@ -22,3 +30,4 @@ kowabunga_metrology_server_metrics_auth_password: "{{ secret_kowabunga_metrology
 
 kowabunga_metrology_server_logs_enabled: false
 kowabunga_metrology_server_logs_public_url: ''
+

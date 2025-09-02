@@ -32,10 +32,8 @@
   {%- set prefix = 'loki.write' if receiver == 'loki' else 'prometheus.remote_write' -%}
   {%- set targets = [] -%}
   {%- for t in alloy_remote_write_targets -%}
-  {%- if t.enabled -%}
   {%- if (receiver == 'prometheus' and t.prometheus is defined) or (receiver == 'loki' and t.loki is defined) -%}
   {{ targets.append(t.name) }}
-  {%- endif -%}
   {%- endif -%}
   {%- endfor -%}
   forward_to = [{% for t in targets %}{{ prefix }}.{{ t }}.receiver{% if not loop.last %}, {% endif %}{% endfor %}]
@@ -74,9 +72,10 @@ discovery.relabel "{{ name | replace ('-', '_') }}" {
 ##############
 
 {% macro prometheus_remote_write(name, cfg) %}
+{% if cfg.endpoint != '' %}
 prometheus.remote_write "{{ name }}" {
   endpoint {
-    url            = "{{ cfg.endpoint }}{{ cfg.path | default(alloy_mimir_default_api_path) }}"
+    url            = "{{ cfg.endpoint }}{{ cfg.path }}"
     remote_timeout = "{{ alloy_remote_shipping_timeout }}"
     enable_http2   = true
     {% if cfg.username is defined and cfg.password is defined -%}
@@ -104,9 +103,10 @@ prometheus.remote_write "{{ name }}" {
 {% endfor %}
   }
 }
+{% endif %}
 {% endmacro %}
 
-{% macro prometheus_scraper(name, target='', address=lan_ip, port=None, path=alloy_metrics_path_default, interval=alloy_metrics_scrape_interval_default, token_file='', extra_labels=[], clustered=False) %}
+{% macro prometheus_scraper(name, target='', address=lan_ip, port=None, path=alloy_metrics_path_default, interval=alloy_metrics_scrape_interval_default, token_file='', extra_labels=[]) %}
 {%- set n = name | replace('-', '_') -%}
 prometheus.scrape "{{ n }}" {
   job_name          = "{{ n }}"
@@ -130,9 +130,6 @@ prometheus.scrape "{{ n }}" {
   bearer_token_file = "{{ token_file }}"
   {% endif -%}
   forward_to        = [prometheus.relabel.{{ n }}.receiver]
-  clustering {
-    enabled         = {{ clustered | bool | lower }}
-  }
 }
 {% endmacro %}
 
@@ -143,9 +140,9 @@ prometheus.relabel "{{ name | replace('-', '_') }}" {
 }
 {% endmacro %}
 
-{% macro prometheus_exporter_scraper(name, exporter, clustered=False, extra_rules=[]) %}
+{% macro prometheus_exporter_scraper(name, exporter, extra_rules=[]) %}
 {{ discovery_relabel(name, exporter) }}
-{{ prometheus_scraper(name, 'discovery.relabel', clustered=clustered) }}
+{{ prometheus_scraper(name, 'discovery.relabel') }}
 {{ prometheus_relabel(name, alloy_metrics_relabel_rules + extra_rules) }}
 {% endmacro %}
 
@@ -161,7 +158,7 @@ prometheus.exporter.unix "{{ name }}" {
 
 {% macro prometheus_exporter_mongodb(name, t) %}
 prometheus.exporter.mongodb "{{ name }}" {
-    mongodb_uri = "mongodb://{{ t.user }}:{{ t.password }}@{{ t.host | default(lan_ip) }}:{{ t.port | default('27017') }}/admin?authSource=admin{% if t.rs is defined %}&readPreference=primary&replicaSet={{ t.rs_name }}&w=majority&retryWrites=true{% endif %}"
+    mongodb_uri = "mongodb://{{ t.user }}:{{ t.password }}@{{ t.host | default(lan_ip) }}:{{ t.port | default('27017') }}/admin?authSource=admin{% if t.rs is defined %}&readPreference=primary&replicaSet={{ t.rs }}&w=majority&retryWrites=true{% endif %}"
 }
 {% endmacro %}
 
@@ -170,12 +167,13 @@ prometheus.exporter.mongodb "{{ name }}" {
 ########
 
 {% macro loki_remote_write(name, cfg) %}
+{% if cfg.endpoint != '' %}
 loki.write "{{ name }}" {
   external_labels = {
     instance = constants.hostname,
   }
   endpoint {
-    url               = "{{ cfg.endpoint }}{{ cfg.path | default(alloy_loki_default_api_path) }}"
+    url               = "{{ cfg.endpoint }}{{ cfg.path }}"
     remote_timeout    = "{{ alloy_remote_shipping_timeout }}"
     enable_http2       = true
     {% if cfg.username is defined and cfg.password is defined -%}
@@ -187,6 +185,7 @@ loki.write "{{ name }}" {
     max_backoff_period = "{{ alloy_remote_max_backoff }}"
   }
 }
+{% endif %}
 {% endmacro %}
 
 {% macro loki_relabel(name, rules=[]) %}
@@ -229,19 +228,18 @@ loki.source.file "{{ name }}" {
 /////////////////////
 
 {{ prometheus_exporter_mongodb(name, alloy_mongodb_exporter_target) }}
-{{ prometheus_exporter_scraper(name, 'prometheus.exporter.mongodb', False, extra_rules=alloy_mongodb_metrics_relabelling_rules) }}
+{{ prometheus_exporter_scraper(name, 'prometheus.exporter.mongodb', extra_rules=alloy_mongodb_metrics_relabelling_rules) }}
 {% endmacro %}
 
 {% macro metrics_collector_third_party_exporter(e) %}
 {%- set path = e.path | default(alloy_metrics_path_default) -%}
 {%- set interval = e.interval | default(alloy_metrics_scrape_interval_default) -%}
 {%- set labels = e.extra_labels | default([]) -%}
-{%- set clustered = scrapper.clustered | default(false) -%}
 //////////////////////////////////////
 // Third-party {{ e.name }} metrics //
 //////////////////////////////////////
 
-{{ prometheus_scraper(e.name, address=e.address, port=e.port, path=path, interval=interval, extra_labels=labels, clustered=clustered) }}
+{{ prometheus_scraper(e.name, address=e.address, port=e.port, path=path, interval=interval, extra_labels=labels) }}
 {{ prometheus_relabel(e.name) }}
 {% endmacro %}
 

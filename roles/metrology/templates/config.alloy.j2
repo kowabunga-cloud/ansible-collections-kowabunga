@@ -4,6 +4,25 @@ logging {
   level = "{{ alloy_loglevel }}"
 }
 
+{% for t in alloy_remote_write_targets %}
+{% if t.prometheus is defined -%}
+///////////////////////////////////////////
+// Prometheus {{ t.name }} remote target //
+///////////////////////////////////////////
+
+{{ alloy.prometheus_remote_write(t.name, t.prometheus) }}
+{% endif -%}
+
+{% if t.loki is defined -%}
+/////////////////////////////////////
+// Loki {{ t.name }} remote target //
+/////////////////////////////////////
+
+{{ alloy.loki_remote_write(t.name, t.loki) }}
+{% endif -%}
+
+{% endfor %} {# alloy_remote_write_targets #}
+
 {{ alloy.metrics_collector_unix("unix") }}
 {{ alloy.logs_collector_systemd("journal") }}
 

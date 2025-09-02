@@ -70,6 +70,44 @@ argument_specs:
         type: str
         default: ''
 
+      kowabunga_metrology_agent_target_relabelling_rules:
+        description:
+          - Optionally defines a list of default target relabelling rules after scrapping.
+          - See https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/ for details.
+        type: list
+        elements: dict
+        default: []
+        options:
+          sources:
+            description:
+              - The list of labels whose values are to be selected.
+            type: list
+            elements: str
+          target:
+            description:
+              - Label to which the resulting value will be written to.
+            type: str
+          action:
+            description:
+              - The relabeling action to perform.
+            type: str
+            default: replace
+            choices: ['drop', 'dropequal', 'hashmod', 'keep', 'keepequal', 'labeldrop', 'labelkeep', 'labelmap', 'lowercase', 'replace', 'uppercase']
+          replacement:
+            description:
+              - The value against which a regular expression replace is performed, if the regular expression matches the extracted value.
+              - Supports previously captured groups.
+            type: str
+          regex:
+            description:
+              - A valid RE2 expression with support for parenthesized capture groups.
+              - Used to match the extracted value from the combination of the source_label and separator fields or filter labels during the labelkeep/labeldrop/labelmap actions.
+            type: str
+          separator:
+            description:
+              - The separator used to concatenate the values present in source_labels.
+            default: ';'
+
       kowabunga_metrology_agent_metrics_enabled:
         description:
           - Enable metrics collection agent on host.
@@ -77,12 +115,122 @@ argument_specs:
         type: bool
         default: false
 
+      kowabunga_metrology_agent_metrics_extra_exporters:
+        description:
+          - List of optional external Prometheus exporters to pull metrics from.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - Friendly name of the Prometheus exporter to scrape.
+            type: str
+            required: true
+          address:
+            description:
+              - IP address of the Prometheus exporter to scrape
+              - Defaults to private network address if unspecified.
+            type: str
+          port:
+            description:
+              - Port of the Prometheus exporter to scrape.
+            type: int
+            required: true
+          path:
+            description:
+              - URL path of the Prometheus exporter to scrape.
+            type: str
+            default: /metrics
+          interval:
+            description:
+              - Polling frequency of the Prometheus exporter to scrape.
+            type: str
+            default: 15s
+          extra_labels:
+            description:
+              - List of key/values labels to be appended to scraped metrics.
+            type: list
+            elements: dict
+            options:
+              key:
+                description:
+                  - Label name to be appended.
+                type: str
+              value:
+                description:
+                  - Label value to be appended.
+                type: str
+
+      kowabunga_metrology_agent_metrics_relabelling_rules:
+        description:
+          - Optionally defines a list of default metrics relabelling rules after scrapping.
+          - See https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/ for details.
+        type: list
+        elements: dict
+        default: []
+        options:
+          sources:
+            description:
+              - The list of labels whose values are to be selected.
+            type: list
+            elements: str
+          target:
+            description:
+              - Label to which the resulting value will be written to.
+            type: str
+          action:
+            description:
+              - The relabeling action to perform.
+            type: str
+            default: replace
+            choices: ['drop', 'dropequal', 'hashmod', 'keep', 'keepequal', 'labeldrop', 'labelkeep', 'labelmap', 'lowercase', 'replace', 'uppercase']
+          replacement:
+            description:
+              - The value against which a regular expression replace is performed, if the regular expression matches the extracted value.
+              - Supports previously captured groups.
+            type: str
+          regex:
+            description:
+              - A valid RE2 expression with support for parenthesized capture groups.
+              - Used to match the extracted value from the combination of the source_label and separator fields or filter labels during the labelkeep/labeldrop/labelmap actions.
+            type: str
+          separator:
+            description:
+              - The separator used to concatenate the values present in source_labels.
+            default: ';'
+
+      kowabunga_metrology_agent_metrics_extra_labels:
+        description:
+          - Dictionnary of extra labels to be appended each metrics before being shipped to time-series database(s).
+          - "Format is 'label_name: label_value'"
+        type: dict
+        default: {}
+
+      kowabunga_metrology_agent_metrics_blacklisted_regex:
+        description:
+          - List of collected metrics regex to be dropped (i.e. not remotely shipped).
+          - Allows saving bandwidth and processing power, minimizing amount of collected timeseries.
+          - Supports globbing.
+          - "Examples: ['go_.*', 'promhttp_.*'] ..."
+        type: list
+        elements: str
+        default: []
+
       kowabunga_metrology_agent_logs_enabled:
         description:
           - Enable logs collection agent on host.
           - Provided by Grafana Alloy.
         type: bool
         default: false
+
+      kowabunga_metrology_agent_logs_files_extra:
+        description:
+          - List of external log files to pull from.
+          - Supports globbing.
+          - "Example: ['/var/log/dpkg.log']"
+        type: str
+        default: []
 
       kowabunga_metrology_server_metrics_enabled:
         description:
