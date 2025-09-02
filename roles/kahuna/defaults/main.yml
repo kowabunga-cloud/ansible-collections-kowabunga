@@ -7,7 +7,7 @@ kowabunga_public_url: ~ # something like "https://kowabunga.acme.com"
 
 kowabunga_kahuna_loglevel: INFO
 kowabunga_kahuna_admin_email: ~
-kowabunga_kahuna_http_address: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+kowabunga_kahuna_http_address: "{{ lan_ip if lan_ip != '' else '127.0.0.1' }}"
 kowabunga_kahuna_http_port: 8080
 kowabunga_kahuna_jwt_signature: ~
 kowabunga_kahuna_jwt_lifetime_hours: 24
