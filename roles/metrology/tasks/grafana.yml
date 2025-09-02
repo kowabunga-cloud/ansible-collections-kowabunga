@@ -38,6 +38,9 @@
   loop: "{{ grafana_plugins }}"
   notify: Restart grafana
 
+- name: Ensure Grafana is up
+  ansible.builtin.meta: flush_handlers
+
 - name: Enable and start systemd services
   ansible.builtin.systemd_service:
     name: grafana-server
