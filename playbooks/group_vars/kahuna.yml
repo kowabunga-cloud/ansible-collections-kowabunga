@@ -1,0 +1,11 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+kahuna_victorialogs_exporter:
+  - name: VictoriaLogs
+    address: "{{ victorialogs_listen_addr }}"
+    port: "{{ victorialogs_port }}"
+
+kowabunga_metrology_agent_metrics_extra_exporters: "{{ [] + kowabunga_metrology_server_logs_enabled | ternary(kahuna_victorialogs_exporter, []) }}"
