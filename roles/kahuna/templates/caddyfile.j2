@@ -52,7 +52,7 @@
 {% endif %}
 
 {% if kowabunga_metrology_server_logs_enabled | default(false) and kowabunga_metrology_server_logs_public_url != '' %}
-{{ kowabunga_metrology_server_logs_public_url | urlsplit('hostname) }} {
+{{ kowabunga_metrology_server_logs_public_url | urlsplit('hostname') }} {
   encode
 
   @remote_write path /insert/loki/api/v1/push
