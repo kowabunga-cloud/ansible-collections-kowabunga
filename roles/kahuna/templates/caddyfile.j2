@@ -34,7 +34,7 @@
 {% endif %}
 
 {% if kowabunga_metrology_server_metrics_enabled | default(false) and kowabunga_metrology_server_metrics_public_url != '' %}
-{{ kowabunga_metrology_server_metrics_public_url | replace('http://', '') | replace('https://', '') }} {
+{{ kowabunga_metrology_server_metrics_public_url | urlsplit('hostname') }} {
   encode
 
   @remote_write path /api/v1/write
@@ -47,6 +47,24 @@
 {% endif %}
 
     reverse_proxy {{ victoriametrics_listen_addr | default('127.0.0.1') }}:{{ victoriametrics_port | default(8428) }}
+  }
+}
+{% endif %}
+
+{% if kowabunga_metrology_server_logs_enabled | default(false) and kowabunga_metrology_server_logs_public_url != '' %}
+{{ kowabunga_metrology_server_logs_public_url | urlsplit('hostname) }} {
+  encode
+
+  @remote_write path /insert/loki/api/v1/push
+
+  handle @remote_write {
+{% if tmp_logs_auth_password_hash !=  '' %}
+    basic_auth {
+      {{ kowabunga_metrology_server_logs_auth_user }} {{ tmp_logs_auth_password_hash }}
+    }
+{% endif %}
+
+    reverse_proxy {{ victorialogs_listen_addr | default('127.0.0.1') }}:{{ victorialogs_port | default(9428) }}
   }
 }
 {% endif %}

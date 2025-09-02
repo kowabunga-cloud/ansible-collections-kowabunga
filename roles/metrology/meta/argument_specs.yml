@@ -274,9 +274,30 @@ argument_specs:
         type: bool
         default: false
 
+      kowabunga_metrology_server_logs_retention_period:
+        description:
+          - Set server-side logs retention period.
+        type: str
+        default: 30d
+
       kowabunga_metrology_server_logs_public_url:
         description:
           - Public FQDN for logs collection server.
           - Usually something such as "https://logs.acme.com".
         type: str
         default: ''
+
+      kowabunga_metrology_server_logs_auth_user:
+        description:
+          - User name used by metrology agent to push logs to server.
+          - Used for HTTPS basic authentication.
+        type: str
+        default: logs
+
+      kowabunga_metrology_server_logs_auth_password:
+        description:
+          - User password used by metrology agent to push logs to server.
+          - Used for HTTPS basic authentication (disabled if unspecified).
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: "{{ secret_kowabunga_metrology_server_logs_auth_password }}"

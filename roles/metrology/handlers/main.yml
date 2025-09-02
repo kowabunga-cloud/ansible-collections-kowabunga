@@ -15,6 +15,12 @@
     state: restarted
     enabled: true
 
+- name: Restart VictoriaLogs
+  ansible.builtin.systemd_service:
+    name: victoria-logs
+    state: restarted
+    enabled: true
+
 - name: Restart alloy
   ansible.builtin.systemd_service:
     name: alloy

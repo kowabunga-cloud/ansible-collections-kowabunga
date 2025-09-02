@@ -1,0 +1,27 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Victoria Logs
+  ansible.builtin.apt:
+    name: victoria-logs
+    state: latest
+  notify: Restart VictoriaLogs
+
+- name: Create data directory
+  ansible.builtin.file:
+    dest: "{{ victorialogs_data_dir }}"
+    owner: "{{ victorialogs_system_user }}"
+    group: "{{ victorialogs_system_group }}"
+    mode: 0755
+    state: directory
+
+- name: Setup configuration
+  ansible.builtin.template:
+    src: victoria-logs.j2
+    dest: "{{ victorialogs_config_file }}"
+    owner: "{{ victorialogs_system_user }}"
+    group: "{{ victorialogs_system_group }}"
+    mode: 0755
+  notify: Restart VictoriaLogs

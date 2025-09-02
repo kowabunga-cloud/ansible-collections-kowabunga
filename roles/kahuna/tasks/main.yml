@@ -39,6 +39,18 @@
         tmp_metrics_auth_password_hash: "{{ metrics_hash.stdout }}"
       when: metrics_hash.rc == 0
 
+- name: Hash logs password
+  when: kowabunga_metrology_server_logs_auth_password != ''
+  block:
+    - name: Generate random log password hash
+      ansible.builtin.command: caddy hash-password -p '{{ kowabunga_metrology_server_logs_auth_password }}'
+      register: logs_hash
+
+    - name: Assign hash
+      ansible.builtin.set_fact:
+        tmp_logs_auth_password_hash: "{{ logs_hash.stdout }}"
+      when: logs_hash.rc == 0
+
 - name: Set Caddy virtual host
   template:
     src: caddyfile.j2

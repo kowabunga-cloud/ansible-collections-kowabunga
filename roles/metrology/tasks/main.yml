@@ -14,5 +14,8 @@
 - ansible.builtin.import_tasks: victoriametrics.yml
   when: kowabunga_metrology_server_metrics_enabled
 
+- ansible.builtin.import_tasks: victorialogs.yml
+  when: kowabunga_metrology_server_logs_enabled
+
 - ansible.builtin.import_tasks: alloy.yml
   when: kowabunga_metrology_agent_metrics_enabled or kowabunga_metrology_agent_logs_enabled

@@ -8,3 +8,4 @@ kowabunga_fqdn: "{{ kowabunga_public_url | replace('http://', '') | replace('htt
 kowabunga_koala_root_dir: /var/www/kowabunga
 
 tmp_metrics_auth_password_hash: ''
+tmp_logs_auth_password_hash: ''

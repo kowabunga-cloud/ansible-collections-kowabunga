@@ -29,5 +29,7 @@ kowabunga_metrology_server_metrics_auth_user: metrics
 kowabunga_metrology_server_metrics_auth_password: "{{ secret_kowabunga_metrology_server_metrics_auth_password | default('') }}"
 
 kowabunga_metrology_server_logs_enabled: false
+kowabunga_metrology_server_logs_retention_period: 30d
 kowabunga_metrology_server_logs_public_url: ''
-
+kowabunga_metrology_server_logs_auth_user: logs
+kowabunga_metrology_server_logs_auth_password: "{{ secret_kowabunga_metrology_server_logs_auth_password | default('') }}"

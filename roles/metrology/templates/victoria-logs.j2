@@ -1,0 +1,9 @@
+# Set the command-line arguments to pass to the server.
+# Due to shell escaping, to pass backslashes for regexes, you need to double
+# them (\\d for \d). If running under systemd, you need to double them again
+# (\\\\d to mean \d), and escape newlines too.
+
+ARGS="-storageDataPath={{ victorialogs_data_dir }} \
+      -retentionPeriod={{ kowabunga_metrology_server_logs_retention_period }} \
+      -maxConcurrentInserts={{ victorialogs_max_concurrent_inserts }} \
+      -httpListenAddr={{ victorialogs_listen_addr }}:{{ victorialogs_port }}"
