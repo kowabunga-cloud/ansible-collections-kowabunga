@@ -1,0 +1,10 @@
+{
+  "name": "{{ grafana_datasource_victorialogs_name  }}",
+  "type": "victoriametrics-logs-datasource",
+  "url": "http://{{ victorialogs_listen_addr }}:{{ victorialogs_port }}",
+  "access": "proxy",
+  "jsonData": {
+    "timeInterval": "60s"
+  },
+  "isDefault": false
+}

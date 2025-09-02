@@ -92,6 +92,29 @@
   run_once: true
   when: grafana_ds_prometheus.status in [403, 404]
 
+- name: Check if Victoria Logs datasource is configured in Grafana
+  ansible.builtin.uri:
+    url: "{{ grafana_datasource_uri }}/name/{{ grafana_datasource_victorialogs_name }}"
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    force_basic_auth: true
+  register: grafana_ds_victorialogs
+  failed_when: grafana_ds_victorialogs.status == 401
+  changed_when: false
+
+- name: Enable Victoria Logs datasource
+  ansible.builtin.uri:
+    url: "{{ grafana_datasource_uri }}"
+    method: POST
+    user: "{{ kowabunga_metrology_dashboard_admin_user }}"
+    password: "{{ kowabunga_metrology_dashboard_admin_password }}"
+    body_format: json
+    body: "{{ lookup('template', 'victoria-logs-datasource.json.j2') }}"
+    force_basic_auth: true
+    status_code: 200
+  run_once: true
+  when: grafana_ds_victorialogs.status in [403, 404]
+
 - name: Register additional users
   ansible.builtin.uri:
     user: "{{ kowabunga_metrology_dashboard_admin_user }}"

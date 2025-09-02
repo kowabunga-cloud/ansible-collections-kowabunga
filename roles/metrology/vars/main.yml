@@ -22,9 +22,11 @@ grafana_http_port: 3000
 grafana_api_uri: "http://{{ grafana_listen_addr }}:{{ grafana_http_port }}/api"
 grafana_datasource_uri: "{{ grafana_api_uri }}/datasources"
 
-grafana_plugins: []
+grafana_plugins:
+  - victoriametrics-logs-datasource
 
 grafana_datasource_prometheus_name: prometheus
+grafana_datasource_victorialogs_name: victorialogs
 
 ####################
 # Victoria Metrics #
