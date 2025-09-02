@@ -77,6 +77,11 @@ alloy_remote_write_targets:
       path: /api/v1/write
       username: "{{ kowabunga_metrology_server_metrics_auth_user }}"
       password: "{{ kowabunga_metrology_server_metrics_auth_password }}"
+    loki:
+      endpoint: "{{ kowabunga_metrology_server_logs_public_url }}"
+      path: /insert/loki/api/v1/push
+      username: "{{ kowabunga_metrology_server_logs_auth_user }}"
+      password: "{{ kowabunga_metrology_server_logs_auth_password }}"
 
 alloy_metrics_builtin_mongodb_exporter: "{{ kowabunga_mongodb_enabled | ternary(['mongodb'], []) }}"
 alloy_metrics_builtin_exporters: "{{ [] + alloy_metrics_builtin_mongodb_exporter }}"
