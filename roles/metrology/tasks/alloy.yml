@@ -1,0 +1,36 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install Grafana Alloy
+  ansible.builtin.apt:
+    name: alloy
+    state: latest
+  notify: Restart alloy
+
+- name: Setup Alloy's default service configuration
+  ansible.builtin.template:
+    src: default.alloy.j2
+    dest: /etc/default/alloy
+    owner: "{{ alloy_system_user }}"
+    group: "{{ alloy_system_group }}"
+    mode: 0644
+  notify: Restart alloy
+
+- name: Set configuration directory readable
+  ansible.builtin.file:
+    path: /etc/alloy
+    state: directory
+    owner: "{{ alloy_system_user }}"
+    group: "{{ alloy_system_group }}"
+    mode: 0755
+
+- name: Setup alloy's configuration file
+  ansible.builtin.template:
+    src: config.alloy.j2
+    dest: /etc/alloy/config.alloy
+    owner: "{{ alloy_system_user }}"
+    group: "{{ alloy_system_group }}"
+    mode: 0644
+  notify: Restart alloy

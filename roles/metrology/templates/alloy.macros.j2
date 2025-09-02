@@ -1,0 +1,264 @@
+############
+# Generics #
+############
+
+{% macro relabel_rules(rules) %}
+{% for r in rules | default([]) -%}
+{% if r.enabled | default(true) | bool %}
+
+  rule {
+    {% if r.sources is defined and r.sources | length > 0 -%}
+    source_labels = [{% for s in r.sources %}"{{ s }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    {% endif -%}
+    {% if r.target is defined -%}
+    target_label  = "{{ r.target }}"
+    {% endif -%}
+    {% if r.replacement is defined -%}
+    replacement   = "{{ r.replacement }}"
+    {% endif -%}
+    {% if r.regex is defined -%}
+    regex         = `{{ r.regex }}`
+    {% endif -%}
+    {% if r.separator is defined -%}
+    separator     = "{{ r.separator }}"
+    {% endif -%}
+    action        = "{{ r.action | default('replace') }}"
+  }
+{% endif %}
+{% endfor -%}
+{% endmacro %}
+
+{% macro forward_to(receiver) %}
+  {%- set prefix = 'loki.write' if receiver == 'loki' else 'prometheus.remote_write' -%}
+  {%- set targets = [] -%}
+  {%- for t in alloy_remote_write_targets -%}
+  {%- if t.enabled -%}
+  {%- if (receiver == 'prometheus' and t.prometheus is defined) or (receiver == 'loki' and t.loki is defined) -%}
+  {{ targets.append(t.name) }}
+  {%- endif -%}
+  {%- endif -%}
+  {%- endfor -%}
+  forward_to = [{% for t in targets %}{{ prefix }}.{{ t }}.receiver{% if not loop.last %}, {% endif %}{% endfor %}]
+{% endmacro %}
+
+#########
+# Local #
+#########
+
+{% macro local_file(name, files) %}
+local.file_match "{{ name }}" {
+  path_targets = [
+{% for f in files %}
+    {
+      __address__ = "localhost",
+      __path__    = "{{ f }}",
+    },
+{% endfor %}
+  ]
+}
+{% endmacro %}
+
+###############
+## Discovery ##
+###############
+
+{% macro discovery_relabel(name, target, rules=alloy_targets_relabel_rules) %}
+discovery.relabel "{{ name | replace ('-', '_') }}" {
+  targets = {{ target }}.{{ name | replace ('-', '_') }}.targets
+{{ relabel_rules(rules) }}
+}
+{% endmacro %}
+
+##############
+# Prometheus #
+##############
+
+{% macro prometheus_remote_write(name, cfg) %}
+prometheus.remote_write "{{ name }}" {
+  endpoint {
+    url            = "{{ cfg.endpoint }}{{ cfg.path | default(alloy_mimir_default_api_path) }}"
+    remote_timeout = "{{ alloy_remote_shipping_timeout }}"
+    enable_http2   = true
+    {% if cfg.username is defined and cfg.password is defined -%}
+    basic_auth {
+      username = "{{ cfg.username }}"
+      password = "{{ cfg.password }}"
+    }
+    {% endif -%}
+    queue_config {
+      max_backoff = "{{ alloy_remote_max_backoff }}"
+    }
+{% for re in alloy_metrics_blacklisted_regex %}
+    write_relabel_config {
+      source_labels = ["__name__"]
+      regex         = "{{ re }}"
+      action        = "drop"
+    }
+{% endfor %}
+{% for k, v in alloy_metrics_extra_labels.items() %}
+    write_relabel_config {
+      target_label = "{{ k }}"
+      replacement  = "{{ v }}"
+      action       = "replace"
+    }
+{% endfor %}
+  }
+}
+{% endmacro %}
+
+{% macro prometheus_scraper(name, target='', address=lan_ip, port=None, path=alloy_metrics_path_default, interval=alloy_metrics_scrape_interval_default, token_file='', extra_labels=[], clustered=False) %}
+{%- set n = name | replace('-', '_') -%}
+prometheus.scrape "{{ n }}" {
+  job_name          = "{{ n }}"
+  {% if target != '' -%}
+  targets           = {{ target }}.{{ n }}.output
+  {% else -%}
+  targets           = [
+    {
+      job           = "{{ n }}",
+      instance      = constants.hostname,
+      __address__   = "{{ address }}:{{ port }}",
+      {% for label in extra_labels -%}
+      {{ label.key }} = "{{ label.value }}",
+      {% endfor -%}
+    },
+  ]
+  {% endif -%}
+  scrape_interval   = "{{ interval }}"
+  metrics_path      = "{{ path }}"
+  {% if token_file != '' -%}
+  bearer_token_file = "{{ token_file }}"
+  {% endif -%}
+  forward_to        = [prometheus.relabel.{{ n }}.receiver]
+  clustering {
+    enabled         = {{ clustered | bool | lower }}
+  }
+}
+{% endmacro %}
+
+{% macro prometheus_relabel(name, rules=alloy_metrics_relabel_rules) %}
+prometheus.relabel "{{ name | replace('-', '_') }}" {
+  {{ forward_to('prometheus') }}
+{{ relabel_rules(rules) }}
+}
+{% endmacro %}
+
+{% macro prometheus_exporter_scraper(name, exporter, clustered=False, extra_rules=[]) %}
+{{ discovery_relabel(name, exporter) }}
+{{ prometheus_scraper(name, 'discovery.relabel', clustered=clustered) }}
+{{ prometheus_relabel(name, alloy_metrics_relabel_rules + extra_rules) }}
+{% endmacro %}
+
+{% macro prometheus_exporter_unix(name) %}
+prometheus.exporter.unix "{{ name }}" {
+  include_exporter_metrics = false
+  set_collectors           = [{% for m in alloy_unix_enabled_metrics %}"{{ m }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+  disk {
+    device_exclude = "^(ram|loop|fd)\\d+$"
+  }
+}
+{% endmacro %}
+
+{% macro prometheus_exporter_mongodb(name, t) %}
+prometheus.exporter.mongodb "{{ name }}" {
+    mongodb_uri = "mongodb://{{ t.user }}:{{ t.password }}@{{ t.host | default(lan_ip) }}:{{ t.port | default('27017') }}/admin?authSource=admin{% if t.rs is defined %}&readPreference=primary&replicaSet={{ t.rs_name }}&w=majority&retryWrites=true{% endif %}"
+}
+{% endmacro %}
+
+########
+# Loki #
+########
+
+{% macro loki_remote_write(name, cfg) %}
+loki.write "{{ name }}" {
+  external_labels = {
+    instance = constants.hostname,
+  }
+  endpoint {
+    url               = "{{ cfg.endpoint }}{{ cfg.path | default(alloy_loki_default_api_path) }}"
+    remote_timeout    = "{{ alloy_remote_shipping_timeout }}"
+    enable_http2       = true
+    {% if cfg.username is defined and cfg.password is defined -%}
+    basic_auth {
+      username = "{{ cfg.username }}"
+      password = "{{ cfg.password }}"
+    }
+    {% endif -%}
+    max_backoff_period = "{{ alloy_remote_max_backoff }}"
+  }
+}
+{% endmacro %}
+
+{% macro loki_relabel(name, rules=[]) %}
+loki.relabel "{{ name }}" {
+  forward_to = []
+{{ relabel_rules(rules) }}
+}
+{% endmacro %}
+
+{% macro loki_source_journal(name) %}
+loki.source.journal "{{ name }}"  {
+  relabel_rules = loki.relabel.{{ name }}.rules
+  {{ forward_to('loki') }}
+}
+{% endmacro %}
+
+{% macro loki_source_file(name) %}
+loki.source.file "{{ name }}" {
+  targets    = local.file_match.{{ name }}.targets
+  {{ forward_to('loki') }}
+}
+{% endmacro %}
+
+#########################
+# Full Chain collectors #
+#########################
+
+{% macro metrics_collector_unix(name) %}
+///////////////////
+// Linux metrics //
+///////////////////
+
+{{ prometheus_exporter_unix(name) }}
+{{ prometheus_exporter_scraper(name, 'prometheus.exporter.unix', extra_rules=alloy_unix_metrics_relabelling_rules) }}
+{% endmacro %}
+
+{% macro metrics_collector_mongodb(name) %}
+/////////////////////
+// MongoDB metrics //
+/////////////////////
+
+{{ prometheus_exporter_mongodb(name, alloy_mongodb_exporter_target) }}
+{{ prometheus_exporter_scraper(name, 'prometheus.exporter.mongodb', False, extra_rules=alloy_mongodb_metrics_relabelling_rules) }}
+{% endmacro %}
+
+{% macro metrics_collector_third_party_exporter(e) %}
+{%- set path = e.path | default(alloy_metrics_path_default) -%}
+{%- set interval = e.interval | default(alloy_metrics_scrape_interval_default) -%}
+{%- set labels = e.extra_labels | default([]) -%}
+{%- set clustered = scrapper.clustered | default(false) -%}
+//////////////////////////////////////
+// Third-party {{ e.name }} metrics //
+//////////////////////////////////////
+
+{{ prometheus_scraper(e.name, address=e.address, port=e.port, path=path, interval=interval, extra_labels=labels, clustered=clustered) }}
+{{ prometheus_relabel(e.name) }}
+{% endmacro %}
+
+{% macro logs_collector_systemd(name) %}
+//////////////////////////
+// Systemd journal logs //
+//////////////////////////
+
+{{ loki_relabel(name, alloy_loki_journal_rules) }}
+{{ loki_source_journal(name) }}
+{% endmacro %}
+
+{% macro logs_collector_files(name, files) %}
+////////////////////////
+// External log files //
+////////////////////////
+
+{{ local_file(name, files) }}
+{{ loki_source_file(name) }}
+{% endmacro %}

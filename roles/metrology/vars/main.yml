@@ -41,6 +41,37 @@ victoriametrics_max_concurrent_inserts: 32
 victoriametrics_search_max_unique_timeseries: 900000
 victoriametrics_port: 8428
 
+#########
+# Alloy #
+#########
+
+alloy_system_user: "alloy"
+alloy_system_group: "{{ alloy_system_user }}"
+
+alloy_listen_addr: "{{ lan_ip if lan_ip != '' else '127.0.0.1' }}"
+alloy_port: 12345
+alloy_loglevel: warn
+alloy_metrics_path_default: "/metrics"
+alloy_metrics_scrape_interval_default: "15s"
+
+alloy_remote_shipping_timeout: 5m
+alloy_remote_max_backoff: 15m
+
+alloy_metrics_builtin_exporters: []
+alloy_metrics_external_exporters: []
+
+# list of external log files to pull from (globbing is supported)
+alloy_external_log_files_default:
+  - /var/log/dpkg.log
+  - /var/log/kern.log
+  - /var/log/syslog
+
+alloy_external_log_files: "{{ alloy_linux_external_log_files_default }}"
+
+alloy_loki_journal_rules:
+  - sources: ["__journal__systemd_unit"]
+    target: "unit"
+
 #######################
 # Host Control Plugin #
 #######################
@@ -50,3 +81,5 @@ hostctl_plugins_metrology:
     when: "{{ kowabunga_metrology_dashboard_enabled }}"
   - name: "victoria-metrics"
     when: "{{ kowabunga_metrology_server_metrics_enabled }}"
+  - name: "alloy"
+    when: "{{ kowabunga_metrology_agent_metrics_enabled or kowabunga_metrology_agent_logs_enabled }}"

@@ -1,0 +1,20 @@
+{% import "alloy.macros.j2" as alloy with context %}
+
+logging {
+  level = "{{ alloy_loglevel }}"
+}
+
+{{ alloy.metrics_collector_unix("unix") }}
+{{ alloy.logs_collector_systemd("journal") }}
+
+{% if "mongodb" in alloy_metrics_builtin_exporters -%}
+{{ alloy.metrics_collector_mongodb("mongodb") }}
+{% endif -%}
+
+{% for e in alloy_metrics_external_exporters %}
+{{ alloy.metrics_collector_third_party_exporter(e) }}
+{% endfor %}
+
+{% if alloy_external_log_files != [] %}
+{{ alloy.logs_collector_files("logfiles", alloy_external_log_files) }}
+{% endif %}
