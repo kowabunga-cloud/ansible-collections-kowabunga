@@ -10,4 +10,4 @@ kowabunga_fqdn: "{{ kowabunga_public_url | urlsplit('hostname') }}"
 #######################
 
 hostctl_plugins_kiwi:
-  - name: kowabunga-kiwi
+  - name: kowabunga-kiwi-agent

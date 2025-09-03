@@ -10,4 +10,4 @@ kowabunga_fqdn: "{{ kowabunga_public_url | urlsplit('hostname') }}"
 #######################
 
 hostctl_plugins_kaktus:
-  - name: kowabunga-kaktus
+  - name: kowabunga-kaktus-agent
