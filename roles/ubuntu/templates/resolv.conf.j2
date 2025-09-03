@@ -1,0 +1,3 @@
+{% for srv in netplan_address_nameserver_dns_default %}
+nameserver {{ srv }}
+{% endfor %}
