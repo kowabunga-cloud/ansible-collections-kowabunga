@@ -13,20 +13,26 @@
     selection: deinstall
 
 - name: Disable Systemd DNS resolver
-  ansible.builtin.systemd_service:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
   when: not kowabunga_ubuntu_systemd_dns_resolver_enabled
+  block:
+    - name: Stop systemd-resolved service
+      ansible.builtin.systemd_service:
+        name: systemd-resolved
+        state: stopped
+        enabled: false
 
-- name: Set custom DNS configuration
-  ansible.builtin.template:
-    src: resolv.conf.j2
-    dest: /etc/resolv.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: not kowabunga_ubuntu_systemd_dns_resolver_enabled
+    - name: Remove resolv.conf symlink, if any
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+
+    - name: Set custom DNS configuration
+      ansible.builtin.template:
+        src: resolv.conf.j2
+        dest: /etc/resolv.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - name: Retrieve GPG pubkey
   ansible.builtin.get_url:
