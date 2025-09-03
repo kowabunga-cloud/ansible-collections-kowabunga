@@ -85,7 +85,7 @@ alloy_remote_write_targets:
       username: "{{ kowabunga_metrology_server_logs_auth_user }}"
       password: "{{ kowabunga_metrology_server_logs_auth_password }}"
 
-alloy_metrics_builtin_mongodb_exporter: "{{ kowabunga_mongodb_enabled | ternary(['mongodb'], []) }}"
+alloy_metrics_builtin_mongodb_exporter: "{{ kowabunga_mongodb_enabled | default(false) | ternary(['mongodb'], []) }}"
 alloy_metrics_builtin_exporters: "{{ [] + alloy_metrics_builtin_mongodb_exporter }}"
 
 alloy_metrics_external_exporters: "{{ kowabunga_metrology_agent_metrics_extra_exporters }}"
