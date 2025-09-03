@@ -1,0 +1,8 @@
+contexts:
+  default:
+    grafana:
+      server: http://{{ grafana_listen_addr }}:{{ grafana_http_port }}
+      org-id: 1
+      user: {{ kowabunga_metrology_dashboard_admin_user }}
+      password: {{ kowabunga_metrology_dashboard_admin_password }}
+current-context: default

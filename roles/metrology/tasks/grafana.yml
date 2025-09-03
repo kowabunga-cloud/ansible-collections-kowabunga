@@ -33,6 +33,14 @@
     mode: 0644
   notify: Restart grafana
 
+- name: Template grafanactl configuration
+  ansible.builtin.template:
+    src: grafanactl.yml.j2
+    dest: "{{ grafana_config_dir }}/grafanactl.yml"
+    owner: "{{ grafana_system_user }}"
+    group: "{{ grafana_system_group }}"
+    mode: 0644
+
 - name: Install plugins
   ansible.builtin.command: grafana-cli plugins install {{ item }}
   register: grafana_install_plugin_result
