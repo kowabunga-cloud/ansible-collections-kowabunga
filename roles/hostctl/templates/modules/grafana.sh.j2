@@ -1,0 +1,27 @@
+MOD_NAME="grafana"
+MOD_PRIO=4
+
+# private functions
+infoGrafana() {
+    processInfo "/usr/sbin/grafana-server"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+grafana_status() {
+    checkService grafana
+    infoGrafana
+}
+
+grafana_stop() {
+    stopService grafana "" grafana
+}
+
+grafana_start() {
+    startService grafana pingService grafana
+}
+
+grafana_restart() {
+    restartLoad grafana
+}

@@ -1,0 +1,27 @@
+MOD_NAME="alloy"
+MOD_PRIO=4
+
+# private functions
+infoAlloy() {
+    processInfo "/usr/bin/alloy"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+alloy_status() {
+    checkService alloy
+    infoAlloy
+}
+
+alloy_stop() {
+    stopService alloy "" alloy
+}
+
+alloy_start() {
+    startService alloy pingService alloy
+}
+
+alloy_restart() {
+    restartLoad alloy
+}

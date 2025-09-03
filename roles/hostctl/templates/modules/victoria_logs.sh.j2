@@ -1,0 +1,27 @@
+MOD_NAME="victoria_logs"
+MOD_PRIO=4
+
+# private functions
+infoVictoriaLogs() {
+    processInfo "/usr/bin/victoria-logs"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+victoria_logs_status() {
+    checkService victoria-logs
+    infoVictoriaLogs
+}
+
+victoria_logs_stop() {
+    stopService victoria-logs "" victoria-logs
+}
+
+victoria_logs_start() {
+    startService victoria-logs pingService victoria-logs
+}
+
+victoria_logs_restart() {
+    restartLoad victoria-logs
+}

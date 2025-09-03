@@ -1,0 +1,27 @@
+MOD_NAME="victoria_metrics"
+MOD_PRIO=4
+
+# private functions
+infoVictoriaMetrics() {
+    processInfo "/usr/bin/victoria-metrics"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+victoria_metrics_status() {
+    checkService victoria-metrics
+    infoVictoriaMetrics
+}
+
+victoria_metrics_stop() {
+    stopService victoria-metrics "" victoria-metrics
+}
+
+victoria_metrics_start() {
+    startService victoria-metrics pingService victoria-metrics
+}
+
+victoria_metrics_restart() {
+    restartLoad victoria-metrics
+}
