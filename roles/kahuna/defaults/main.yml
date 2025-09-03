@@ -27,10 +27,3 @@ kowabunga_kahuna_smtp_username: ~
 kowabunga_kahuna_smtp_password: ~
 
 kowabunga_koala_enabled: true
-
-#######################
-# Host Control Plugin #
-#######################
-
-hostctl_plugins_kahuna:
-  - name: kowabunga-kahuna
