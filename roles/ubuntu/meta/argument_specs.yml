@@ -19,3 +19,10 @@ argument_specs:
           - Enforced upgrades improves security and bug-fixing but might cause unexpected regressions or service restarts.
         type: bool
         default: false
+
+      kowabunga_ubuntu_systemd_dns_resolver_enabled:
+        description:
+          - Defines whether systemd-resolved local DNS cache should be enabled.
+          - Disabled for Kiwi, as agent implements its own DNS server.
+        type: bool
+        default: true

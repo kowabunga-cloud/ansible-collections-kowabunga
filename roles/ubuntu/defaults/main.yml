@@ -9,3 +9,4 @@
 
 kowabunga_ubuntu_packages_list_extra: []
 kowabunga_ubuntu_enforced_dist_upgrade: false
+kowabunga_ubuntu_systemd_dns_resolver_enabled: true

@@ -12,6 +12,13 @@
     name: snapd
     selection: deinstall
 
+- name: Disable Systemd DNS resolver
+  ansible.builtin.systemd_service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+  when: not kowabunga_ubuntu_systemd_dns_resolver_enabled
+
 - name: Retrieve GPG pubkey
   ansible.builtin.get_url:
     url: "{{ kowabunga_apt_keyring_remote }}"
