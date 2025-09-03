@@ -27,15 +27,3 @@
   ansible.builtin.setup:
     filter: ansible_local
   when: network_detector.changed
-
-- name: Check that the /run/systemd/resolve/resolv.conf file exists
-  ansible.builtin.stat:
-    path: /run/systemd/resolve/resolv.conf
-  register: resolvconf_result
-
-- name: Ensure we use resolv.conf from systemd
-  ansible.builtin.file:
-    src: /run/systemd/resolve/stub-resolv.conf
-    dest: /etc/resolv.conf
-    state: link
-  when: resolvconf_result.stat.exists
