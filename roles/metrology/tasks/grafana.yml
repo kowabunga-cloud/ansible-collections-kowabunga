@@ -5,8 +5,11 @@
 
 - name: Install Grafana
   ansible.builtin.apt:
-    name: grafana
+    name: "{{ item }}"
     state: latest
+  loop:
+    - grafana
+    - grafanactl
   notify: Restart grafana
 
 - name: Create data directory
