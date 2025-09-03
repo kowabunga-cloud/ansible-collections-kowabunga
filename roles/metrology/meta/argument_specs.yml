@@ -30,7 +30,7 @@ argument_specs:
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
           - Empty if unspecified.
         type: str
-        default: "{{ secret_kowabunga_metrology_dashboard_admin_password }}"
+        default: Value of secret_kowabunga_metrology_dashboard_admin_password variable.
 
       kowabunga_metrology_dashboard_extra_users:
         description:
@@ -265,7 +265,7 @@ argument_specs:
           - Used for HTTPS basic authentication (disabled if unspecified).
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: "{{ secret_kowabunga_metrology_server_metrics_auth_password }}"
+        default: Value of secret_kowabunga_metrology_server_metrics_auth_password variable.
 
       kowabunga_metrology_server_logs_enabled:
         description:
@@ -300,4 +300,4 @@ argument_specs:
           - Used for HTTPS basic authentication (disabled if unspecified).
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
         type: str
-        default: "{{ secret_kowabunga_metrology_server_logs_auth_password }}"
+        default: Value of secret_kowabunga_metrology_server_logs_auth_password variable.
