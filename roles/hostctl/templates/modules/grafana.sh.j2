@@ -10,18 +10,18 @@ infoGrafana() {
 # each of the below function may or may not be defined
 
 grafana_status() {
-    checkService grafana
+    checkService grafana-server grafana
     infoGrafana
 }
 
 grafana_stop() {
-    stopService grafana "" grafana
+    stopService grafana-server "" grafana-server
 }
 
 grafana_start() {
-    startService grafana pingService grafana
+    startService grafana-server pingService grafana-server
 }
 
 grafana_restart() {
-    restartLoad grafana
+    restartLoad grafana-server
 }
