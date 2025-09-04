@@ -70,30 +70,30 @@ argument_specs:
         description:
           - Admin password for PowerDNS Web Server.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted secret_kowabunga_powerdns_webserver_password variable.
         type: str
-        default: Value of secret_kowabunga_powerdns_webserver_password variable.
         required: true
 
       kowabunga_powerdns_api_key:
         description:
           - PowerDNS API key.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted secret_kowabunga_powerdns_api_key variable.
         type: str
-        default: Value of secret_kowabunga_powerdns_api_key variable.
         required: true
 
       kowabunaga_powerdns_db_admin_password:
         description:
           - Admin password for MariaDB database.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted secret_kowabunaga_powerdns_db_admin_password variable.
         type: str
-        default: Value of secret_kowabunaga_powerdns_db_admin_password variable.
         required: true
 
       kowabunaga_powerdns_db_user_password:
         description:
           - PowerDNS user password for MariaDB database.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted secret_kowabunaga_powerdns_db_user_password variable.
         type: str
-        default: Value of secret_kowabunaga_powerdns_db_user_password variable.
         required: true
