@@ -4,22 +4,6 @@ MOD_PRIO=2
 # private functions
 infoMariaDB() {
     processInfo "/usr/sbin/mariadbd"
-    mariadbTest=$(sudo mariadb-admin ping)
-    res=$?
-    if [ "${res}" -ne 0 ]; then
-        logErrorWithDiagnosis "  mariadb-admin ping" "${mariadbTest}"
-    else
-        displaySuccess "  mariadb-admin ping"
-        [ $isVerbose -eq 1 ] && echo "${mariadbTest}" | sed -r 's/^/    /'
-    fi
-    mariadbTest=$(sudo mariadb-admin status)
-    res=$?
-    if [ "${res}" -ne 0 ]; then
-        logErrorWithDiagnosis "  mariadb-admin status" "${mariadbTest}"
-    else
-        displaySuccess "  mariadb-status status"
-        echo "${mariadbTest}" | sed -r 's/^/    /'
-    fi
 }
 
 # publicly exported functions
