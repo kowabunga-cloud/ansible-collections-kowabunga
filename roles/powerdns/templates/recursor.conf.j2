@@ -14,7 +14,7 @@ local-address=127.0.0.1 {{ lan_ip }} {% if kowabunga_network_failover_enabled %}
 # API
 api-key={{ kowabunga_powerdns_api_key  }}
 webserver=true
-webserver-address=localhost
+webserver-address={{ powerdns_locally_managed_dns_ip }}
 webserver-password={{ kowabunga_powerdns_webserver_password }}
 webserver-port= {{ powerdns_recursor_webserver_port }}
 webserver-allow-from={{ powerdns_allow_from }}
