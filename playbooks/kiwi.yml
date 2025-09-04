@@ -15,5 +15,7 @@
     - name: kowabunga.cloud.metrology
       when: kowabunga_metrology_enabled
       tags: metrology
+    - name: kowabunga.cloud.powerdns
+      tags: powerdns
     - name: kowabunga.cloud.kiwi
       tags: agent
