@@ -1,0 +1,24 @@
+# local zones
+forward-zones-file={{ powerdns_forward_zones_file }}
+
+# forwarders
+forward-zones-recurse=.={% for srv in netplan_address_nameserver_dns_default %}{[ srv }}{% if not loop.last %};{% endif %}{% endfor %}
+
+# security
+allow-from={{ powerdns_allow_from }}
+
+local-port={{ powerdns_recursor_port }}
+
+local-address=127.0.0.1 {{ lan_ip }} {% if kowabunga_network_failover_enabled %}{% for tracker in kowabunga_network_failover_settings.trackers %}{% for cfg in tracker.configs %}{% if cfg.vip | ansible.utils.ipaddr('private') %} {{ cfg.vip }}{% endif %}{% endfor %}{% endfor %}{% endif %}
+
+# API
+api-key={{ kowabunga_powerdns_api_key  }}
+webserver=true
+webserver-address=localhost
+webserver-password={{ kowabunga_powerdns_webserver_password }}
+webserver-port= {{ powerdns_recursor_webserver_port }}
+webserver-allow-from={{ powerdns_allow_from }}
+api-config-dir={{ powerdns_recursor_api_config_dir }}
+include-dir={{ powerdns_recursor_api_config_dir }}
+auth-zones=
+forward-zones=

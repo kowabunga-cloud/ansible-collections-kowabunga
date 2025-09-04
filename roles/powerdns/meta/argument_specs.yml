@@ -1,0 +1,99 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start PowerDNS server.
+    description:
+      - Install, configure, and start PowerDNS server.
+
+    options:
+      kowabunga_powerdns_forward_zones:
+        description:
+          - List of DNS zones to be forwarded to remote destinations.
+        type: list
+        elements: dict
+        default: []
+        options:
+          zone:
+            description:
+              - Name of the zone to be forwarded.
+            type: str
+            required: true
+          destination:
+            description:
+              - Map of IP addresses and ports for the DNS zone to be forwarded to.
+              - Format as 'ips:ports'
+            type: str
+            required: true
+
+      kowabunga_powerdns_locally_managed_zones:
+        description:
+          - List of local DNS zones to be associated and managed by PowerDNS.
+        type: list
+        elements: str
+        default: []
+
+      kowabunga_powerdns_locally_managed_zone_records:
+        description:
+          - List of locally managed DNS zone records.
+        type: list
+        elements: dict
+        default: []
+        options:
+          zone:
+            description:
+              - Name of the zone where to create DNS record.
+            type: str
+            required: true
+          name:
+            description:
+              - Name of the DNS record to be created.
+            type: str
+            required: true
+          rtype:
+            description:
+              - Type of DNS record entry to be created.
+            type: str
+            default: A
+            choices: ['A', 'AAAA', 'CNAME', 'PTR', 'TXT']
+          ttl:
+            description:
+              - DNS record Time-To-Live (TTL) value.
+            type: int
+            default: 3600
+          value:
+            description:
+              - DNS record associated value.
+            type: str
+            required: true
+
+      kowabunga_powerdns_webserver_password:
+        description:
+          - Admin password for PowerDNS Web Server.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: Value of secret_kowabunga_powerdns_webserver_password variable.
+        required: true
+
+      kowabunga_powerdns_api_key:
+        description:
+          - PowerDNS API key.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: Value of secret_kowabunga_powerdns_api_key variable.
+        required: true
+
+      kowabunaga_powerdns_db_admin_password:
+        description:
+          - Admin password for MariaDB database.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: Value of secret_kowabunaga_powerdns_db_admin_password variable.
+        required: true
+
+      kowabunaga_powerdns_db_user_password:
+        description:
+          - PowerDNS user password for MariaDB database.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+        type: str
+        default: Value of secret_kowabunaga_powerdns_db_user_password variable.
+        required: true

@@ -1,0 +1,46 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+##################
+# MySQL Database #
+##################
+
+powerdns_database_name: powerdns
+powerdns_database_host: localhost
+powerdns_database_port: 3306
+powerdns_database_user: powerdns
+powerdns_database_sql_schema: /usr/share/pdns-backend-mysql/schema/schema.mysql.sql
+powerdns_database_sql_fk_schema: /usr/share/pdns-backend-mysql/schema/enable-foreign-keys.mysql.sql
+
+##################################
+# PowerDNS Authority Server (AS) #
+##################################
+
+powerdns_local_user: pdns
+powerdns_local_group: "{{ powerdns_local_user }}"
+powerdns_locally_managed_dns_ip: "{{ lan_ip }}"
+
+# Restrict IP addreses allowed to access the DNS service to private LAN ones
+powerdns_allow_from: "127.0.0.0/8, 10.0.0.0/8, 100.64.0.0/10, 169.254.0.0/16, 192.168.0.0/16, 172.16.0.0/12, ::1/128, fc00::/7, fe80::/10"
+
+powerdns_authoritative_port: 54
+powerdns_auth_webserver_port: 9000
+
+#####################
+# PowerDNS Recursor #
+#####################
+
+powerdns_recursor_port: 53
+powerdns_recursor_webserver_port: 9001
+powerdns_recursor_api_config_dir: /etc/powerdns/recursor.d/
+powerdns_forward_zones_file: "{{ powerdns_recursor_api_config_dir }}zones.txt"
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_powerdns:
+  - name: mariadb
+  - name: powerdns

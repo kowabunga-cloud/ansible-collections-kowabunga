@@ -1,0 +1,24 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Restart MariaDB
+  ansible.builtin.systemd_service:
+    name: mariadb
+    state: restarted
+    enabled: true
+
+- name: Restart pdns
+  ansible.builtin.service:
+    name: pdns
+    state: restarted
+    enabled: true
+  listen: "Restart PowerDNS"
+
+- name: Restart pdns-recursor
+  ansible.builtin.service:
+    name: pdns-recursor
+    state: restarted
+    enabled: true
+  listen: "Restart PowerDNS"

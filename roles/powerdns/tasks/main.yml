@@ -1,0 +1,160 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install MariaDB backend
+  ansible.builtin.import_tasks: mariadb.yml
+
+- name: Install PowerDNS
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - pdns-server
+    - pdns-recursor
+    - pdns-backend-mysql
+
+- name: Setup database
+  block:
+    - name: Create MySQL PowerDNS database
+      mysql_db:
+        name: "{{ powerdns_database_name }}"
+        state: present
+        login_host: localhost
+        login_port: "{{ powerdns_database_port }}"
+        login_user: root
+        login_password: "{{ kowabunaga_powerdns_db_admin_password }}"
+
+    - name: Create MySQL PowerDNS user
+      mysql_user:
+        state: present
+        name: "{{ powerdns_database_user }}"
+        password: "{{ kowabunaga_powerdns_db_user_password }}"
+        priv: "{{ powerdns_database_name }}.*:ALL"
+        host: "{{ powerdns_database_host }}"
+        login_host: localhost
+        login_port: "{{ powerdns_database_port }}"
+        login_user: root
+        login_password: "{{ kowabunaga_powerdns_db_admin_password }}"
+
+    - name: Import PowerDNS SQL schema
+      ansible.builtin.slurp:
+        src: "{{ powerdns_database_sql_schema }}"
+      register: powerdns_sql_schema
+
+    - name: Update PowerDNS SQL schema
+      ansible.builtin.set_fact:
+        powerdns_sql_schema_query: >-
+          {{ powerdns_sql_schema.content | b64decode
+          | replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS')
+          | replace('INDEX', 'INDEX IF NOT EXISTS') }}
+
+    - name: Create PowerDNS SQL tables
+      mysql_query:
+        login_db: "{{ powerdns_database_name }}"
+        login_host: "{{ powerdns_database_host }}"
+        login_port: "{{ powerdns_database_port }}"
+        login_user: "{{ powerdns_database_user }}"
+        login_password: "{{ kowabunaga_powerdns_db_user_password }}"
+        query: "{{ powerdns_sql_schema_query }}"
+
+    - name: Import SQL foreign keys schema
+      ansible.builtin.slurp:
+        src: "{{ powerdns_database_sql_fk_schema }}"
+      register: powerdns_sql_fk_schema
+
+    - name: Update foreign keys SQL schema
+      ansible.builtin.set_fact:
+        powerdns_sql_fk_schema_query: >-
+          {{ powerdns_sql_fk_schema.content | b64decode
+          | replace('FOREIGN KEY', 'FOREIGN KEY IF NOT EXISTS') }}
+
+    - name: Create PowerDNS SQL indexes & foreign keys
+      mysql_query:
+        login_db: "{{ powerdns_database_name }}"
+        login_host: "{{ powerdns_database_host }}"
+        login_port: "{{ powerdns_database_port }}"
+        login_user: "{{ powerdns_database_user }}"
+        login_password: "{{ kowabunaga_powerdns_db_user_password }}"
+        query: "{{ powerdns_sql_fk_schema_query }}"
+
+- name: Ensure Forward Zone files exists
+  ansible.builtin.file:
+    path: "{{ powerdns_forward_zones_file }}"
+    state: touch
+    owner: "{{ powerdns_local_user }}"
+    group: "{{ powerdns_local_group }}"
+    mode: 0644
+
+- name: Template configuration
+  ansible.builtin.template:
+    src: "{{ item.file }}.j2"
+    dest: "/etc/powerdns/{{ item.path }}/{{ item.file }}"
+    owner: "{{ powerdns_local_user }}"
+    group: "{{ powerdns_local_group }}"
+    mode: "0644"
+  loop:
+    - file: "configure_mysql.conf"
+      path: "pdns.d"
+    - file: "pdns.conf"
+      path: "pdns.d"
+    - file: "recursor.conf"
+      path: "recursor.d"
+  notify: Restart PowerDNS
+
+- name: Tune systemctl config for "recursor.conf" part1
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/pdns-recursor.service
+    regexp: '^ProtectSystem='
+    line: ProtectSystem=strict
+  register: recursorprotectsystem
+  notify: Restart PowerDNS
+
+- name: Tune systemctl config for "recursor.conf" part2
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/pdns-recursor.service
+    line: "ReadWritePaths={{ powerdns_recursor_api_config_dir }}"
+    insertafter: '^ProtectSystem='
+  register: recursorreadwritepath
+  notify: Restart PowerDNS
+
+- name: Reload systemd daemon on change
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: recursorprotectsystem.changed or recursorreadwritepath.changed
+
+- name: Record externally forwarded zones on recursor
+  ansible.builtin.lineinfile:
+    path: "{{ powerdns_forward_zones_file }}"
+    line: "{{ item.zone }}={{ item.destination }};"
+  loop: "{{ kowabunga_powerdns_forward_zones }}"
+  notify: Restart PowerDNS
+
+- name: Record local zones on recursor
+  ansible.builtin.lineinfile:
+    path: "{{ powerdns_forward_zones_file }}"
+    line: "{{ item }}={{ powerdns_locally_managed_dns_ip }}:{{ powerdns_authoritative_port }}"
+  loop: "{{ kowabunga_powerdns_locally_managed_zones }}"
+  notify: Restart PowerDNS
+
+- name: Create zones
+  ansible.builtin.command: "pdnsutil create-zone {{ item }} {{ powerdns_locally_managed_dns_ip }}"
+  failed_when: "'already exists' in pdns_created_zone.stderr"
+  register: pdns_created_zone
+  loop: "{{ kowabunga_powerdns_locally_managed_zones }}"
+
+- name: Check if DNS zone records exist
+  ansible.builtin.command: "host -t {{ item.rtype }} {{ item.name }}.{{ item.zone }} {{ powerdns_locally_managed_dns_ip }}"
+  register: pdns_zone_records
+  loop: "{{ kowabunga_powerdns_locally_managed_zone_records }}"
+  failed_when: false
+
+- name: Create DNS zone records
+  ansible.builtin.command: "pdnsutil add-record {{ item.zone }} {{ item.name }} {{ item.rtype | default('A') }} {{ item.ttl | default(3600) }} {{ item.value }}"
+  loop: "{{ kowabunga_powerdns_locally_managed_zone_records }}"
+  loop_control:
+    index_var: idx
+  when: >-
+    (pdns_zone_records.results[idx].rc != 0) or
+    (pdns_zone_records.results[idx].rc == 0 and (item.name + "." + item.zone + " has address " + item.value) not in pdns_zone_records.results[idx].stdout_lines)

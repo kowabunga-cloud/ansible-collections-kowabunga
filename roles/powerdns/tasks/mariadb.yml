@@ -1,0 +1,38 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install MariaDB
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - mariadb-server
+    - mariadb-client
+    - python3-mysqldb
+
+- name: Ensure MariaDB is started
+  ansible.builtin.systemd_service:
+    name: mariadb
+    state: started
+    daemon_reload: true
+    enabled: true
+
+- name: Check for empty MariaDB admin password (first run)
+  shell: mysql -u root -e ";"
+  register: mariadb_bootstrap
+  changed_when: true
+  failed_when: false
+
+- name: Create MariaDB admin password
+  community.mysql.mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ kowabunaga_powerdns_db_admin_password }}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+  loop:
+    - "%"
+    - "localhost"
+  when: mariadb_bootstrap.stderr | length == 0
