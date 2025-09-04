@@ -5,6 +5,8 @@
 
 kowabunga_fqdn: "{{ kowabunga_public_url | urlsplit('hostname') }}"
 
+kiwi_powerdns_recursor_cluster_group_name: "kiwi"
+
 #######################
 # Host Control Plugin #
 #######################
