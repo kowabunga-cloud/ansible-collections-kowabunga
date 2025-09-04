@@ -93,7 +93,7 @@
     dest: "/etc/powerdns/{{ item.path }}/{{ item.file }}"
     owner: "{{ powerdns_local_user }}"
     group: "{{ powerdns_local_group }}"
-    mode: "0644"
+    mode: 0644
   loop:
     - file: "configure_mysql.conf"
       path: "pdns.d"
