@@ -101,6 +101,7 @@
       path: "pdns.d"
     - file: "recursor.conf"
       path: "recursor.d"
+  no_log: true
   notify: Restart PowerDNS
 
 - name: Tune systemctl config for "recursor.conf" part1

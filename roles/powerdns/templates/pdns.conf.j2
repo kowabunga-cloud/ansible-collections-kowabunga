@@ -1,7 +1,7 @@
 # general service
 local-port={{ powerdns_authoritative_port }}
 
-local-address= 127.0.0.1 {% if kowabunga_network_failover_enabled %}{% for tracker in kowabunga_network_failover_settings.trackers %}{% for cfg in tracker.configs %}{% if cfg.vip | ansible.utils.ipaddr('private') %} {{ cfg.vip }}{% endif %}{% endfor %}{% endfor %}{% endif %} {% for iface in ansible_local.auto.network.interfaces | default ([]) %}{% if ansible_local.auto.network.interfaces[iface].private %} {{ ansible_local.auto.network.interfaces[iface].ip }}{% endif %}{% endfor %}
+local-address= 127.0.0.1 {% if kowabunga_network_failover_enabled %}{% for tracker in kowabunga_network_failover_settings.trackers %}{% for cfg in tracker.configs %}{% if cfg.vip | ansible.utils.ipaddr('private') %} {{ cfg.vip | ansible.utils.ipaddr('address') }}{% endif %}{% endfor %}{% endfor %}{% endif %} {% for iface in ansible_local.auto.network.interfaces | default ([]) %}{% if ansible_local.auto.network.interfaces[iface].private %} {{ ansible_local.auto.network.interfaces[iface].ip }}{% endif %}{% endfor %}
 
 dnsupdate=true
 
