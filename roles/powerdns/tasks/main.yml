@@ -146,7 +146,7 @@
   loop: "{{ kowabunga_powerdns_locally_managed_zones }}"
 
 - name: Check if DNS zone records exist
-  ansible.builtin.command: "host -t {{ item.rtype }} {{ item.name }}.{{ item.zone }} {{ powerdns_locally_managed_dns_ip }}"
+  ansible.builtin.command: "host -t {{ item.rtype | default('A') }} {{ item.name }}.{{ item.zone }} {{ powerdns_locally_managed_dns_ip }}"
   register: pdns_zone_records
   loop: "{{ kowabunga_powerdns_locally_managed_zone_records }}"
   failed_when: false
