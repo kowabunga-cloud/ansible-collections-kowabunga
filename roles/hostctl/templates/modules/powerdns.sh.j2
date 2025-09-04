@@ -1,0 +1,32 @@
+MOD_NAME="powerdns"
+MOD_PRIO=3
+
+# private functions
+infoPowerdns() {
+    processInfo "/usr/sbin/pdns_server"
+    processInfo "/usr/sbin/pdns_recursor"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+powerdns_status() {
+    checkService pdns pdns-server
+    checkService pdns-recursor pdns-recursor
+    infoPowerdns
+}
+
+powerdns_stop() {
+    stopService pdns "" pdns
+    stopService pdns-recursor "" pdns-recursor
+}
+
+powerdns_start() {
+    startService pdns pingService pdns
+    startService pdns-recursor pingService pdns-recursor
+}
+
+powerdns_restart() {
+    restartService pdns pingService pdns
+    restartService pdns-recursor pingService pdns-recursor
+}
