@@ -52,9 +52,9 @@
       loop:
         - src: /tmp/bootstrap.keyring,
           dest: "{{ ceph_auth_bootstrap_secret_key }}"
-        - src: /tmp/admin.keyring,
+        - src: /tmp/admin.keyring
           dest: "{{ ceph_auth_admin_secret_key }}"
-        - src: "{{ ceph_auth_secret_keyring }}",
+        - src: "{{ ceph_auth_secret_keyring }}"
           dest: "{{ ceph_auth_secret_keyring }}"
 
 - name: Deploy keys
