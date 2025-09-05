@@ -47,10 +47,10 @@
     - name: Fetch keys
       ansible.builtin.fetch:
         src: "{{ item.src }}"
-        dest: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region}}/{{ item.dest | split('/') | last }}"
+        dest: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item.dest | ansible.builtin.basename }}"
         flat: true
       loop:
-        - src: /tmp/bootstrap.keyring,
+        - src: /tmp/bootstrap.keyring
           dest: "{{ ceph_auth_bootstrap_secret_key }}"
         - src: /tmp/admin.keyring
           dest: "{{ ceph_auth_admin_secret_key }}"

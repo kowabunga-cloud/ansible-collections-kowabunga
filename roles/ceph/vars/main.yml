@@ -94,6 +94,6 @@ hostctl_plugins_ceph:
 
 hostctl_plugins_nfs_ganesha:
   - name: "nfs-ganesha"
-    when: "{{ kowabunga_ceph_fs_nfs_enabled }}"
+    when: "{{ ceph_fs_nfs_enabled }}"
   - name: "nfs-ganesha-export-api"
-    when: "{{ kowabunga_ceph_fs_nfs_enabled }}"
+    when: "{{ ceph_fs_nfs_enabled }}"

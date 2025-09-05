@@ -255,4 +255,3 @@ argument_specs:
               - Map of client capabilities.
               - "Refer to https://docs.ceph.com/en/latest/cephfs/client-auth/ for help."
             type: dict
-            elements: str
