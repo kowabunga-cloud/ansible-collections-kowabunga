@@ -8,5 +8,8 @@ mon_host = {% for node in ceph_monitor_nodes %}{{ hostvars[node].kowabunga_ceph_
 auth_cluster_required = cephx
 auth_service_required = cephx
 auth_client_required = cephx
+
+[mon]
+public_bind_addr = {{ kowabunga_ceph_monitor_listen_addr }}
 ; This empty line is left intentionally.
 ; It is needed to have a carriage return on the last line in the config file
