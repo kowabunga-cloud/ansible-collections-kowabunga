@@ -23,7 +23,7 @@ kowabunga_ceph_monitor_enabled: false
 #########################
 
 kowabunga_ceph_manager_enabled: false
-kowabunga_ceph_manager_admin_password: ~
+kowabunga_ceph_manager_admin_password: "{{ secret_kowabunga_ceph_manager_admin_password }}"
 
 #####################
 # Ceph OSD Settings #
