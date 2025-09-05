@@ -1,0 +1,14 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Create Ceph client keyrings
+  ansible.builtin.shell:
+    cmd: "ceph auth get-or-create client.{{ item.name }} {% for cap in item.caps | dict2items %} {{ cap.key }} '{{ cap.value }}' {% endfor %}"
+  with_items: "{{ kowabunga_ceph_clients }}"
+
+- name: Dump Ceph client keyring to file
+  ansible.builtin.shell:
+    cmd: "ceph auth get client.{{ item.name }} > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.name }}.keyring"
+  with_items: "{{ kowabunga_ceph_clients }}"

@@ -1,0 +1,13 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Disable CVE-2021-20288 warning
+  ansible.builtin.shell:
+    cmd: "ceph config set mon mon_warn_on_insecure_global_id_reclaim_allowed false"
+  when: kowabunga_ceph_monitor_enabled
+
+- name: Acknowledge previous errors
+  ansible.builtin.shell: ceph crash archive-all
+  when: kowabunga_ceph_manager_enabled

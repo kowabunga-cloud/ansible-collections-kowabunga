@@ -13,4 +13,6 @@
     - name: kowabunga.cloud.metrology
       when: kowabunga_metrology_enabled
       tags: metrology
+    - name: ceph
+      tags: ceph
     - name: kowabunga.cloud.kaktus

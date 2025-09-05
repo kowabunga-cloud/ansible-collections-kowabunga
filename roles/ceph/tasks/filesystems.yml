@@ -1,0 +1,23 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Check for filesystems existence
+  ansible.builtin.shell: "ceph fs get {{ item.name }}"
+  register: ceph_fss
+  changed_when: false
+  failed_when: false
+  loop: "{{ kowabunga_ceph_fs_filesystems }}"
+
+- name: Create filesystem on OSD pools
+  ansible.builtin.shell: "ceph fs new {{ item.name }} {{ item.metadata_pool }} {{ item.data_pool }}"
+  loop: "{{ kowabunga_ceph_fs_filesystems }}"
+  loop_control:
+    index_var: idx
+  when: ceph_fss.results[idx].rc != 0
+
+- name: Set default filesystem
+  ansible.builtin.shell: "ceph fs set-default {{ item.name }}"
+  when: item.default | default(false)
+  loop: "{{ kowabunga_ceph_fs_filesystems }}"

@@ -1,0 +1,47 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Restart ceph-mon
+  ansible.builtin.service:
+    name: "ceph-mon@{{ ansible_hostname }}"
+    state: restarted
+    enabled: true
+
+- name: Restart ceph-mgr
+  ansible.builtin.service:
+    name: "ceph-mgr@{{ ansible_hostname }}"
+    state: restarted
+    enabled: true
+
+- name: Restart ceph-mds
+  ansible.builtin.service:
+    name: "ceph-mds@{{ ansible_hostname }}"
+    state: restarted
+    enabled: true
+
+- name: Restart ceph-osd
+  ansible.builtin.service:
+    name: "ceph-osd@{{ item.id }}"
+    state: started
+    enabled: true
+  loop: "{{ kowabunga_ceph_osds | flatten(levels=1) }}"
+
+- name: Restart ceph nfs
+  ansible.builtin.service:
+    name: "nfs-ganesha"
+    state: started
+    enabled: true
+
+- name: Reload ceph nfs
+  ansible.builtin.service:
+    name: "nfs-ganesha"
+    state: reloaded
+    enabled: true
+
+- name: Restart ceph nfs API
+  ansible.builtin.service:
+    name: "nfs-ganesha-export-api"
+    state: restarted
+    enabled: true

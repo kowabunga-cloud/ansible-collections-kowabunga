@@ -1,0 +1,252 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start Ceph storage cluster.
+    description:
+      - Install, configure, and start Ceph storage cluster.
+
+    options:
+      kowabunga_ceph_fsid:
+        description:
+          - Ceph cluster filesystem ID.
+          - Must be unique across your entire network (usually the case, unless you have multiple Ceph clusters).
+          - Consists of a UUID (can be generated through 'uuigen' command).
+        type: str
+        required: true
+
+      kowabunga_ceph_network:
+        description:
+          - Definition of the Ceph storage network.
+          - Must be CIDR formatted (e.g. a.b.c.d/mask)
+        type: str
+        required: true
+
+      kowabunga_ceph_region:
+        description:
+          - Name of the Ceph region.
+          - Usually the Kowabunga's one.
+        type: str
+        required: true
+
+      kowabunga_ceph_local_keyrings_dir:
+        description:
+          - Defines local directory (relative to playbook execution one) where to store generated keyrings.
+          - Keyring files will be generated once (and for all) per regional cluster.
+          - Generated Keyring files then be further deployed on cluster peers.
+          - Once generated, keep files under source control.
+        type: path
+        required: true
+
+      kowabunga_ceph_monitor_enabled:
+        description:
+          - Defines whether Ceph monitor component must be deployed on node.
+          - Ceph monitors implement API and takes the clients workload.
+          - At least one cluster node must have a monitor present.
+          - A group of 3 is recommended for load balancing and high-availability.
+          - Having more than 3 is usually not useful.
+        type: bool
+        default: false
+
+      kowabunga_ceph_manager_enabled:
+        description:
+          - Defines whether Ceph Manager component must be deployed on node.
+          - Ceph manager provides monitoring and serviceability features.
+          - It is recommended to enable on at least one cluster node.
+          - A group of 2 (or 3) is recommended for high-availability (active-passive).
+        type: bool
+        default: false
+
+      kowabunga_ceph_manager_admin_password:
+        description:
+          - Password for the 'admin' user.
+          - Can be used to connect on Ceph Web client on port 8080.
+          - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted V(secret_kowabunga_ceph_manager_admin_password) variable.
+        type: str
+        required: true
+
+      kowabunga_ceph_osd_enabled:
+        description:
+          - Defines whether Ceph OSD components must be deployed on node.
+          - An OSD (Object Storage Daemon) targets an atomic cluster storage entity (usually a disk or a partition).
+          - There are as many OSD instances as disks to be part of the cluster.
+          - Enabled, unless the node does not feature any data disk to be part of the cluster.
+        type: bool
+        default: true
+
+      kowabunga_ceph_osds:
+        description:
+          - List of instance OSDs definitions.
+          - Each disk/partition from the host must be declared in this list.
+        type: list
+        elements: dict
+        default: []
+        options:
+          id:
+            description:
+              - OSD unique identifier across the whole Ceph cluster.
+              - Usually iterates incrementally over disks and instances (e.g. 0 for first disk of for first instance, 1 for second disk of first instance, ...)
+            type: int
+            required: true
+          dev:
+            description:
+              - Unique Linux special device file representing the disk/partition to be mapped by the OSD.
+              - "Example: /dev/disk/by-id/nvme-SAMSUNG_MZQL21T9HCJR-00A07_S64GNS0X101300"
+              - "WARNING: Device WILL be formatted for Ceph usage."
+            type: path
+            required: true
+          weight:
+            description:
+              - Weight of the OSD in Ceph crush map.
+              - Value will determine the object placement and priority.
+              - The bigger the value, the more chances one disk has to be elected to store data fragments.
+              - Usually defines as disk size in TB (e.g. a 1.92 TB SSD would be assigned a weight of 1.92).
+              - Can be overriden to enforce placement (if you have faster disks than others for example).
+            type: float
+            required: true
+
+      kowabunga_ceph_osd_max_pg_per_osd:
+        description:
+          - Maximum number of PG (Placement Groups) per OSD.
+        type: int
+        default: 500
+
+      kowabunga_ceph_osd_pools:
+        description:
+          - List of storage pools to be created on the Ceph cluster.
+          - Refer to https://linuxkidd.com/ceph/pgcalc.html for per-pool PG value calculation.
+          - Values of at least 256 (or 512) are recommended for multi-nodes cluster, 128 for single-node.
+          - "Warning: pg_autoscaler is enabled by default, see https://docs.ceph.com/en/latest/rados/operations/placement-groups"
+        type: list
+        elements: dict
+        default:
+          - name: rbd
+            type: rbd
+            pgs: 256
+            replication:
+              min: 1
+              request: 2
+            compression:
+              mode: passive
+              algorithm: snappy
+        options:
+          name:
+            description:
+              - Pool name
+              - No whitespace or special characters are allowed.
+            type: str
+            required: true
+          ptype:
+            description:
+              - Type of storage pool
+              - Use 'rbd' for block devices 0r 'fs' for filesystems.
+            type: str
+            choices: ['rbd', 'fs']
+            required: true
+          pgs:
+            description:
+              - Number of PGs to be allocated to the pool.
+            type: int
+            required: true
+          replication:
+            description:
+              - Defines pool data replication factor.
+              - Data fragments are copied over multiple OSDs for redundancy.
+              - The bigger, the more resilient your cluster is to failures but the least usable space you'll get.
+            type: dict
+            required: true
+            options:
+              min:
+                description:
+                  - Minimum replicas to be alive for the cluster to be safe.
+                type: int
+                required: true
+              request:
+                description:
+                  - Target replica count.
+                type: int
+                required: true
+          compression:
+            description:
+              - Data compression settings.
+            type: dict
+            options:
+              mode:
+                description:
+                  - Compression mode, tradeoff between storage size and CPU usage.
+                type: str
+                default: passive
+                choices: ['none', 'passive', 'aggressive', 'force']
+              algorithm:
+                description:
+                  - Compression algorithm to be used.
+                type: str
+                default: snappy
+                choices: ['lz4', 'snappy', 'zlib', 'zstd']
+
+      kowabunga_ceph_fs_enabled:
+        description:
+          - Defines whether support for CephFS must be enabled.
+          - Only usefull if you intend to provide filesystem-as-a-service (e.g. with Kylo).
+        type: bool
+        default: false
+
+      kowabunga_ceph_fs_filesystems:
+        description:
+          - List of Ceph filesystem to be created on the storage cluster.
+          - Requires V(kowabunga_ceph_fs_enabled) feature to be enabled.
+        type: list
+        elements: dict
+        default: []
+        options:
+          name:
+            description:
+              - Filesystem name.
+              - No whitespace or special characters are allowed.
+            type: str
+            required: true
+          metadata_pool:
+            description:
+              - Name of one of the previously created OSD pool which will serve to host filesystem's metadata.
+            type: str
+            required: true
+          data_pool:
+            description:
+              - Name of one of the previously created OSD pool which will serve to host filesystem's data.
+            type: str
+            required: true
+          default:
+            description:
+              - Defines whether this filesystem is to be set as default one.
+            type: bool
+            default: false
+          fstype:
+            description:
+              - Filesystem target type.
+            default: fs
+            choices: ['fs', 'nfs']
+
+      kowabunga_ceph_clients:
+        description:
+          - List of client keyrings to be supported.
+          - Must be hand over to client applications further on.
+          - Typical client would be libvirt or Kubernetes, trying to access Ceph RBD block devices.
+        type: list
+        elements: dict
+        default:
+          - name: libvirt
+            caps:
+              mon: "profile rbd"
+              osd: "profile rbd pool=rbd"
+        options:
+          name:
+            description:
+              - Ceph client name
+            type: str
+            required: true
+          caps:
+            description:
+              - Map of client capabilities.
+              - "Refer to https://docs.ceph.com/en/latest/cephfs/client-auth/ for help."
+            type: dict
+            elements: str

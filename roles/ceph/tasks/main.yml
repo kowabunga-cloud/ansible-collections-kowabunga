@@ -1,0 +1,54 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- ansible.builtin.import_tasks: pre.yml
+
+- ansible.builtin.import_tasks: monitor.yml
+  when: kowabunga_ceph_monitor_enabled
+
+- name: Copy admin keyring
+  ansible.builtin.copy:
+    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item | split('/') | last }}"
+    dest: "{{ item }}"
+    owner: ceph
+    group: ceph
+    mode: 0644
+  loop:
+    - "{{ ceph_auth_admin_secret_key }}"
+  when: not kowabunga_ceph_monitor_enabled
+
+- ansible.builtin.import_tasks: manager.yml
+  when: kowabunga_ceph_manager_enabled
+
+- ansible.builtin.import_tasks: osd.yml
+  when: kowabunga_ceph_osd_enabled
+
+- ansible.builtin.import_tasks: pools.yml
+  when: kowabunga_ceph_osd_enabled
+  run_once: true
+
+- ansible.builtin.import_tasks: metadata.yml
+  when: kowabunga_ceph_fs_enabled
+
+- ansible.builtin.import_tasks: filesystems.yml
+  when: kowabunga_ceph_fs_enabled
+  run_once: true
+
+- name: Check for NFS requirement
+  ansible.builtin.set_fact:
+    ceph_fs_nfs_enabled: true
+    ceph_fs_nfs_name: "{{ item.name }}"
+    ceph_fs_nfs_pool_metadata: "{{ item.metadata_pool }}"
+    ceph_fs_nfs_pool_data: "{{ item.data_pool }}"
+  when: item.fstype == 'nfs'
+  loop: "{{ kowabunga_ceph_fs_filesystems }}"
+
+- ansible.builtin.import_tasks: nfs.yml
+  when: ceph_fs_nfs_enabled
+
+- ansible.builtin.import_tasks: clients.yml
+  when: kowabunga_ceph_clients != []
+
+- ansible.builtin.import_tasks: post.yml

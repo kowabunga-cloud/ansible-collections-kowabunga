@@ -1,0 +1,113 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install manager
+  ansible.builtin.apt:
+    name:
+      - ceph-mgr
+      - ceph-mgr-dashboard
+      - ceph-mgr-diskprediction-local
+    state: present
+  notify: Restart ceph-mgr
+
+- ansible.builtin.import_tasks: systemd.yml
+  vars:
+    service: "ceph-mgr"
+
+- name: Create manager's data dir
+  ansible.builtin.file:
+    path: "{{ ceph_mgr_data_dir }}"
+    state: directory
+    owner: ceph
+    group: ceph
+    mode: 0755
+
+- name: Check if manager has already been configured and deployed
+  ansible.builtin.stat:
+    path: "{{ ceph_mgr_keyring }}"
+  register: ceph_mgr_done
+  when: ceph_auth_enabled
+
+- name: Create manager auth key
+  ansible.builtin.shell:
+    cmd: "ceph auth get-or-create mgr.{{ ansible_hostname }} mon 'allow profile mgr' osd 'allow *' mds 'allow *' -o {{ ceph_mgr_keyring }}"
+  when: not ceph_mgr_done.stat.exists
+
+- name: Enable ceph manager
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - ceph.target
+    - "ceph-mgr@{{ ansible_hostname }}"
+
+- name: Enable manager's modules
+  ansible.builtin.shell:
+    cmd: "ceph mgr module enable {{ item }} --force"
+  loop: "{{ ceph_mgr_modules }}"
+  changed_when: false
+  run_once: true
+
+- name: Configure prometheus plugin
+  ansible.builtin.shell:
+    cmd: "ceph config set mgr mgr/prometheus/{{ ansible_hostname }}/{{ item.k }} {{ item.v }}"
+  loop:
+    - { k: "server_addr", v: "{{ ceph_monitor_nodes[ansible_hostname] }}" }
+    - { k: "server_port", v: "{{ ceph_mon_prometheus_port }}" }
+  when:
+    - "'prometheus' in ceph_mgr_modules"
+    - ceph_mgr_force_configure
+    - ansible_hostname in ceph_monitor_nodes
+  notify: Restart ceph-mgr
+
+- name: Configure dashboard plugin
+  when:
+    - "'dashboard' in ceph_mgr_modules"
+    - ceph_mgr_force_configure
+  block:
+    - name: Enable dashboard plugin
+      ansible.builtin.shell:
+        cmd: "ceph config set mgr mgr/dashboard/{{ ansible_hostname }}/{{ item.k }} {{ item.v }}"
+      loop:
+        - { k: "ssl", v: "false" }
+        - { k: "server_addr", v: "{{ ceph_monitor_nodes[ansible_hostname] }}" }
+        - { k: "server_port", v: "{{ ceph_mgr_port }}" }
+      when: ansible_hostname in ceph_monitor_nodes
+      changed_when: false
+      notify: Restart ceph-mgr
+
+    - name: Check dashboard users
+      ansible.builtin.shell:
+        cmd: "ceph dashboard ac-user-show {{ ceph_mgr_admin_user }}"
+      run_once: true
+      register: ac_user
+      changed_when: false
+      failed_when:
+        - ac_user.rc != 0
+        - '"does not exist" not in ac_user.stderr'
+
+    - name: Create password file
+      ansible.builtin.copy:
+        dest: "{{ ceph_mgr_password_file }}"
+        content: |
+          {{ kowabunga_ceph_manager_admin_password }}
+        mode: 0600
+        owner: root
+        group: root
+      no_log: true
+      when: ac_user.rc != 0
+
+    - name: Create dashboard users
+      ansible.builtin.shell:
+        cmd: "ceph dashboard ac-user-create --enabled --force-password {{ ceph_mgr_admin_user }} -i {{ ceph_mgr_password_file }} administrator"
+      run_once: true
+      when: ac_user.rc != 0
+
+    - name: Clear up password file
+      ansible.builtin.file:
+        path: "{{ ceph_mgr_password_file }}"
+        state: absent
+      when: ac_user.rc != 0

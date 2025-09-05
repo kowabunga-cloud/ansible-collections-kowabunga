@@ -1,0 +1,70 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Check whether file already exists on the cluster
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: bootstraps_keys
+  loop:
+    - "{{ ceph_auth_bootstrap_secret_key }}"
+    - "{{ ceph_auth_admin_secret_key }}"
+
+- name: Bootstrap keys
+  # Make sure that this doesn't run if one of the bootstrap files already exists
+  when: bootstraps_keys.results | selectattr('stat.exists', '==', true) | length == 0
+  run_once: true
+  block:
+    - name: Create cluster secret key
+      ansible.builtin.shell:
+        cmd: "ceph-authtool --create-keyring {{ ceph_auth_secret_keyring }} --gen-key -n mon. --cap mon 'allow *'"
+
+    - name: Create admin keyring, add user to keyring
+      ansible.builtin.shell:
+        cmd: "ceph-authtool --create-keyring /tmp/admin.keyring --gen-key -n client.admin --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'"
+
+    - name: Create bootstrap keyring, add user to keyring
+      ansible.builtin.shell:
+        cmd: "ceph-authtool --create-keyring /tmp/bootstrap.keyring --gen-key -n client.bootstrap-osd --cap mon 'profile bootstrap-osd' --cap mgr 'allow r'"
+
+    - name: Import admin keyring
+      ansible.builtin.shell:
+        cmd: "ceph-authtool {{ ceph_auth_secret_keyring }} --import-keyring /tmp/admin.keyring"
+
+    - name: Import bootstrap keyring
+      ansible.builtin.shell:
+        cmd: "ceph-authtool {{ ceph_auth_secret_keyring }} --import-keyring /tmp/bootstrap.keyring"
+
+    - name: Make sure the files folder exist
+      delegate_to: 127.0.0.1
+      become: false
+      ansible.builtin.file:
+        path: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}"
+        recurse: true
+        state: directory
+
+    - name: Fetch keys
+      ansible.builtin.fetch:
+        src: "{{ item.src }}"
+        dest: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region}}/{{ item.dest | split('/') | last }}"
+        flat: true
+      loop:
+        - src: /tmp/bootstrap.keyring,
+          dest: "{{ ceph_auth_bootstrap_secret_key }}"
+        - src: /tmp/admin.keyring,
+          dest: "{{ ceph_auth_admin_secret_key }}"
+        - src: "{{ ceph_auth_secret_keyring }}",
+          dest: "{{ ceph_auth_secret_keyring }}"
+
+- name: Deploy keys
+  ansible.builtin.copy:
+    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item | split('/') | last }}"
+    dest: "{{ item }}"
+    owner: ceph
+    group: ceph
+    mode: 0644
+  loop:
+    - "{{ ceph_auth_bootstrap_secret_key }}"
+    - "{{ ceph_auth_admin_secret_key }}"
+    - "{{ ceph_auth_secret_keyring }}"

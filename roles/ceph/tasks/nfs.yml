@@ -1,0 +1,85 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Add NFS Ganesha PPA public key
+  ansible.builtin.apt_key:
+    keyserver: "{{ ceph_fs_nfs_ganesha_apt_repo_keyserver }}"
+    id: "{{ ceph_fs_nfs_ganesha_apt_repo_key_id }}"
+
+- name: Setup NFS Ganesha PPA repositories
+  ansible.builtin.apt_repository:
+    repo: "deb {{ ceph_fs_nfs_ganesha_apt_repo }}/{{ item }}/ubuntu {{ ansible_facts['distribution_release'] }} main"
+    state: present
+    update_cache: true
+  loop:
+    - libntirpc-5
+    - nfs-ganesha-5
+
+####################
+# Server-side bits #
+####################
+
+- name: Install NFS Ganesha
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nfs-ganesha
+    - nfs-ganesha-ceph
+  notify: Restart ceph nfs
+
+- name: Create config directory
+  ansible.builtin.file:
+    path: /etc/ganesha
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Generate ganesha configuration file
+  ansible.builtin.template:
+    src: ganesha.conf.j2
+    dest: /etc/ganesha/ganesha.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload ceph nfs
+
+#################
+# API-side bits #
+#################
+
+- name: Install NFS Ganesha API server
+  ansible.builtin.apt:
+    name: nfs-ganesha-export-api
+    state: present
+  notify: Restart ceph nfs API
+
+- name: Generate ganesha API configuration file
+  ansible.builtin.template:
+    src: ganesha.api.yml.j2
+    dest: /etc/ganesha/api.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart ceph nfs API
+
+- name: Create exports directory
+  ansible.builtin.file:
+    path: /etc/ganesha/export.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Make sure API exports config file exists
+  ansible.builtin.file:
+    path: "{{ ceph_fs_nfs_api_export_api_file }}"
+    state: touch
+    owner: root
+    group: root
+    mode: 0644
+    modification_time: preserve
+    access_time: preserve

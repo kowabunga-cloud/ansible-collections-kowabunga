@@ -1,0 +1,98 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+########################
+# Ceph Global Settings #
+########################
+
+ceph_cluster_name: "ceph"
+ceph_nodes: "{{ groups['kaktus'] }}"
+ceph_monitor_nodes: []
+ceph_features: ["squid"]
+
+ceph_systemd_service_overrides:
+  - key: StartLimitBurst
+    value: 5
+  - key: StartLimitInterval
+    value: 30min
+
+#########################
+# Ceph Monitor Settings #
+#########################
+
+ceph_mon_map: /etc/ceph/monmap
+ceph_mon_messenger_v1_port: 6789
+ceph_mon_messenger_v2_port: 3300
+ceph_mon_messenger_port: "{{ ceph_mon_messenger_v2_port }}"
+ceph_mon_prometheus_port: 9283
+
+######################
+# Ceph Monitor Auth  #
+######################
+
+ceph_auth_secret_keyring: "/tmp/ceph.mon.keyring"
+ceph_auth_bootstrap_secret_key: "/var/lib/ceph/bootstrap-osd/ceph.keyring"
+ceph_auth_admin_secret_key: "/etc/ceph/ceph.client.admin.keyring"
+
+#########################
+# Ceph Manager Settings #
+#########################
+
+ceph_mgr_port: 8080
+ceph_mgr_data_dir: "/var/lib/ceph/mgr/ceph-{{ ansible_hostname }}"
+ceph_mgr_keyring: "{{ ceph_mgr_data_dir }}/keyring"
+ceph_mgr_admin_user: admin
+ceph_mgr_password_file: "/tmp/ceph.password"
+ceph_mgr_modules:
+  - restful
+  - prometheus
+  - balancer
+  - dashboard
+  - insights
+  - diskprediction_local
+  - localpool
+  - iostat
+
+#####################
+# Ceph OSD Settings #
+#####################
+
+ceph_osd_min_compat_release: squid
+
+########################
+# Ceph FS NFS Settings #
+########################
+
+ceph_fs_nfs_enabled: false
+
+ceph_fs_nfs_ganesha_apt_repo: https://ppa.launchpadcontent.net/nfs-ganesha
+ceph_fs_nfs_ganesha_apt_repo_keyserver: keyserver.ubuntu.com
+ceph_fs_nfs_ganesha_apt_repo_key_id: EA914D611053D07BD332E18010353E8834DC57CA
+
+ceph_fs_nfs_log_file: "/var/log/ganesha/ganesha.log"
+
+ceph_fs_nfs_api_port: 54934
+ceph_fs_nfs_api_export_api_file: /etc/ganesha/export.d/api.conf
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_ceph:
+  - name: "ceph"
+  - name: "ceph_mon"
+    when: "{{ kowabunga_ceph_monitor_enabled }}"
+  - name: "ceph_mgr"
+    when: "{{ kowabunga_ceph_manager_enabled }}"
+  - name: "ceph_osd"
+    when: "{{ kowabunga_ceph_osd_enabled }}" }
+  - name: "ceph_mds"
+    when: "{{ kowabunga_ceph_fs_enabled }}"
+
+hostctl_plugins_nfs_ganesha:
+  - name: "nfs-ganesha"
+    when: "{{ kowabunga_ceph_fs_nfs_enabled }}"
+  - name: "nfs-ganesha-export-api"
+    when: "{{ kowabunga_ceph_fs_nfs_enabled }}"

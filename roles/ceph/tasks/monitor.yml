@@ -1,0 +1,61 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Install monitor
+  ansible.builtin.apt:
+    name: ceph-mon
+    state: present
+  notify: Restart ceph-mon
+
+- ansible.builtin.import_tasks: systemd.yml
+  vars:
+    service: "ceph-mon"
+
+- name: Set monmap_add_cmd
+  ansible.builtin.set_fact:
+    monmap_add_cmd: "{{ monmap_add_cmd | default('') }} --add {{ hostvars[item].name }} {{ item }} {% for feature in ceph_features %}--feature-set {{ feature }} --persistent {% endfor %}"
+  loop: "{{ ceph_monitor_nodes }}"
+
+- name: Create monitor map
+  ansible.builtin.shell:
+    cmd: "monmaptool --create --clobber {{ monmap_add_cmd }} --fsid {{ kowabunga_ceph_fsid }} {{ ceph_mon_map }}"
+    creates: ceph_monmap
+
+- name: Check if monitor has already been configured and deployed
+  ansible.builtin.stat:
+    path: "/var/lib/ceph/mon/ceph-{{ ansible_hostname }}/kv_backend"
+  register: ceph_mon_done
+
+- name: Create runtime directory for monitor
+  ansible.builtin.file:
+    path: "/var/lib/ceph/mon/ceph-{{ ansible_hostname }}"
+    state: directory
+    owner: ceph
+    group: ceph
+    mode: 0755
+  when: not ceph_mon_done.stat.exists
+
+- ansible.builtin.import_tasks: authentication.yml
+
+- name: Create monitor
+  ansible.builtin.shell:
+    cmd: "ceph-mon --mkfs -i {{ ansible_hostname }} --monmap {{ ceph_mon_map }} --setuser ceph --setgroup ceph --keyring {{ ceph_auth_secret_keyring }}"
+  register: ceph_mon_mkfs
+  when: not ceph_mon_done.stat.exists
+
+- name: Enable Ceph monitor
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - ceph.target
+    - "ceph-mon@{{ ansible_hostname }}"
+
+- name: Enable Messenger v2 API
+  ansible.builtin.shell:
+    cmd: ceph mon enable-msgr2
+  run_once: true

@@ -1,0 +1,62 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+########################
+# Ceph Global Settings #
+########################
+
+kowabunga_ceph_fsid: ~
+kowabunga_ceph_network: ~
+kowabunga_ceph_region: ~
+kowabunga_ceph_local_keyrings_dir: ~
+
+#########################
+# Ceph Monitor Settings #
+#########################
+
+kowabunga_ceph_monitor_enabled: false
+
+#########################
+# Ceph Manager Settings #
+#########################
+
+kowabunga_ceph_manager_enabled: false
+kowabunga_ceph_manager_admin_password: ~
+
+#####################
+# Ceph OSD Settings #
+#####################
+
+kowabunga_ceph_osd_enabled: true
+kowabunga_ceph_osds: []
+kowabunga_ceph_osd_max_pg_per_osd: 500
+
+kowabunga_ceph_osd_pools:
+  - name: rbd
+    type: rbd
+    pgs: 256
+    replication:
+      min: 1
+      request: 2
+    compression:
+      mode: passive
+      algorithm: snappy
+
+#####################
+# Ceph FS Settings  #
+#####################
+
+kowabunga_ceph_fs_enabled: false
+kowabunga_ceph_fs_filesystems: []
+
+################
+# Ceph Clients #
+################
+
+kowabunga_ceph_clients:
+  - name: libvirt
+    caps:
+      mon: "profile rbd"
+      osd: "profile rbd pool=rbd"

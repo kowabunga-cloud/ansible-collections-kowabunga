@@ -1,0 +1,43 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install OSD
+  ansible.builtin.apt:
+    name: ceph-osd
+    state: present
+  notify: Restart ceph-osd
+
+- ansible.builtin.import_tasks: systemd.yml
+  vars:
+    service: "ceph-osd"
+
+- ansible.builtin.import_tasks: format.yml
+
+- name: Set minimum OSD requirements (1/2)
+  ansible.builtin.shell:
+    cmd: "ceph osd set-require-min-compat-client {{ ceph_osd_min_compat_release }}"
+
+- name: Set minimum OSD requirements (2/2)
+  ansible.builtin.shell:
+    cmd: "ceph osd require-osd-release {{ ceph_osd_min_compat_release }}"
+
+- name: Enable balancer
+  ansible.builtin.shell:
+    cmd: "ceph balancer {{ item }}"
+  loop:
+    - "mode upmap"
+    - "on"
+
+- name: Ensure OSDs are started
+  ansible.builtin.service:
+    name: "ceph-osd@{{ item.id }}"
+    state: started
+    enabled: true
+  loop: "{{ kowabunga_ceph_osds }}"
+
+- name: Reweight OSDs
+  ansible.builtin.shell:
+    cmd: "ceph osd crush reweight osd.{{ item.id }} {{ item.weight }}"
+  loop: "{{ kowabunga_ceph_osds }}"

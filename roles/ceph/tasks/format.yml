@@ -1,0 +1,18 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Check for previous OSD existence and configuration
+  ansible.builtin.stat:
+    path: "/var/lib/ceph/osd/ceph-{{ item.id }}/ready"
+  register: ceph_osd_ready
+  loop: "{{ kowabunga_ceph_osds | flatten(levels=1) }}"
+
+- name: Prepare/format OSDs
+  ansible.builtin.shell:
+    cmd: "/usr/sbin/ceph-volume --cluster {{ ceph_cluster_name }} lvm create --data {{ item.dev }} --osd-id {{ item.id }}"
+  loop: "{{ kowabunga_ceph_osds | flatten(levels=1) }}"
+  loop_control:
+    index_var: idx
+  when: not ceph_osd_ready.results[idx].stat.exists

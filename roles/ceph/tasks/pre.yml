@@ -1,0 +1,33 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install base package
+  ansible.builtin.apt:
+    name: ceph-common
+    update_cache: true
+    state: present
+
+- name: Configure cluster name
+  ansible.builtin.lineinfile:
+    dest: /etc/default/ceph
+    insertafter: EOF
+    create: true
+    regexp: "^CLUSTER="
+    line: "CLUSTER={{ ceph_cluster_name }}"
+    mode: 0644
+
+- name: Set list of Ceph monitor nodes
+  ansible.builtin.set_fact:
+    ceph_monitor_nodes: "{{ ceph_monitor_nodes + [item] }}"
+  when: hostvars[item].kowabunga_ceph_monitor_enabled
+  loop: "{{ ceph_nodes }}"
+
+- name: Write Ceph configuration
+  ansible.builtin.template:
+    src: ceph.conf.j2
+    dest: /etc/ceph/ceph.conf
+    owner: root
+    group: root
+    mode: 0644

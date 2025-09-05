@@ -1,0 +1,5 @@
+http:
+  host: {{ ceph_monitor_nodes[ansible_hostname] }}
+  port: {{ ceph_fs_nfs_api_port }}
+nfs:
+  exports: {{ ceph_fs_nfs_api_export_api_file }}
