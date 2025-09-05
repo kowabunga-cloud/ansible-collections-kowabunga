@@ -1,0 +1,27 @@
+MOD_NAME="nfs_ganesha"
+MOD_PRIO=6
+
+# private functions
+infoNfsGanesha() {
+    processInfo "/usr/bin/ganesha.nfsd"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+nfs_ganesha_status() {
+    checkService nfs-ganesha
+    infoNfsGanesha
+}
+
+nfs_ganesha_stop() {
+    stopService nfs-ganesha "" nfs-ganesha
+}
+
+nfs_ganesha_start() {
+    startService nfs-ganesha pingService nfs-ganesha
+}
+
+nfs_ganesha_restart() {
+    restartService nfs-ganesha pingService nfs-ganesha
+}

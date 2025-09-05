@@ -1,0 +1,39 @@
+MOD_NAME="ceph_osd"
+MOD_PRIO=5
+
+# private functions
+infoCephOSD() {
+    processInfo "/usr/bin/ceph-osd"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+ceph_osd_status() {
+{% for osd in kowabunga_ceph_osds | default([]) | flatten(levels=1) %}
+    checkService ceph-osd@{{ osd.id }}
+{% endfor %}
+
+    infoCephOSD
+}
+
+ceph_osd_stop() {
+{% for osd in kowabunga_ceph_osds | default([]) | flatten(levels=1) %}
+    stopService ceph-osd@{{ osd.id }} "" ceph-osd
+{% endfor %}
+
+}
+
+ceph_osd_start() {
+{% for osd in kowabunga_ceph_osds | default([]) | flatten(levels=1) %}
+    startService ceph-osd@{{ osd.id }} pingService ceph-osd@{{ osd.id }}
+{% endfor %}
+
+}
+
+ceph_osd_restart() {
+{% for osd in kowabunga_ceph_osds | default([]) | flatten(levels=1) %}
+    restartService ceph-osd@{{ osd.id }} pingService ceph-osd@{{ osd.id }}
+{% endfor %}
+
+}

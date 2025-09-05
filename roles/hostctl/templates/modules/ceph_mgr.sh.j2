@@ -1,0 +1,29 @@
+MOD_NAME="ceph_mgr"
+MOD_PRIO=5
+
+CEPH_MGR="ceph-mgr@{{ ansible_hostname }}"
+
+# private functions
+infoCephMgr() {
+    processInfo "/usr/bin/ceph-mgr"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+ceph_mgr_status() {
+    checkService ${CEPH_MGR}
+    infoCephMgr
+}
+
+ceph_mgr_stop() {
+    stopService ${CEPH_MGR} "" ceph-mgr
+}
+
+ceph_mgr_start() {
+    startService ${CEPH_MGR} pingService ${CEPH_MGR}
+}
+
+ceph_mgr_restart() {
+    restartService ${CEPH_MGR} pingService ${CEPH_MGR}
+}

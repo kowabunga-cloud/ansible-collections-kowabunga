@@ -1,0 +1,36 @@
+MOD_NAME="ceph"
+MOD_PRIO=5
+
+# private functions
+cephClusterStatus() {
+    echo ""
+    echo "#######################"
+    echo "# Ceph Cluster Status #"
+    echo "#######################"
+    ceph -s
+}
+
+cephOSDStatus() {
+    echo ""
+    echo "###################"
+    echo "# Ceph OSD Status #"
+    echo "###################"
+    ceph osd tree
+}
+
+cephOSDStorage() {
+    echo ""
+    echo "####################"
+    echo "# Ceph OSD Storage #"
+    echo "####################"
+    ceph df
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+ceph_status() {
+    cephClusterStatus
+    cephOSDStatus
+    cephOSDStorage
+}

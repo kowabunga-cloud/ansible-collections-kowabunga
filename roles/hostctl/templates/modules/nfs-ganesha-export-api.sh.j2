@@ -1,0 +1,27 @@
+MOD_NAME="nfs_ganesha_export_api"
+MOD_PRIO=6
+
+# private functions
+infoNfsGaneshaExportApi() {
+    processInfo "/usr/bin/nfs-ganesha-export-api"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+nfs_ganesha_export_api_status() {
+    checkService nfs-ganesha-export-api
+    infoNfsGaneshaExportApi
+}
+
+nfs_ganesha_export_api_stop() {
+    stopService nfs-ganesha-export-api "" nfs-ganesha-export-api
+}
+
+nfs_ganesha_export_api_start() {
+    startService nfs-ganesha-export-api pingService nfs-ganesha-export-api
+}
+
+nfs_ganesha_export_api_restart() {
+    restartService nfs-ganesha-export-api pingService nfs-ganesha-export-api
+}

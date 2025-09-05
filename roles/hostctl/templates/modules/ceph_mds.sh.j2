@@ -1,0 +1,29 @@
+MOD_NAME="ceph_mds"
+MOD_PRIO=5
+
+CEPH_MDS="ceph-mds@{{ ansible_hostname }}"
+
+# private functions
+infoCephMds() {
+    processInfo "/usr/bin/ceph-mds"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+ceph_mds_status() {
+    checkService ${CEPH_MDS}
+    infoCephMds
+}
+
+ceph_mds_stop() {
+    stopService ${CEPH_MDS} "" ceph-mds
+}
+
+ceph_mds_start() {
+    startService ${CEPH_MDS} pingService ${CEPH_MDS}
+}
+
+ceph_mds_restart() {
+    restartService ${CEPH_MDS} pingService ${CEPH_MDS}
+}

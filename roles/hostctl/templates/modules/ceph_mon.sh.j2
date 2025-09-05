@@ -1,0 +1,29 @@
+MOD_NAME="ceph_mon"
+MOD_PRIO=5
+
+CEPH_MON="ceph-mon@{{ ansible_hostname }}"
+
+# private functions
+infoCephMon() {
+    processInfo "/usr/bin/ceph-mon"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+ceph_mon_status() {
+    checkService ${CEPH_MON}
+    infoCephMon
+}
+
+ceph_mon_stop() {
+    stopService ${CEPH_MON} "" ceph-mon
+}
+
+ceph_mon_start() {
+    startService ${CEPH_MON} pingService ${CEPH_MON}
+}
+
+ceph_mon_restart() {
+    restartService ${CEPH_MON} pingService ${CEPH_MON}
+}
