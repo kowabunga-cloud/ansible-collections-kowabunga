@@ -88,7 +88,7 @@ hostctl_plugins_ceph:
   - name: "ceph_mgr"
     when: "{{ kowabunga_ceph_manager_enabled }}"
   - name: "ceph_osd"
-    when: "{{ kowabunga_ceph_osd_enabled }}" }
+    when: "{{ kowabunga_ceph_osd_enabled }}"
   - name: "ceph_mds"
     when: "{{ kowabunga_ceph_fs_enabled }}"
 
