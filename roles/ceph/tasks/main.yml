@@ -46,7 +46,9 @@
   loop: "{{ kowabunga_ceph_fs_filesystems }}"
 
 - ansible.builtin.import_tasks: nfs.yml
-  when: ceph_fs_nfs_enabled
+  when:
+    - ceph_fs_nfs_enabled
+    - ansible_hostname in ceph_monitor_nodes
 
 - ansible.builtin.import_tasks: clients.yml
   when: kowabunga_ceph_clients != []

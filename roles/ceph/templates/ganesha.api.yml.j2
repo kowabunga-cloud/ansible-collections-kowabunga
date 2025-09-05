@@ -1,5 +1,5 @@
 http:
-  host: {{ ceph_monitor_nodes[ansible_hostname] }}
+  host: {{ kowabunga_ceph_monitor_listen_addr }}
   port: {{ ceph_fs_nfs_api_port }}
 nfs:
   exports: {{ ceph_fs_nfs_api_export_api_file }}

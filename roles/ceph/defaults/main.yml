@@ -17,6 +17,7 @@ kowabunga_ceph_local_keyrings_dir: ~
 #########################
 
 kowabunga_ceph_monitor_enabled: false
+kowabunga_ceph_monitor_listen_addr: "{{ lan_ip }}"
 
 #########################
 # Ceph Manager Settings #
@@ -35,7 +36,7 @@ kowabunga_ceph_osd_max_pg_per_osd: 500
 
 kowabunga_ceph_osd_pools:
   - name: rbd
-    type: rbd
+    ptype: rbd
     pgs: 256
     replication:
       min: 1

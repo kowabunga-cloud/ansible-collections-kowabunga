@@ -47,6 +47,12 @@ argument_specs:
         type: bool
         default: false
 
+      kowabunga_ceph_monitor_listen_addr:
+        description:
+          - Network address for Ceph monitor to listen to.
+          - Private LAN one if unspecified.
+        type: str
+
       kowabunga_ceph_manager_enabled:
         description:
           - Defines whether Ceph Manager component must be deployed on node.
@@ -121,7 +127,7 @@ argument_specs:
         elements: dict
         default:
           - name: rbd
-            type: rbd
+            ptype: rbd
             pgs: 256
             replication:
               min: 1

@@ -4,7 +4,7 @@
 NFS_Core_Param {
   Enable_NLM = false;
   Enable_RQUOTA = false;
-  Bind_Addr = {{ ceph_monitor_nodes[ansible_hostname] }};
+  Bind_Addr = {{ kowabunga_ceph_monitor_listen_addr }};
 }
 
 EXPORT_DEFAULTS {

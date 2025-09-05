@@ -24,6 +24,12 @@
     group: ceph
     mode: 0755
 
+- name: Set list of Ceph monitor nodes
+  ansible.builtin.set_fact:
+    ceph_manager_nodes: "{{ ceph_manager_nodes + [item] }}"
+  when: hostvars[item].kowabunga_ceph_manager_enabled
+  loop: "{{ ceph_nodes }}"
+
 - name: Check if manager has already been configured and deployed
   ansible.builtin.stat:
     path: "{{ ceph_mgr_keyring }}"
@@ -55,12 +61,12 @@
   ansible.builtin.shell:
     cmd: "ceph config set mgr mgr/prometheus/{{ ansible_hostname }}/{{ item.k }} {{ item.v }}"
   loop:
-    - { k: "server_addr", v: "{{ ceph_monitor_nodes[ansible_hostname] }}" }
+    - { k: "server_addr", v: "{{ kowabunga_ceph_monitor_listen_addr }}" }
     - { k: "server_port", v: "{{ ceph_mon_prometheus_port }}" }
   when:
     - "'prometheus' in ceph_mgr_modules"
     - ceph_mgr_force_configure
-    - ansible_hostname in ceph_monitor_nodes
+    - ansible_hostname in ceph_manager_nodes
   notify: Restart ceph-mgr
 
 - name: Configure dashboard plugin
@@ -73,9 +79,9 @@
         cmd: "ceph config set mgr mgr/dashboard/{{ ansible_hostname }}/{{ item.k }} {{ item.v }}"
       loop:
         - { k: "ssl", v: "false" }
-        - { k: "server_addr", v: "{{ ceph_monitor_nodes[ansible_hostname] }}" }
+        - { k: "server_addr", v: "{{ kowabunga_ceph_monitor_listen_addr }}" }
         - { k: "server_port", v: "{{ ceph_mgr_port }}" }
-      when: ansible_hostname in ceph_monitor_nodes
+      when: ansible_hostname in ceph_manager_nodes
       changed_when: false
       notify: Restart ceph-mgr
 

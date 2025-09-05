@@ -9,7 +9,6 @@
 
 ceph_cluster_name: "ceph"
 ceph_nodes: "{{ groups['kaktus'] }}"
-ceph_monitor_nodes: []
 ceph_features: ["squid"]
 
 ceph_systemd_service_overrides:
@@ -27,6 +26,7 @@ ceph_mon_messenger_v1_port: 6789
 ceph_mon_messenger_v2_port: 3300
 ceph_mon_messenger_port: "{{ ceph_mon_messenger_v2_port }}"
 ceph_mon_prometheus_port: 9283
+ceph_monitor_nodes: []
 
 ######################
 # Ceph Monitor Auth  #
@@ -54,6 +54,7 @@ ceph_mgr_modules:
   - diskprediction_local
   - localpool
   - iostat
+ceph_manager_nodes: []
 
 #####################
 # Ceph OSD Settings #

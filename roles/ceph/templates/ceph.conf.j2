@@ -3,7 +3,7 @@ fsid = {{ kowabunga_ceph_fsid }}
 public_network = {{ kowabunga_ceph_network }}
 mon_initial_members = {% for node in ceph_monitor_nodes %}{{ hostvars[node].name }}{% if not loop.last %},{% endif %}{% endfor %}
 
-mon_host = {% for node in ceph_monitor_nodes %}{{ node }}{% if not loop.last %},{% endif %}{% endfor %}
+mon_host = {% for node in ceph_monitor_nodes %}{{ hostvars[node].kowabunga_ceph_monitor_listen_addr }}{% if not loop.last %},{% endif %}{% endfor %}
 
 auth_cluster_required = cephx
 auth_service_required = cephx
