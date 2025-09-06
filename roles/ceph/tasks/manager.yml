@@ -24,7 +24,7 @@
     group: ceph
     mode: 0755
 
-- name: Set list of Ceph monitor nodes
+- name: Set list of Ceph manager nodes
   ansible.builtin.set_fact:
     ceph_manager_nodes: "{{ ceph_manager_nodes + [item] }}"
   when: hostvars[item].kowabunga_ceph_manager_enabled
@@ -34,7 +34,6 @@
   ansible.builtin.stat:
     path: "{{ ceph_mgr_keyring }}"
   register: ceph_mgr_done
-  when: ceph_auth_enabled
 
 - name: Create manager auth key
   ansible.builtin.shell:
@@ -65,14 +64,11 @@
     - { k: "server_port", v: "{{ ceph_mon_prometheus_port }}" }
   when:
     - "'prometheus' in ceph_mgr_modules"
-    - ceph_mgr_force_configure
     - ansible_hostname in ceph_manager_nodes
   notify: Restart ceph-mgr
 
 - name: Configure dashboard plugin
-  when:
-    - "'dashboard' in ceph_mgr_modules"
-    - ceph_mgr_force_configure
+  when: "'dashboard' in ceph_mgr_modules"
   block:
     - name: Enable dashboard plugin
       ansible.builtin.shell:

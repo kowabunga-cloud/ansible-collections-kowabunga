@@ -25,14 +25,11 @@
   ansible.builtin.stat:
     path: "/var/lib/ceph/mds/ceph-{{ ansible_hostname }}/keyring"
   register: ceph_mds_done
-  when: ceph_auth_enabled
 
 - name: Configure auth key for cephx if auth is enabled
   ansible.builtin.shell:
     cmd: "ceph auth get-or-create mds.{{ ansible_hostname }} mon 'profile mds' mgr 'profile mds' mds 'allow *' osd 'allow *' > /var/lib/ceph/mds/ceph-{{ ansible_hostname }}/keyring"
-  when:
-    - ceph_auth_enabled
-    - not ceph_mds_done.stat.exists
+  when: ceph_mds_done.stat.exists
 
 - name: Enable metadata server
   ansible.builtin.service:

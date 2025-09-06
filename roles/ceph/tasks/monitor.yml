@@ -15,7 +15,7 @@
 
 - name: Set monmap_add_cmd
   ansible.builtin.set_fact:
-    monmap_add_cmd: "{{ monmap_add_cmd | default('') }} --add {{ hostvars[item].name }} {{ item }} {% for feature in ceph_features %}--feature-set {{ feature }} --persistent {% endfor %}"
+    monmap_add_cmd: "{{ monmap_add_cmd | default('') }} --add {{ hostvars[item].name }} {{ hostvars[item].kowabunga_ceph_monitor_listen_addr }} --enable-all-features"
   loop: "{{ ceph_monitor_nodes }}"
 
 - name: Create monitor map
@@ -53,8 +53,3 @@
   loop:
     - ceph.target
     - "ceph-mon@{{ ansible_hostname }}"
-
-- name: Enable Messenger v2 API
-  ansible.builtin.shell:
-    cmd: ceph mon enable-msgr2
-  run_once: true
