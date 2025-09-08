@@ -8,7 +8,7 @@
 ########################
 
 ceph_cluster_name: "ceph"
-ceph_nodes: "{{ groups['kaktus'] }}"
+ceph_nodes: "{{ groups[kowabunga_ceph_group] }}"
 ceph_features: ["squid"]
 
 ceph_systemd_service_overrides:

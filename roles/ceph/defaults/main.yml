@@ -9,6 +9,7 @@
 
 kowabunga_ceph_fsid: ~
 kowabunga_ceph_network: ~
+kowabunga_ceph_group: ~
 kowabunga_ceph_region: ~
 kowabunga_ceph_local_keyrings_dir: ~
 

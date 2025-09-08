@@ -21,6 +21,12 @@ argument_specs:
         type: str
         required: true
 
+      kowabunga_ceph_group:
+        description:
+          - Name of the group of machine that are part of the Ceph cluster
+        type: str
+        required: true
+
       kowabunga_ceph_region:
         description:
           - Name of the Ceph region.
