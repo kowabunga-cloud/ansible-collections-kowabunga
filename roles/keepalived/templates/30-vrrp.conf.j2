@@ -36,7 +36,7 @@ vrrp_instance VI_{{ item.name }}_{{ cfg.vrid }} {
   unicast_src_ip {{ lan_ip }}
   unicast_peer {
 {% for h in ansible_play_hosts %}
-    {% if h != ansible_default_ipv4.address %}{{ h }}{% endif %}
+    {% if h != ansible_hostname %}{{ h }}{% endif %}
 {% endfor %}
 
   }
@@ -76,7 +76,7 @@ vrrp_instance VI_{{ item.name }}_{{ cfg.vrid }} {
 {% if keepalived_use_bfd %}
   track_bfd {
 {% for node in keepalived_cluster_list %}
-    bfd_{{ hostvars[node].name | replace('-', '_') }} weight {{ vip_priority(cfg, hostvars[node].name) }}
+    bfd_{{ node | replace('-', '_') }} weight {{ vip_priority(cfg, node) }}
 {% endfor %}
   }
 {% endif %}

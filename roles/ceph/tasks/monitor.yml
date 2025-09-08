@@ -15,7 +15,7 @@
 
 - name: Set monmap_add_cmd
   ansible.builtin.set_fact:
-    monmap_add_cmd: "{{ monmap_add_cmd | default('') }} --add {{ hostvars[item].name }} {{ hostvars[item].kowabunga_ceph_monitor_listen_addr }} --enable-all-features"
+    monmap_add_cmd: "{{ monmap_add_cmd | default('') }} --add {{ item }} {{ hostvars[item].kowabunga_ceph_monitor_listen_addr }} --enable-all-features"
   loop: "{{ ceph_monitor_nodes }}"
 
 - name: Create monitor map
