@@ -31,7 +31,7 @@
   when:
     - ceph_pools.results[idx].rc is defined
     - ceph_pools.results[idx].rc != 0
-    - item.ptype == "rbd"
+    - item.ptype != 'fs'
 
 - name: Set pool replication size
   ansible.builtin.shell: "ceph osd pool set {{ item.name }} size {{ item.replication.request }}"
