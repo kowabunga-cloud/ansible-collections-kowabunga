@@ -6,12 +6,6 @@ argument_specs:
       - Install, configure, and start Kowabunga Kaktus HCI node.
 
     options:
-      kowabunga_public_url:
-        description:
-          - Public URL the Kahuna server is exposed to.
-        type: str
-        default: "https://kowabunga.acme.com"
-
       kowabunga_kaktus_loglevel:
         description:
           - Kahuna Kaktus agent log level.

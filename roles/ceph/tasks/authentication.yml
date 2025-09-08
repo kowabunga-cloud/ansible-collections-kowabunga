@@ -40,14 +40,14 @@
       delegate_to: 127.0.0.1
       become: false
       ansible.builtin.file:
-        path: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}"
+        path: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ ceph_region }}"
         recurse: true
         state: directory
 
     - name: Fetch keys
       ansible.builtin.fetch:
         src: "{{ item.src }}"
-        dest: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item.dest | ansible.builtin.basename }}"
+        dest: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ ceph_region }}/{{ item.dest | ansible.builtin.basename }}"
         flat: true
       loop:
         - src: /tmp/bootstrap.keyring
@@ -59,12 +59,12 @@
 
 - name: Deploy encrypted keyrings (if any)
   ansible.builtin.copy:
-    content: "{{ lookup('file', kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last + '.sops') | community.sops.decrypt(output_type='binary') + '\n' }}"
+    content: "{{ lookup('file', kowabunga_ceph_local_keyrings_dir + '/' + ceph_region + '/' + item | split('/') | last + '.sops') | community.sops.decrypt(output_type='binary') + '\n' }}"
     dest: "{{ item }}"
     owner: ceph
     group: ceph
     mode: 0644
-  when: (kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last + '.sops') is is_file
+  when: (kowabunga_ceph_local_keyrings_dir + '/' + ceph_region + '/' + item | split('/') | last + '.sops') is is_file
   loop:
     - "{{ ceph_auth_bootstrap_secret_key }}"
     - "{{ ceph_auth_admin_secret_key }}"
@@ -72,12 +72,12 @@
 
 - name: Deploy un-encrypted keyrings (if any)
   ansible.builtin.copy:
-    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item | split('/') | last }}"
+    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ ceph_region }}/{{ item | split('/') | last }}"
     dest: "{{ item }}"
     owner: ceph
     group: ceph
     mode: 0644
-  when: (kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last) is is_file
+  when: (kowabunga_ceph_local_keyrings_dir + '/' + ceph_region + '/' + item | split('/') | last) is is_file
   loop:
     - "{{ ceph_auth_bootstrap_secret_key }}"
     - "{{ ceph_auth_admin_secret_key }}"

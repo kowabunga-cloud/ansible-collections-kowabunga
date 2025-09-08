@@ -30,7 +30,10 @@ argument_specs:
           - List of local DNS zones to be associated and managed by PowerDNS.
         type: list
         elements: str
-        default: []
+        default:
+          - "{{ kowabunga_region_domain }}"
+          - "{{ kowabunga_region_domain_admin }}"
+          - "{{ kowabunga_region_domain_storage }}"
 
       kowabunga_powerdns_locally_managed_zone_records:
         description:

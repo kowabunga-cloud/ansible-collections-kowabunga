@@ -8,6 +8,8 @@
 ########################
 
 ceph_cluster_name: "ceph"
+ceph_network: "{{ kowabunga_region_domain_storage_network }}"
+ceph_region: "{{ kowabunga_region }}"
 ceph_nodes: "{{ groups[kowabunga_ceph_group] }}"
 ceph_features: ["squid"]
 

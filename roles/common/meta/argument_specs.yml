@@ -1,0 +1,56 @@
+argument_specs:
+
+  main:
+    short_description: Defines a few Kahuna global variables, shared amongst roles.
+    description:
+      - Defines a few Kahuna global variables, shared amongst roles.
+
+    options:
+      kowabunga_region:
+        description:
+          - Name of the Kowabunga region.
+        type: str
+        required: true
+
+      kowabunga_region_domain:
+        description:
+          - FQDN of the Kowabunga region local domain.
+          - "Example: <region>.acme.local"
+        type: str
+        required: true
+
+      kowabunga_region_domain_admin_prefix:
+        description:
+          - Prefix for Kowabunga region local administrative sub-domain.
+          - Will be computed as prefix.V(kowabunga_region_domain).
+          - All region's Kiwi and Kaktus instances are part of this sub-domain.
+        type: str
+        default: admin
+
+      kowabunga_region_domain_admin_network:
+        description:
+          - Network of Kowabunga region local administrative sub-domain.
+          - Must be CIDR formatted (e.g. a.b.c.d/mask)
+        type: str
+        required: true
+
+      kowabunga_region_domain_storage_prefix:
+        description:
+          - Prefix for Kowabunga region local storage sub-domain.
+          - Will be computed as prefix.V(kowabunga_region_domain).
+          - Used by Ceph cluster instances for API and data transfers.
+        type: str
+        default: storage
+
+      kowabunga_region_domain_storage_network:
+        description:
+          - Network of Kowabunga region local storage sub-domain.
+          - Must be CIDR formatted (e.g. a.b.c.d/mask)
+        type: str
+        required: true
+
+      kowabunga_public_url:
+        description:
+          - Public URL the server Kowabunga API is exposed to.
+        type: str
+        required: true

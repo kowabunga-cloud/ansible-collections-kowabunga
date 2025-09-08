@@ -7,7 +7,6 @@
 # Global Settings #
 ###################
 
-kowabunga_public_url: "https://kowabunga.acme.com"
 kowabunga_kaktus_loglevel: INFO
 
 #####################

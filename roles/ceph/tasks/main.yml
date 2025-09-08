@@ -10,7 +10,7 @@
 
 - name: Copy admin keyring
   ansible.builtin.copy:
-    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item | split('/') | last }}"
+    src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ ceph_region }}/{{ item | split('/') | last }}"
     dest: "{{ item }}"
     owner: ceph
     group: ceph

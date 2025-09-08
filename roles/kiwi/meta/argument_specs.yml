@@ -6,12 +6,6 @@ argument_specs:
       - Install, configure, and start Kowabunga Kiwi SDN node.
 
     options:
-      kowabunga_public_url:
-        description:
-          - Public URL the server is exposed to.
-        type: str
-        default: "https://kowabunga.acme.com"
-
       kowabunga_kiwi_loglevel:
         description:
           - Kahuna Kiwi agent log level.

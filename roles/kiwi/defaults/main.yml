@@ -7,7 +7,6 @@
 # Global Settings #
 ###################
 
-kowabunga_public_url: "https://kowabunga.acme.com"
 kowabunga_kiwi_loglevel: INFO
 
 #####################

@@ -6,6 +6,8 @@
 - hosts: kahuna
 
   roles:
+    - name: kowabunga.cloud.common
+      tags: always
     - name: kowabunga.cloud.os
     - name: kowabunga.cloud.caddy
       tags: caddy

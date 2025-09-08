@@ -6,12 +6,6 @@ argument_specs:
       - Install, configure, and start Kowabunga Kahuna orchestrator and Koala WebUI.
 
     options:
-      kowabunga_public_url:
-        description:
-          - Public URL the server is exposed to.
-        type: str
-        required: true
-
       kowabunga_kahuna_loglevel:
         description:
           - Kahuna server log level.

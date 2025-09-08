@@ -1,0 +1,13 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+kowabunga_region: ~
+kowabunga_region_domain: ~
+kowabunga_region_domain_admin_prefix: admin
+kowabunga_region_domain_admin_network: ~
+kowabunga_region_domain_storage_prefix: storage
+kowabunga_region_domain_storage_network: ~
+
+kowabunga_public_url: ~

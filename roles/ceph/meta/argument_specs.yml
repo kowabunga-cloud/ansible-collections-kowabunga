@@ -14,23 +14,9 @@ argument_specs:
         type: str
         required: true
 
-      kowabunga_ceph_network:
-        description:
-          - Definition of the Ceph storage network.
-          - Must be CIDR formatted (e.g. a.b.c.d/mask)
-        type: str
-        required: true
-
       kowabunga_ceph_group:
         description:
           - Name of the group of machine that are part of the Ceph cluster
-        type: str
-        required: true
-
-      kowabunga_ceph_region:
-        description:
-          - Name of the Ceph region.
-          - Usually the Kowabunga's one.
         type: str
         required: true
 

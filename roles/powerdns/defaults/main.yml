@@ -4,7 +4,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_powerdns_forward_zones: []
-kowabunga_powerdns_locally_managed_zones: []
+kowabunga_powerdns_locally_managed_zones:
+  - "{{ kowabunga_region_domain }}"
+  - "{{ kowabunga_region_domain_admin }}"
+  - "{{ kowabunga_region_domain_storage }}"
+
 kowabunga_powerdns_locally_managed_zone_records: []
 
 kowabunga_powerdns_webserver_password:  "{{ secret_kowabunga_powerdns_webserver_password }}"
