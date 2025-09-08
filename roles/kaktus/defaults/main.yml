@@ -14,8 +14,8 @@ kowabunga_kaktus_loglevel: INFO
 # Agent Credentials #
 #####################
 
-kowabunga_kaktus_agent_id: ~
-kowabunga_kaktus_agent_api_key: ~
+kowabunga_kaktus_agent_id: "{{ secret_kowabunga_kaktus_agent_id }}"
+kowabunga_kaktus_agent_api_key: "{{ kowabunga_kaktus_agent_api_key }"}
 
 ####################
 # Libvirt Settings #

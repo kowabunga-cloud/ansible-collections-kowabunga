@@ -24,6 +24,7 @@ argument_specs:
           - ID of the Kowabunga Kaktus agent, as instructed in Kahuna database.
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted V(secret_kowabunga_kaktus_agent_id) variable.
         type: str
         required: true
 
@@ -32,6 +33,7 @@ argument_specs:
           - API key of the Kowabunga Kaktus agent, as instructed in Kahuna database.
           - Used by agent to establish WebSocket connection to Kahuna.
           - Recommended to be safe and encrypted into Ansible Vault or SOPS.
+          - Defaults to encrypted V(secret_kowabunga_kaktus_agent_api_key) variable.
         type: str
         required: true
 
