@@ -3,6 +3,12 @@
 # Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
 # SPDX-License-Identifier: Apache-2.0
 
+# boilerplates
+kowabunga_region: boilerplate
+kowabunga_region_domain: boilerplate
+kowabunga_region_domain_admin_network: boilerplate
+kowabunga_region_domain_storage_network: boilerplate
+
 kahuna_victorialogs_exporter:
   - name: VictoriaLogs
     address: "{{ victorialogs_listen_addr }}"
