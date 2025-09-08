@@ -57,13 +57,27 @@
         - src: "{{ ceph_auth_secret_keyring }}"
           dest: "{{ ceph_auth_secret_keyring }}"
 
-- name: Deploy keys
+- name: Deploy encrypted keyrings (if any)
+  ansible.builtin.copy:
+    content: "{{ lookup('file', kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last + '.sops') | community.sops.decrypt(output_type='binary') + '\n' }}"
+    dest: "{{ item }}"
+    owner: ceph
+    group: ceph
+    mode: 0644
+  when: (kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last + '.sops') is is_file
+  loop:
+    - "{{ ceph_auth_bootstrap_secret_key }}"
+    - "{{ ceph_auth_admin_secret_key }}"
+    - "{{ ceph_auth_secret_keyring }}"
+
+- name: Deploy un-encrypted keyrings (if any)
   ansible.builtin.copy:
     src: "{{ kowabunga_ceph_local_keyrings_dir }}/{{ kowabunga_ceph_region }}/{{ item | split('/') | last }}"
     dest: "{{ item }}"
     owner: ceph
     group: ceph
     mode: 0644
+  when: (kowabunga_ceph_local_keyrings_dir + '/' + kowabunga_ceph_region + '/' + item | split('/') | last) is is_file
   loop:
     - "{{ ceph_auth_bootstrap_secret_key }}"
     - "{{ ceph_auth_admin_secret_key }}"
