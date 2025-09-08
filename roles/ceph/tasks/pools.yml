@@ -23,6 +23,14 @@
     - ceph_pools.results[idx].rc is defined
     - ceph_pools.results[idx].rc != 0
 
+- name: Re-check for pool existence
+  ansible.builtin.shell: "ceph osd pool get {{ item.name }} size"
+  register: ceph_pools
+  changed_when: false
+  failed_when: false
+  loop: "{{ kowabunga_ceph_osd_pools }}"
+  when: item.when | default(true)
+
 - name: Enable pool
   ansible.builtin.shell: "ceph osd pool application enable {{ item.name }} {{ item.name }}"
   loop: "{{ kowabunga_ceph_osd_pools }}"
@@ -30,7 +38,7 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
     - item.ptype != 'fs'
 
 - name: Set pool replication size
@@ -40,7 +48,7 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
 
 - name: Set pool minimum replication size
   ansible.builtin.shell: "ceph osd pool set {{ item.name }} min_size {{ item.replication.min }}"
@@ -49,7 +57,7 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
 
 - name: Set pool compression settings
   ansible.builtin.shell: "ceph osd pool set {{ item.name }} compression_mode {{ item.compression.mode | default('passive') }}"
@@ -58,7 +66,7 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
 
 - name: Set pool compression algorithm
   ansible.builtin.shell: "ceph osd pool set {{ item.name }} compression_algorithm {{ item.compression.algorithm | default('snappy') }}"
@@ -67,7 +75,7 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
 
 - name: Initialize pool
   ansible.builtin.shell: "rbd pool init {{ item.name }}"
@@ -76,5 +84,5 @@
     index_var: idx
   when:
     - ceph_pools.results[idx].rc is defined
-    - ceph_pools.results[idx].rc != 0
+    - ceph_pools.results[idx].rc == 0
     - item.ptype == "rbd"
