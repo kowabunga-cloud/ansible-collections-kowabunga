@@ -1,0 +1,19 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install libvirt-exporter
+  ansible.builtin.apt:
+    name: prometheus-libvirt-exporter
+    state: present
+  notify: restart prometheus libvirt exporter
+
+- name: Set exporter configuration
+  ansible.builtin.template:
+    src: exporter.cfg.j2
+    dest: /etc/default/prometheus-libvirt-exporter
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart prometheus libvirt exporter

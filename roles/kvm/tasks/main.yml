@@ -1,0 +1,81 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Install packages
+  ansible.builtin.apt:
+    name:
+      - qemu-kvm
+      - qemu-utils
+      - qemu-block-extra
+      - libvirt0
+      - virt-manager
+      - libvirt-daemon
+      - libvirt-daemon-system
+      - libvirt-daemon-system-systemd
+      - libvirt-daemon-driver-qemu
+      - libvirt-daemon-driver-storage-rbd
+      - libvirt-clients
+      - libguestfs-tools
+      - smem
+      - ksmtuned
+      - xmlstarlet
+      - bridge-utils
+    state: latest
+    update_cache: true
+  notify:
+    - restart ksmtuned
+    - restart libvirtd
+
+- name: Disable Systemd socket activation mode (uses legacy)
+  ansible.builtin.systemd:
+    name: "{{ item }}.socket"
+    state: stopped
+    enabled: false
+    masked: true
+  loop:
+    - libvirtd
+    - libvirtd-ro
+    - libvirtd-admin
+    - libvirtd-tls
+    - libvirtd-tcp
+
+- name: Copy libvirtd default config
+  ansible.builtin.template:
+    src: libvirtd.default.j2
+    dest: /etc/default/libvirtd
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart libvirtd
+
+- name: Set libvirtd config
+  ansible.builtin.template:
+    src: libvirtd.conf.j2
+    dest: /etc/libvirt/libvirtd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart libvirtd
+
+# - name: Disable libvirtd QEMU security profile
+#   ansible.builtin.lineinfile:
+#     path: /etc/libvirt/qemu.conf
+#     regexp: "^#security_driver ="
+#     line: 'security_driver = "none"'
+#   notify: restart libvirtd
+
+- ansible.builtin.import_tasks: network.yml
+- ansible.builtin.import_tasks: rbd.yml
+
+- ansible.builtin.import_tasks: exporter.yml
+  when: kowabunga_metrology_agent_metrics_enabled
+
+- name: Copy iptables libvirt default ruleset
+  ansible.builtin.copy:
+    src: iptables.rules
+    dest: /etc/iptables.libvirt.rules
+    owner: root
+    group: root
+    mode: 0644

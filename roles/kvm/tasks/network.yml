@@ -1,0 +1,92 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: Ensure some packages are not installed
+  ansible.builtin.apt:
+    name:
+      - "{{ item }}"
+    purge: true
+    state: absent
+  loop: "{{ kvm_blacklisted_packages }}"
+
+- name: Undefine libvirt default network
+  ansible.builtin.command: "virsh net-undefine default"
+  register: net_undefine
+  changed_when: false
+  failed_when:
+    - net_undefine.rc != 0
+    - net_undefine.rc != 1
+
+- name: Destroy libvirt default network
+  ansible.builtin.command: "virsh net-destroy default"
+  register: net_destroy
+  changed_when: false
+  failed_when:
+    - net_destroy.rc != 0
+    - net_undefine.rc != 1
+
+- name: Ensure no default libvirt network exists
+  ansible.builtin.file:
+    path: "/etc/libvirt/qemu/networks/{{ item }}"
+    state: absent
+  loop:
+    - "default.xml"
+    - "autostart/default.xml"
+
+- name: Compute network bridges list
+  ansible.builtin.set_fact:
+    kowabunga_kvm_network_bridges: |
+      {%- set res=[] -%}
+      {%- for b in kowabunga_netplan_config.bridge -%}
+      {%- set dummy = res.extend([b.name]) -%}
+      {%- endfor -%}
+      {{- res -}}
+  when:
+    - kowabunga_kvm_network_bridges != []
+    - kowabunga_netplan_config != {}
+    - kowabunga_netplan_config.bridge | default([]) != []
+
+- name: Copy temporary network bridge description
+  ansible.builtin.template:
+    src: net-bridge.xml.j2
+    dest: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+
+- name: Check for network bridges existence
+  ansible.builtin.command: "virsh net-info {{ item.name }}"
+  register: kvm_network_bridge_info
+  changed_when: false
+  failed_when: false
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+
+- name: Define network bridges
+  ansible.builtin.command: "virsh net-define {{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+  loop_control:
+    index_var: idx
+  when: kvm_network_bridge_info.results[idx].rc != 0
+
+- name: Autostart network bridges
+  ansible.builtin.command: "virsh net-autostart {{ item.name }}"
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+  loop_control:
+    index_var: idx
+  when: kvm_network_bridge_info.results[idx].rc != 0
+
+- name: Start network bridges
+  ansible.builtin.command: "virsh net-start {{ item.name }}"
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+  loop_control:
+    index_var: idx
+  when: kvm_network_bridge_info.results[idx].rc != 0
+
+- name: Remove temporary network bridge definition files
+  ansible.builtin.file:
+    path: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+    state: absent
+  loop: "{{ kowabunga_kvm_network_bridges }}"

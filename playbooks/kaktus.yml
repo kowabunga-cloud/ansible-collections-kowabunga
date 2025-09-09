@@ -17,4 +17,7 @@
       tags: metrology
     - name: ceph
       tags: ceph
+    - name: kvm
+      tags: kvm
     - name: kowabunga.cloud.kaktus
+      tags: agent

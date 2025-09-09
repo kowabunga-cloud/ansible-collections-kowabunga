@@ -1,0 +1,33 @@
+MOD_NAME="libvirt"
+MOD_PRIO=2
+
+# private functions
+libvirtDetails() {
+  echo "KVM Guests:"
+  virsh list --all
+}
+
+infoLibvirt() {
+    processInfo "/usr/sbin/libvirtd"
+    libvirtDetails
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+libvirt_status() {
+    checkService libvirtd libvirt-daemon
+    infoLibvirt
+}
+
+libvirt_stop() {
+    stopService libvirtd "" "/usr/sbin/libvirtd"
+}
+
+libvirt_start() {
+    startService libvirtd pingService libvirt-daemon
+}
+
+libvirt_restart() {
+    restartService libvirtd pingService libvirt-daemon
+}

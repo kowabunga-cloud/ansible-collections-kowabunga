@@ -1,0 +1,21 @@
+argument_specs:
+
+  main:
+    short_description: Install, configure, and start libvirt and QEMU/KVM.
+    description:
+      - Install, configure, and start libvirt and QEMU/KVM.
+
+    options:
+      kowabunga_libvirt_listen_addr:
+        description:
+          - Network address for libvirt to listen to.
+          - Private LAN one if unspecified.
+        type: str
+
+      kowabunga_kvm_network_bridges:
+        description:
+          - List of network bridge interfaces allowed by QEMU to bind.
+          - Automatically generated from V(kowabunga_netplan_config.bridge) variable if unspecified.
+        type: list
+        elements: str
+        default: []

@@ -1,0 +1,27 @@
+MOD_NAME="prometheus_exporter_libvirt"
+MOD_PRIO=10
+
+# private functions
+infoPrometheusLibvirtExporter() {
+    processInfo "/usr/bin/prometheus-libvirt-exporter"
+}
+
+# publicly exported functions
+# each of the below function may or may not be defined
+
+prometheus_exporter_libvirt_status() {
+    checkService prometheus-libvirt-exporter
+    infoPrometheusLibvirtExporter
+}
+
+prometheus_exporter_libvirt_stop() {
+    stopService prometheus-libvirt-exporter "" prometheus-libvirt-exporter
+}
+
+prometheus_exporter_libvirt_start() {
+    startService prometheus-libvirt-exporter pingService prometheus-libvirt-exporter
+}
+
+prometheus_exporter_libvirt_restart() {
+    restartService prometheus-libvirt-exporter pingService prometheus-libvirt-exporter
+}

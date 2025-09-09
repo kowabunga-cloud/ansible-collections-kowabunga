@@ -25,6 +25,7 @@ ceph_systemd_service_overrides:
 
 ceph_mon_map: /etc/ceph/monmap
 ceph_mon_prometheus_port: 9283
+ceph_messenger_v2_port: 3300
 ceph_monitor_nodes: []
 
 ######################
@@ -75,6 +76,12 @@ ceph_fs_nfs_log_file: "/var/log/ganesha/ganesha.log"
 
 ceph_fs_nfs_api_port: 54934
 ceph_fs_nfs_api_export_api_file: /etc/ganesha/export.d/api.conf
+
+################
+# Ceph Clients #
+################
+
+ceph_client_libvirt: libvirt
 
 #######################
 # Host Control Plugin #

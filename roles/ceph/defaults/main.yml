@@ -56,7 +56,7 @@ kowabunga_ceph_fs_filesystems: []
 ################
 
 kowabunga_ceph_clients:
-  - name: libvirt
+  - name: "{{ ceph_client_libvirt }}"
     caps:
       mon: "profile rbd"
       osd: "profile rbd pool=rbd"

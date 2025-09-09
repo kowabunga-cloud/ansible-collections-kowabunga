@@ -1,0 +1,22 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+- name: restart libvirtd
+  ansible.builtin.service:
+    name: libvirtd
+    state: restarted
+    enabled: true
+
+- name: restart ksmtuned
+  ansible.builtin.service:
+    name: ksmtuned
+    state: restarted
+    enabled: true
+
+- name: restart prometheus libvirt exporter
+  ansible.builtin.service:
+    name: prometheus-libvirt-exporter
+    state: restarted
+    enabled: true

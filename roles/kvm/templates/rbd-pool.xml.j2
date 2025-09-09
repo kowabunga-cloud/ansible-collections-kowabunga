@@ -1,0 +1,10 @@
+<pool type="rbd">
+  <name>{{ kvm_rbd_pool_name }}</name>
+  <source>
+    <name>{{ kvm_rbd_pool_name }}</name>
+    <host name='{{ kvm_rbd_pool_host }}' port='{{ kvm_rbd_pool_port }}'/>
+    <auth type='ceph' username='{{ ceph_client_libvirt }}'>
+      <secret uuid='{{ kvm_cephx_secret_guid }}'/>
+    </auth>
+  </source>
+</pool>

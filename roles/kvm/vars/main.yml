@@ -1,0 +1,32 @@
+---
+# Copyright (c) The Kowabunga Project
+# Apache License, Version 2.0 (see LICENSE or https://www.apache.org/licenses/LICENSE-2.0.txt)
+# SPDX-License-Identifier: Apache-2.0
+
+libvirt_prometheus_port: 9177
+libvirt_tmp_bridge_file_prefix: /tmp/qemu-net-bridge
+libvirt_tmp_pool_file_prefix: /tmp/qemu-pool
+libvirt_tmp_pool_file_secret: /tmp/rbd-secret.xml
+
+kvm_blacklisted_packages:
+  - dnsmasq
+
+kvm_rbd_pool_name: rbd
+kvm_rbd_pool_host: "{{ ceph_cluster_name }}.{{ kowabunga_region_domain_storage }}"
+kvm_rbd_pool_port: "{{ ceph_messenger_v2_port }}"
+
+# Arbitrary secret guid.
+# This is a ref to the secret that needs to exist and be the same on all libvirt hosts
+# It can be left untouched
+# This needs to be used in your disk xml configuration on your libvirt domain
+# Default is to use Ceph FS identifier, for simple convenience.
+kvm_cephx_secret_guid: "{{ kowabunga_ceph_fsid }}"
+
+#######################
+# Host Control Plugin #
+#######################
+
+hostctl_plugins_kvm:
+  - name: libvirt
+  - name: prometheus_exporter_libvirt
+    when: "{{ kowabunga_metrology_agent_metrics_enabled }}"
