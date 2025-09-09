@@ -122,7 +122,7 @@ To deploy Kowabunga infrastructure thanks to collection, use an appropriate inve
 ##########
 
 [kahuna]
-kowabunga-labs-kahuna-1 ansible_host=a.b.c.d ansible_ssh_user=ubuntu
+kahuna-1 ansible_host=a.b.c.d ansible_ssh_user=ubuntu
 
 ##################
 # EU-WEST Region #
