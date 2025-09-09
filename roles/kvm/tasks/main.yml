@@ -62,13 +62,6 @@
 - name: Flush handlers if required
   ansible.builtin.meta: flush_handlers
 
-# - name: Disable libvirtd QEMU security profile
-#   ansible.builtin.lineinfile:
-#     path: /etc/libvirt/qemu.conf
-#     regexp: "^#security_driver ="
-#     line: 'security_driver = "none"'
-#   notify: restart libvirtd
-
 - ansible.builtin.import_tasks: network.yml
 - ansible.builtin.import_tasks: rbd.yml
 

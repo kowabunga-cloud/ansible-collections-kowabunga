@@ -4,5 +4,4 @@
 # SPDX-License-Identifier: Apache-2.0
 
 kowabunga_libvirt_listen_addr: "{{ lan_primary_ip }}"
-
 kowabunga_kvm_network_bridges: []

@@ -44,42 +44,42 @@
       {%- endfor -%}
       {{- res -}}
   when:
-    - kowabunga_kvm_network_bridges != []
+    - kowabunga_kvm_network_bridges == []
     - kowabunga_netplan_config != {}
     - kowabunga_netplan_config.bridge | default([]) != []
 
 - name: Copy temporary network bridge description
   ansible.builtin.template:
     src: net-bridge.xml.j2
-    dest: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+    dest: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item }}.xml"
     owner: root
     group: root
     mode: 0644
   loop: "{{ kowabunga_kvm_network_bridges }}"
 
 - name: Check for network bridges existence
-  ansible.builtin.command: "virsh net-info {{ item.name }}"
+  ansible.builtin.command: "virsh net-info {{ item }}"
   register: kvm_network_bridge_info
   changed_when: false
   failed_when: false
   loop: "{{ kowabunga_kvm_network_bridges }}"
 
 - name: Define network bridges
-  ansible.builtin.command: "virsh net-define {{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+  ansible.builtin.command: "virsh net-define {{ libvirt_tmp_bridge_file_prefix }}-{{ item }}.xml"
   loop: "{{ kowabunga_kvm_network_bridges }}"
   loop_control:
     index_var: idx
   when: kvm_network_bridge_info.results[idx].rc != 0
 
 - name: Autostart network bridges
-  ansible.builtin.command: "virsh net-autostart {{ item.name }}"
+  ansible.builtin.command: "virsh net-autostart {{ item }}"
   loop: "{{ kowabunga_kvm_network_bridges }}"
   loop_control:
     index_var: idx
   when: kvm_network_bridge_info.results[idx].rc != 0
 
 - name: Start network bridges
-  ansible.builtin.command: "virsh net-start {{ item.name }}"
+  ansible.builtin.command: "virsh net-start {{ item }}"
   loop: "{{ kowabunga_kvm_network_bridges }}"
   loop_control:
     index_var: idx
@@ -87,6 +87,6 @@
 
 - name: Remove temporary network bridge definition files
   ansible.builtin.file:
-    path: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item.name }}.xml"
+    path: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item }}.xml"
     state: absent
   loop: "{{ kowabunga_kvm_network_bridges }}"
