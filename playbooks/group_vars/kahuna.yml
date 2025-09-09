@@ -9,9 +9,14 @@ kowabunga_region_domain: boilerplate
 kowabunga_region_domain_admin_network: boilerplate
 kowabunga_region_domain_storage_network: boilerplate
 
+kahuna_kowabunga_exporter:
+  - name: kowabunga
+    address: "{{ kowabunga_kahuna_http_address }}"
+    port: "{{ kowabunga_kahuna_http_port }}"
+
 kahuna_victorialogs_exporter:
   - name: VictoriaLogs
     address: "{{ victorialogs_listen_addr }}"
     port: "{{ victorialogs_port }}"
 
-kowabunga_metrology_agent_metrics_extra_exporters: "{{ [] + kowabunga_metrology_server_logs_enabled | ternary(kahuna_victorialogs_exporter, []) }}"
+kowabunga_metrology_agent_metrics_extra_exporters: "{{ kahuna_kowabunga_exporter + kowabunga_metrology_server_logs_enabled | ternary(kahuna_victorialogs_exporter, []) }}"
