@@ -16,21 +16,9 @@ kowabunga_kaktus_loglevel: INFO
 kowabunga_kaktus_agent_id: "{{ secret_kowabunga_kaktus_agent_id }}"
 kowabunga_kaktus_agent_api_key: "{{ secret_kowabunga_kaktus_agent_api_key }}"
 
-####################
-# Libvirt Settings #
-####################
-
-kowabunga_kaktus_libvirt_host: "127.0.0.1"
-kowabunga_kaktus_libvirt_port: 16509
-kowabunga_kaktus_libvirt_protocol: tcp
-kowabunga_kaktus_libvirt_tls_private_key_file: ~
-kowabunga_kaktus_libvirt_tls_public_cert_file: ~
-kowabunga_kaktus_libvirt_tls_ca_file: ~
-
 #################
 # Ceph Settings #
 #################
 
-kowabunga_kaktus_ceph_monitor_name: ceph-mon
-kowabunga_kaktus_ceph_monitor_host: "127.0.0.1"
-kowabunga_kaktus_ceph_monitor_port: 3300
+kowabunga_kaktus_ceph_monitor_name: "{{ ansible_hostname }}"
+kowabunga_kaktus_ceph_monitor_host: "{{ kowabunga_ceph_monitor_listen_addr }}"

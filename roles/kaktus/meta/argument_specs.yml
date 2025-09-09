@@ -31,58 +31,14 @@ argument_specs:
         type: str
         required: true
 
-      kowabunga_kaktus_libvirt_host:
-        description:
-          - Libvirt host to be used by Kaktus agent to connect to.
-        type: str
-        default: "127.0.0.1"
-
-      kowabunga_kaktus_libvirt_port:
-        description:
-          - Libvirt port to be used by Kaktus agent to connect.
-          - Usually 16509 for plain TCP connection and 16514 for TLS one.
-        type: int
-        default: 16509
-
-      kowabunga_kaktus_libvirt_protocol:
-        description:
-          - Protocol to be used by Kaktus agent to connect to libvirt daemon.
-        type: str
-        default: tcp
-        choices: ['tcp', 'tls']
-
-      kowabunga_kaktus_libvirt_tls_private_key_file:
-        description:
-          - Path to PEM-formatted file containing libvirt TLS private key.
-          - Only useful when TLS connection is expected.
-        type: str
-
-      kowabunga_kaktus_libvirt_tls_public_cert_file:
-        description:
-          - Path to PEM-formatted file containing libvirt TLS public certificate.
-          - Only useful when TLS connection is expected.
-        type: str
-
-      kowabunga_kaktus_libvirt_tls_ca_file:
-        description:
-          - Path to PEM-formatted file containing libvirt TLS certificate of authority.
-          - Only useful when TLS connection is expected.
-        type: str
-
       kowabunga_kaktus_ceph_monitor_name:
         description:
           - Ceph cluster monitor hostname to be used by Kaktus agent to connect to.
+          - Defaults to local V(ansible_hostname) if unspecified.
         type: str
-        default: ceph-mon
 
       kowabunga_kaktus_ceph_monitor_host:
         description:
           - Ceph cluster monitor host address to be used by Kaktus agent to connect to.
+          - Defaults to local V(kowabunga_ceph_monitor_listen_addr) if unspecified.
         type: str
-        default: "127.0.0.1"
-
-      kowabunga_kaktus_ceph_monitor_port:
-        description:
-          - Ceph cluster monitor Port to be used by Kaktus agent to connect.
-        type: int
-        default: 3300

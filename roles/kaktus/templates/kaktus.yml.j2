@@ -4,18 +4,12 @@ global:
   endpoint: "wss://{{ kowabunga_fqdn }}"
   apiKey: {{ kowabunga_kaktus_agent_api_key }}
 libvirt:
-  protocol: {{ kowabunga_kaktus_libvirt_protocol }}
-  address: {{ kowabunga_kaktus_libvirt_host }}
-  port: {{ kowabunga_kaktus_libvirt_port }}
-{% if kowabunga_kaktus_libvirt_protocol == 'tls' %}
-  tls:
-    key: {{ kowabunga_kaktus_libvirt_tls_private_key_file }}
-    cert: {{ kowabunga_kaktus_libvirt_tls_public_cert_file }}
-    ca: {{ kowabunga_kaktus_libvirt_tls_ca_file }}
-{% endif %}
+  protocol: tcp
+  address: {{ kowabunga_libvirt_listen_addr }}
+  port: 16509
 ceph:
   plugin: /usr/lib/kowabunga/plugins/ceph.so
   monitor:
     name: {{ kowabunga_kaktus_ceph_monitor_name }}
     address: {{ kowabunga_kaktus_ceph_monitor_host }}
-    port: {{ kowabunga_kaktus_ceph_monitor_port }}
+    port: {{ ceph_messenger_v2_port }}
