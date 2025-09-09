@@ -48,6 +48,13 @@
     - kowabunga_netplan_config != {}
     - kowabunga_netplan_config.bridge | default([]) != []
 
+- name: Check for network bridges existence
+  ansible.builtin.command: "virsh net-info {{ item }}"
+  register: kvm_network_bridge_info
+  changed_when: false
+  failed_when: false
+  loop: "{{ kowabunga_kvm_network_bridges }}"
+
 - name: Copy temporary network bridge description
   ansible.builtin.template:
     src: net-bridge.xml.j2
@@ -56,13 +63,9 @@
     group: root
     mode: 0644
   loop: "{{ kowabunga_kvm_network_bridges }}"
-
-- name: Check for network bridges existence
-  ansible.builtin.command: "virsh net-info {{ item }}"
-  register: kvm_network_bridge_info
-  changed_when: false
-  failed_when: false
-  loop: "{{ kowabunga_kvm_network_bridges }}"
+  loop_control:
+    index_var: idx
+  when: kvm_network_bridge_info.results[idx].rc != 0
 
 - name: Define network bridges
   ansible.builtin.command: "virsh net-define {{ libvirt_tmp_bridge_file_prefix }}-{{ item }}.xml"
@@ -90,3 +93,6 @@
     path: "{{ libvirt_tmp_bridge_file_prefix }}-{{ item }}.xml"
     state: absent
   loop: "{{ kowabunga_kvm_network_bridges }}"
+  loop_control:
+    index_var: idx
+  when: kvm_network_bridge_info.results[idx].rc != 0

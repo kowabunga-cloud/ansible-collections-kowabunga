@@ -12,32 +12,40 @@
     kvm_cephx_auth_key: "{{ ceph_kvm_key_command.stdout }}"
   when: ceph_kvm_key_command.rc == 0
 
-- name: Copy temporary RBD pool XML description
-  ansible.builtin.template:
-    src: rbd-pool.xml.j2
-    dest: "{{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Check Ceph secrets doesn't yet exist in libvirt
   ansible.builtin.shell: virsh secret-list | grep {{ kvm_cephx_secret_guid }}
   register: libvirt_secret_list
   failed_when: false
 
-- name: Copy temporary secret config
-  ansible.builtin.template:
-    src: rbd-secret.xml.j2
-    dest: "{{ libvirt_tmp_pool_file_secret }}"
+- name: Provision RBD on libvirt
   when: libvirt_secret_list.rc == 1
+  block:
+    - name: Copy temporary RBD pool XML description
+      ansible.builtin.template:
+        src: rbd-pool.xml.j2
+        dest: "{{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
+        owner: root
+        group: root
+        mode: 0644
 
-- name: Create ceph secret
-  ansible.builtin.shell: virsh secret-define --file "{{ libvirt_tmp_pool_file_secret }}"
-  register: rbd_secret_id
-  when: libvirt_secret_list.rc == 1
+    - name: Copy temporary secret config
+      ansible.builtin.template:
+        src: rbd-secret.xml.j2
+        dest: "{{ libvirt_tmp_pool_file_secret }}"
 
-- name: Populate RBD secret with values
-  ansible.builtin.command: "virsh secret-set-value --secret {{ kvm_cephx_secret_guid }} --base64 {{ kvm_cephx_auth_key }}"
+    - name: Create ceph secret
+      ansible.builtin.shell: virsh secret-define --file "{{ libvirt_tmp_pool_file_secret }}"
+
+    - name: Populate RBD secret with values
+      ansible.builtin.command: "virsh secret-set-value --secret {{ kvm_cephx_secret_guid }} --base64 {{ kvm_cephx_auth_key }}"
+
+    - name: Remove temporary pool definition files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
+        - "{{ libvirt_tmp_pool_file_secret }}"
 
 - name: Check for RBD pool existence
   ansible.builtin.command: "virsh pool-info {{ kvm_rbd_pool_name }}"
@@ -45,22 +53,14 @@
   changed_when: false
   failed_when: false
 
-- name: Define rbd pool
-  ansible.builtin.command: "virsh pool-define {{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
+- name: Enabled RBD pool
   when: kvm_rbd_pool_info.rc != 0
+  block:
+    - name: Define RBD pool
+      ansible.builtin.command: "virsh pool-define {{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
 
-- name: Autostart RBD pool
-  ansible.builtin.command: "virsh pool-autostart {{ kvm_rbd_pool_name }}"
-  when: kvm_rbd_pool_info.rc != 0
+    - name: Autostart RBD pool
+      ansible.builtin.command: "virsh pool-autostart {{ kvm_rbd_pool_name }}"
 
-- name: Start RBD pools
-  ansible.builtin.command: "virsh pool-start {{ kvm_rbd_pool_name }}"
-  when: kvm_rbd_pool_info.rc != 0
-
-- name: Remove temporary pool definition files
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - "{{ libvirt_tmp_pool_file_prefix }}-{{ kvm_rbd_pool_name }}.xml"
-    - "{{ libvirt_tmp_pool_file_secret }}"
+    - name: Start RBD pools
+      ansible.builtin.command: "virsh pool-start {{ kvm_rbd_pool_name }}"
