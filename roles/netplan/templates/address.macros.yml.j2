@@ -41,6 +41,7 @@
 {%- endmacro %}
 
 {% macro config(a) -%}
+      mtu: {{ a.mtu | default(netplan_interface_default_mtu) }}
       link-local: []
       accept-ra: false
       {% set dhcp_enabled = a.dhcp | default(false) | bool -%}

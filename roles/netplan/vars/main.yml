@@ -6,6 +6,8 @@
 netplan_cloud_init_default_config_file: /etc/netplan/50-cloud-init.yaml
 netplan_cloud_init_disable_config_file: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 
+netplan_interface_default_mtu: 1500
+
 netplan_address_route_metric_default: 100
 netplan_address_nameserver_search_default: []
 netplan_address_nameserver_dns_default:

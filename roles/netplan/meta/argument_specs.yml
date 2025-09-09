@@ -46,6 +46,12 @@ argument_specs:
                   - "Example: aa:bb:cc:dd:ee:ff"
                 type: str
                 required: true
+              mtu:
+                description:
+                  - Set Maximum Transmission Unit (MTU) for the interface.
+                  - Useful to enable Jumbo frames (MTU 9000) for example.
+                type: int
+                default: 1500
               dhcp:
                 description:
                   - Defines whether interface should be configured manually (default) or through DCHP.
@@ -156,6 +162,12 @@ argument_specs:
                 type: str
                 default: layer2+3
                 choices: ['layer2', 'layer3+4', 'layer2+3', 'encap2+3', 'encap3+4']
+              mtu:
+                description:
+                  - Set Maximum Transmission Unit (MTU) for the interface.
+                  - Useful to enable Jumbo frames (MTU 9000) for example.
+                type: int
+                default: 1500
               dhcp:
                 description:
                   - Defines whether interface should be configured manually (default) or through DCHP.
@@ -239,6 +251,12 @@ argument_specs:
                   - "Example: eth0"
                 type: str
                 required: true
+              mtu:
+                description:
+                  - Set Maximum Transmission Unit (MTU) for the interface.
+                  - Useful to enable Jumbo frames (MTU 9000) for example.
+                type: int
+                default: 1500
               dhcp:
                 description:
                   - Defines whether interface should be configured manually (default) or through DCHP.
@@ -328,6 +346,12 @@ argument_specs:
                   - The value is interpreted as seconds.
                 type: int
                 default: 4
+              mtu:
+                description:
+                  - Set Maximum Transmission Unit (MTU) for the interface.
+                  - Useful to enable Jumbo frames (MTU 9000) for example.
+                type: int
+                default: 1500
               dhcp:
                 description:
                   - Defines whether interface should be configured manually (default) or through DCHP.
