@@ -114,11 +114,61 @@ To use a module from the Ansible Kowabunga collection, call them by their Fully 
         state: present
 ```
 
+To deploy Kowabunga infrastructure thanks to collection, use an appropriate inventory, e.g.
+
+```ini
+##########
+# Global #
+##########
+
+[kahuna]
+kowabunga-labs-kahuna-1 ansible_host=a.b.c.d ansible_ssh_user=ubuntu
+
+##################
+# EU-WEST Region #
+##################
+
+[kiwi_eu_west]
+kiwi-eu-west-1 ansible_host=10.0.1.1
+kiwi-eu-west-2 ansible_host=10.0.1.2
+
+[kaktus_eu_west]
+kaktus-eu-west-1 ansible_host=10.0.1.11
+kaktus-eu-west-2 ansible_host=10.0.1.12
+kaktus-eu-west-3 ansible_host=10.0.1.13
+
+[eu_west:children]
+kiwi_eu_west
+kaktus_eu_west
+
+################
+# Dependencies #
+################
+
+[kiwi:children]
+kiwi_eu_west
+
+[kaktus:children]
+kaktus_eu_west
+```
+
+configure variables as [group_vars and host_vars](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html) and run them through [Kobra](https://github.com/kowabunga-cloud/kobra):
+
+```sh
+$ kobra ansible deploy -p kowabunga.cloud.kahuna
+$ kobra ansible deploy -p kowabunga.cloud.kiwi
+$ kobra ansible deploy -p kowabunga.cloud.kaktus
+```
+
 ## Documentation
 
 See collection docs at:
 
 * [kowabunga.cloud collection docs](https://ansible.kowabunga.cloud/kowabunga/cloud/index.html)
+
+See tutorials and usage on:
+
+* [kowabunga administration guide](https://kowabunga.cloud/docs/admin-guide/)
 
 ## License
 
