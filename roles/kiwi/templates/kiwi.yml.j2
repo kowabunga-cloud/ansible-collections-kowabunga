@@ -10,7 +10,7 @@ pdns:
     api_key: {{ kowabunga_powerdns_api_key }}
   recursors:
 {% for host in groups[kiwi_powerdns_recursor_cluster_group_name] %}
-    - host: {{ host }}
+    - host: {{ powerdns_locally_managed_dns_ip }}
       port: {{ powerdns_authoritative_port }} # misleading, this is actually AS service port, not recursor one, but it makes things simpler
       api_port: {{ powerdns_recursor_webserver_port }}
       api_key: {{ kowabunga_powerdns_api_key }}
