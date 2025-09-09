@@ -18,6 +18,13 @@
     line: "CLUSTER={{ ceph_cluster_name }}"
     mode: 0644
 
+- name: Update local hosts DNS
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ ceph_cluster_name }}.{{ kowabunga_region_domain_storage }}$'
+    line: "{{ kowabunga_ceph_monitor_listen_addr }} {{ ceph_cluster_name }} {{ ceph_cluster_name }}.{{ kowabunga_region_domain_storage }}"
+    state: present
+
 - name: Set list of Ceph monitor nodes
   ansible.builtin.set_fact:
     ceph_monitor_nodes: "{{ ceph_monitor_nodes + [item] }}"
