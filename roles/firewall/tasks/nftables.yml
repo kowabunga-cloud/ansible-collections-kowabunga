@@ -48,13 +48,15 @@
         src: nftables.conf.j2
         dest: /etc/nftables.conf.new
         mode: 0644
-        notify: Reload nftables firewall
+        lstrip_blocks: true
+      notify: Reload nftables firewall
 
     - name: Templates firewall rules
       ansible.builtin.template:
         src: "{{ item }}.nft.j2"
         dest: "{{ firewall_nftables_config_dir }}/{{ item }}.nft"
         mode: 0644
+        lstrip_blocks: true
       loop:
         - defines
         - local-rules

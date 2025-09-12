@@ -4,25 +4,25 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Primary LAN
-lan_primary_dev: "{{ ansible_local | json_query('auto.network.devices.private.primary.dev') | default('') }}"
-lan_primary_dev_raw: "{{ ansible_local | json_query('auto.network.devices.private.primary.raw_dev') | default('') }}"
-lan_primary_ip: "{{ ansible_local | json_query('auto.network.devices.private.primary.ip') | default('') }}"
-lan_primary_gw: "{{ ansible_local | json_query('auto.network.devices.private.gateway') | default('') }}"
-lan_primary_mask: "{{ ansible_local | json_query('auto.network.devices.private.primary.netmask') | default('') }}"
+lan_primary_dev: "{{ ansible_local.auto.network.devices.private.primary.dev | default('') }}"
+lan_primary_dev_raw: "{{ ansible_local.auto.network.devices.private.primary.raw_dev | default('') }}"
+lan_primary_ip: "{{ ansible_local.auto.network.devices.private.primary.ip | default('') }}"
+lan_primary_gw: "{{ ansible_local.auto.network.devices.private.gateway | default('') }}"
+lan_primary_mask: "{{ ansible_local.auto.network.devices.private.primary.netmask | default('') }}"
 
 # Secondary LAN
-lan_secondary_dev: "{{ ansible_local | json_query('auto.network.devices.private.secondary.dev') | default('') }}"
-lan_secondary_dev_raw: "{{ ansible_local | json_query('auto.network.devices.private.secondary.raw_dev') | default('') }}"
-lan_secondary_ip: "{{ ansible_local | json_query('auto.network.devices.private.secondary.ip') | default('') }}"
-lan_secondary_gw: "{{ ansible_local | json_query('auto.network.devices.private.gateway') | default('') }}"
-lan_secondary_mask: "{{ ansible_local | json_query('auto.network.devices.private.secondary.netmask') | default('') }}"
+lan_secondary_dev: "{{ ansible_local.auto.network.devices.private.secondary.dev | default('') }}"
+lan_secondary_dev_raw: "{{ ansible_local.auto.network.devices.private.secondary.raw_dev | default('') }}"
+lan_secondary_ip: "{{ ansible_local.auto.network.devices.private.secondary.ip | default('') }}"
+lan_secondary_gw: "{{ ansible_local.auto.network.devices.private.gateway | default('') }}"
+lan_secondary_mask: "{{ ansible_local.auto.network.devices.private.secondary.netmask | default('') }}"
 
 # Primary WAN
-wan_primary_dev: "{{ ansible_local | json_query('auto.network.devices.public.primary.dev') | default('') }}"
-wan_primary_dev_raw: "{{ ansible_local | json_query('auto.network.devices.public.primary.raw_dev') | default('') }}"
-wan_primary_ip: "{{ ansible_local | json_query('auto.network.devices.public.primary.ip') | default('') }}"
-wan_primary_gw: "{{ ansible_local | json_query('auto.network.devices.public.primary.gateway') | default('') }}"
-wan_primary_mask: "{{ ansible_local | json_query('auto.network.devices.public.primary.netmask') | default('') }}"
+wan_primary_dev: "{{ ansible_local.auto.network.devices.public.primary.dev | default('') }}"
+wan_primary_dev_raw: "{{ ansible_local.auto.network.devices.public.primary.raw_dev | default('') }}"
+wan_primary_ip: "{{ ansible_local.auto.network.devices.public.primary.ip | default('') }}"
+wan_primary_gw: "{{ ansible_local.auto.network.devices.public.primary.gateway | default('') }}"
+wan_primary_mask: "{{ ansible_local.auto.network.devices.public.primary.netmask | default('') }}"
 
 # for backward-compatiblity
 lan_dev: "{{ lan_primary_dev }}"
@@ -39,5 +39,5 @@ wan_mask: "{{ wan_primary_mask }}"
 
 wan_access: "{{ wan_primary_dev != lan_primary_dev }}"
 
-NET_WAN_IS_DIRECT: "{{ ansible_local | json_query('auto.network.devices.public.primary.mode') | default('direct') == 'direct' }}"
-NET_WAN_IS_NAT: "{{ ansible_local | json_query('auto.network.devices.public.primary.mode') | default('direct') == 'nat' }}"
+NET_WAN_IS_DIRECT: "{{ ansible_local.auto.network.devices.public.primary.mode | default('direct') == 'direct' }}"
+NET_WAN_IS_NAT: "{{ ansible_local.auto.network.devices.public.primary.mode | default('direct') == 'nat' }}"
