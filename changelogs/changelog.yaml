@@ -1,5 +1,14 @@
 ancestor: null
 releases:
+  0.1.0:
+    changes:
+      - Complete playbook support to deploy ``kahuna``, ``kiwi`` and ``kaktus`` nodes.
+      - Add all necessary roles (``ansible``, ``caddy``, ``ceph``, ``chrony``, ``common``, ``firewall``, ``hostctl``, ``kahuna``, ``kaktus``, ``keepalived``, ``kiwi``, ``kvm``, ``logrotate``, ``metrology``, ``mitogen``, ``mongodb``, ``netplan``, ``network_detector``, ``os``, ``powerdns``, ``ssh``, ``ubuntu``).
+      - Complete roles documentation.
+      - Full tested and compatible with Ubuntu 24.04 LTS deployments.
+      - Early support for Ansible modules (``project`` only so far)
+      release_summary: First major availability of collection, prime-time readiness.
+    release_date: '2020-09-12'
   0.0.1:
     changes:
       release_summary: Initial release of collection.
