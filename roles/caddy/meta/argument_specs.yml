@@ -1,0 +1,6 @@
+argument_specs:
+
+  main:
+    short_description: Deploy Caddy web server.
+    description:
+      - Deploy Caddy web server.

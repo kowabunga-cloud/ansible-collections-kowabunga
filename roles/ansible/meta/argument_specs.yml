@@ -1,0 +1,6 @@
+argument_specs:
+
+  main:
+    short_description: Defines a few Ansible macros.
+    description:
+      - Defines a few Ansible macros.

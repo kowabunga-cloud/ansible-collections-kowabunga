@@ -1,0 +1,6 @@
+argument_specs:
+
+  main:
+    short_description: Deploy mitogen SSH accelerator.
+    description:
+      - Deploy mitogen SSH accelerator.

@@ -1,0 +1,6 @@
+argument_specs:
+
+  main:
+    short_description: Deploy Host Control.
+    description:
+      - Deploy Host Control.
