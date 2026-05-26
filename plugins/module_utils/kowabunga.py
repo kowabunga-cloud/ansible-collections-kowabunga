@@ -334,6 +334,82 @@ class KowabungaModule:
         """
         return self._find_resources_by_name('region', 'regions', strict=True)
 
+    def _find_users(self):
+        """Retrieve list of user resource IDs from requested user names.
+        """
+        if not self.params.get('users'):
+            return []
+        return self._find_resources_by_name('user', 'users', strict=True)
+
+    def _find_agents(self):
+        """Retrieve list of agent resource IDs from requested agent names.
+        """
+        if not self.params.get('agents'):
+            return []
+        return self._find_resources_by_name('agent', 'agents', strict=True)
+
+    def _find_pool_by_name(self, name):
+        """Retrieve a storage pool resource by name.
+        """
+        api = self.sdk.PoolApi(self.client)
+        for id in api.list_storage_pools():
+            pool = api.read_storage_pool(id)
+            if name in [pool.id, pool.name]:
+                return pool
+        return None
+
+    def _find_nfs_by_name(self, name):
+        """Retrieve a storage NFS resource by name.
+        """
+        api = self.sdk.NfsApi(self.client)
+        for id in api.list_storage_nfss():
+            nfs = api.read_storage_nfs(id)
+            if name in [nfs.id, nfs.name]:
+                return nfs
+        return None
+
+    def _find_vnet_by_name(self, name):
+        """Retrieve a virtual network resource by name.
+        """
+        api = self.sdk.VnetApi(self.client)
+        for id in api.list_v_nets():
+            vnet = api.read_v_net(id)
+            if name in [vnet.id, vnet.name]:
+                return vnet
+        return None
+
+    def _find_kawaii_ipsec_in_kawaii(self, ipsec_name, kawaii_id):
+        """Retrieve a KawaiiIpSec resource by name within a given kawaii.
+        """
+        api = self.sdk.KawaiiApi(self.client)
+        for id in api.list_kawaii_ip_secs(kawaii_id):
+            ipsec = api.read_kawaii_ip_sec(kawaii_id, id)
+            if ipsec_name in [ipsec.id, ipsec.name]:
+                return ipsec
+        return None
+
+    def _find_record_in_project(self, record_name, project_id):
+        """Retrieve a DNS record by name within a given project.
+        """
+        api = self.sdk.ProjectApi(self.client)
+        record_api = self.sdk.RecordApi(self.client)
+        for id in api.list_project_dns_records(project_id):
+            r = record_api.read_dns_record(id)
+            if record_name in [r.id, r.name]:
+                return r
+        return None
+
+    def _find_record_in_region(self, record_name, region_id):
+        """Retrieve a DNS record by name within a given region.
+        """
+        api = self.sdk.RegionApi(self.client)
+        record_api = self.sdk.RecordApi(self.client)
+        for id in api.list_region_dns_records(region_id):
+            r = record_api.read_dns_record(id)
+            if record_name in [r.id, r.name]:
+                return r
+        return None
+
     @abc.abstractmethod
     def run(self):
         """Function for overriding in inhetired classes, it's executed by default.
