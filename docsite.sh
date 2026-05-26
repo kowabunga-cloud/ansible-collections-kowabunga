@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-DOCSITE_DIR="docsite"
+DOCROOT="."
+[ -n "$1" ] && DOCROOT="$1"
+
+DOCSITE_DIR="${DOCROOT}/docsite"
 VENV_DIR="${DOCSITE_DIR}/venv"
 BIN_DIR="${VENV_DIR}/bin"
 RST_DIR="${DOCSITE_DIR}/rst"
@@ -13,6 +16,7 @@ cp conf.py ${DOCSITE_DIR}
 
 # Create Python virtual environment
 python3 -m venv ${VENV_DIR}
+${VENV_DIR}/bin/pip3 install ansible
 ${VENV_DIR}/bin/pip3 install antsibull-docs
 ${VENV_DIR}/bin/pip3 install Sphinx
 ${VENV_DIR}/bin/pip3 install sphinx-ansible-theme
@@ -20,17 +24,18 @@ ${VENV_DIR}/bin/pip3 install sphinx-ansible-theme
 cat <<EOF > ${DOCSITE_DIR}/ansible.cfg
 [defaults]
 ansible_python_interpreter = ./venv/bin/python3
-collections_paths = ./collections/
+collections_path = ./collections/
 EOF
 
 mkdir -p ${COLLECTIONS_DIR}
-ln -sf ../../../.. ${COLLECTIONS_DIR}/cloud
+ln -sf $(pwd) ${COLLECTIONS_DIR}/cloud
 
 # Build RST documentation
 mkdir -p ${RST_DIR}
+chmod -R 755 ${RST_DIR}
 mkdir -p ${BUILD_DIR}
 
 cd ${DOCSITE_DIR}
-ANSIBLE_CONFIG=ansible.cfg ./venv/bin/antsibull-docs collection --use-current --dest-dir rst kowabunga.cloud
+PATH=${BIN_DIR}:$PATH ANSIBLE_CONFIG=ansible.cfg ./venv/bin/antsibull-docs collection --use-current --dest-dir rst kowabunga.cloud
 ./venv/bin/sphinx-build -M html rst/collections build -c . -W --keep-going
 cd ..

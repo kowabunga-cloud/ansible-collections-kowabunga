@@ -32,19 +32,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: 'pip'
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
       - name: Build local doc site
-        run: ./docsite.sh
+        run: |
+          ./docsite.sh "${RUNNER_TEMP}"
+          echo "output_path=${RUNNER_TEMP}/docsite/build/html" >> $GITHUB_OUTPUT
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: ./docsite/build/html
+          path: ${{ steps.build_doc.outputs.output_path }}
 
   # Deployment job
   deploy:
