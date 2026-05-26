@@ -45,6 +45,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - name: Build local doc site
+        id: build_doc
         run: |
           ./docsite.sh "${RUNNER_TEMP}"
           echo "output_path=${RUNNER_TEMP}/docsite/build/html" >> $GITHUB_OUTPUT
