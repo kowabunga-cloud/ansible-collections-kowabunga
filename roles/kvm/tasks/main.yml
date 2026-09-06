@@ -22,6 +22,9 @@
       - ksmtuned
       - xmlstarlet
       - bridge-utils
+      - swtpm
+      - swtpm-tools
+      - ovmf
     state: latest
     update_cache: true
   notify:
