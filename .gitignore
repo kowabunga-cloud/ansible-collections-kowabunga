@@ -4,6 +4,7 @@ test.yml
 ansible.cfg
 
 .idea/
+.claude/
 *.pyc
 *.tar.gz
 __pycache__
