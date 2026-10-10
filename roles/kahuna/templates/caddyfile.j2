@@ -17,10 +17,19 @@
   }
 
 {% if kowabunga_koala_enabled %}
-  # Koala WebUI
+  # Koala WebUI: build assets have content-hashed names and never change (missing ones are 404s)
+  handle /assets/* {
+    root * {{ kowabunga_koala_root_dir }}
+    @exists file
+    header @exists Cache-Control "public, max-age=31536000, immutable"
+    file_server
+  }
+  # Koala WebUI: single-page app, any other path (/kompute, /login, ...) is served by index.html,
+  # revalidated on each load so browsers pick up new releases
   handle {
     root * {{ kowabunga_koala_root_dir }}
     try_files {path} /index.html
+    header Cache-Control "no-cache"
     file_server
   }
 {% endif %}
